@@ -33,6 +33,7 @@ public class CSharpDirectoryScannerPlugin extends AbstractDirectoryScannerPlugin
     private MethodCache methodCache;
     private EnumValueCache enumValueCache;
     private FieldCache fieldCache;
+    private PropertyCache propertyCache;
 
     private File jsonDirectory;
 
@@ -84,6 +85,10 @@ public class CSharpDirectoryScannerPlugin extends AbstractDirectoryScannerPlugin
             fieldCache = new FieldCache(scannerContext.getStore());
         }
 
+        if (propertyCache == null){
+            propertyCache = new PropertyCache(scannerContext.getStore());
+        }
+
         try {
             cSharpToJsonToolManager.checkIfParserIsAvailableOrDownloadOtherwise();
             jsonDirectory = cSharpToJsonToolExecutor.execute(container);
@@ -96,7 +101,8 @@ public class CSharpDirectoryScannerPlugin extends AbstractDirectoryScannerPlugin
                     cSharpFileCache,
                     methodCache,
                     enumValueCache,
-                    fieldCache);
+                    fieldCache,
+                    propertyCache);
             jsonToNeo4JConverter.readAllJsonFilesAndSaveToNeo4J();
 
         } catch (CSharpPluginException e) {

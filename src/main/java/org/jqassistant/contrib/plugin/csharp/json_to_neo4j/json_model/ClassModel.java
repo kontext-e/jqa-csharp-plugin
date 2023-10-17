@@ -38,6 +38,8 @@ public class ClassModel implements JsonModel {
 
     private List<FieldModel> fields;
 
+    private List<PropertyModel> properties;
+
     private int firstLineNumber;
 
     private int lastLineNumber;

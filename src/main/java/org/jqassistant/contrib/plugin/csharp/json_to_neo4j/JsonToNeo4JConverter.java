@@ -14,6 +14,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class JsonToNeo4JConverter {
 
@@ -28,10 +29,11 @@ public class JsonToNeo4JConverter {
     private final MethodCache methodCache;
     private final EnumValueCache enumValueCache;
     private final FieldCache fieldCache;
+    private final PropertyCache propertyCache;
 
     private List<FileModel> fileModelList;
 
-    public JsonToNeo4JConverter(Store store, File inputDirectory, NamespaceCache namespaceCache, TypeCache typeCache, CSharpFileCache cSharpFileCache, MethodCache methodCache, EnumValueCache enumValueCache, FieldCache fieldCache) {
+    public JsonToNeo4JConverter(Store store, File inputDirectory, NamespaceCache namespaceCache, TypeCache typeCache, CSharpFileCache cSharpFileCache, MethodCache methodCache, EnumValueCache enumValueCache, FieldCache fieldCache, PropertyCache propertyCache) {
 
         this.store = store;
         this.inputDirectory = inputDirectory;
@@ -41,6 +43,7 @@ public class JsonToNeo4JConverter {
         this.methodCache = methodCache;
         this.enumValueCache = enumValueCache;
         this.fieldCache = fieldCache;
+        this.propertyCache = propertyCache;
     }
 
     public void readAllJsonFilesAndSaveToNeo4J() {
@@ -58,6 +61,7 @@ public class JsonToNeo4JConverter {
         createMethods();
         createInvokations();
         createFields();
+        createProperties();
     }
 
     private void readAllJsonFilesRecursivelyAndCreateDirectoryDescriptors(File currentDirectory, CSharpClassesDirectoryDescriptor parentDirectoryDescriptor) {
@@ -282,6 +286,63 @@ public class JsonToNeo4JConverter {
         }
     }
 
+    private void createProperties(){
+        //TODO what to do, when neither public nor private is given
+        for (FileModel fileModel : fileModelList){
+            for (ClassModel classModel : fileModel.getClasses()){
+                CSharpClassDescriptor cSharpClassDescriptor = (CSharpClassDescriptor) typeCache.get(classModel.getKey());
+
+                for (PropertyModel propertyModel : classModel.getProperties()){
+                    PropertyDescriptor propertyDescriptor = propertyCache.create(propertyModel.getKey());
+                    propertyDescriptor.setFullQualifiedName(propertyModel.getFqn());
+                    propertyDescriptor.setName(propertyModel.getName());
+                    propertyDescriptor.setVisibility(propertyModel.getAccessibility());
+                    propertyDescriptor.setStatic(propertyModel.isStaticKeyword());
+
+                    TypeDescriptor typeDescriptor = typeCache.findOrCreate(propertyModel.getType());
+                    propertyDescriptor.setType(typeDescriptor);
+
+                    List<MethodDescriptor> accessors = findAndCreateAccessors(propertyModel);
+
+                    propertyDescriptor.getAccessors().addAll(accessors);
+
+                    cSharpClassDescriptor.getDeclaredMembers().add(propertyDescriptor);
+                }
+            }
+        }
+    }
+
+    private List<MethodDescriptor> findAndCreateAccessors(PropertyModel propertyModel) {
+        List<MethodDescriptor> accessors = new ArrayList<>();
+
+        Optional<String> getter = propertyModel.getAccessors().stream().filter(t -> t.contains("get")).findAny();
+        getter.ifPresent(s -> accessors.add(createAccessors(propertyModel, s.trim())));
+
+        Optional<String> setter = propertyModel.getAccessors().stream().filter(t -> t.contains("set")).findAny();
+        setter.ifPresent(s -> accessors.add(createAccessors(propertyModel, s.trim())));
+
+        Optional<String> init = propertyModel.getAccessors().stream().filter(t -> t.contains("init")).findAny();
+        init.ifPresent(s -> accessors.add(createAccessors(propertyModel, s.trim())));
+
+        return accessors;
+    }
+
+    private MethodDescriptor createAccessors(PropertyModel propertyModel, String accessor) {
+        String kindOfAccessor = accessor.contains(" ") ?
+                accessor.substring(accessor.lastIndexOf(" "), accessor.length()).trim() : accessor;
+
+        MethodModel methodModel = new MethodModel();
+        methodModel.setName(kindOfAccessor + propertyModel.getName());
+        methodModel.setFqn(propertyModel.getFqn() + "." + kindOfAccessor);
+        methodModel.setParameters(new ArrayList<>());
+
+        if (accessor.contains(" ")){
+            methodModel.setAccessibility(StringUtils.capitalize(StringUtils.substringBeforeLast(accessor, " ").trim()));
+        } else {
+            methodModel.setAccessibility(propertyModel.getAccessibility());
+        }
+        return createMethodDescriptor(methodModel);
+    }
 
     private void createMethods() {
 
@@ -298,36 +359,12 @@ public class JsonToNeo4JConverter {
 
             for (MethodModel methodModel : classModel.getMethods()) {
 
-                MethodDescriptor methodDescriptor = methodCache.create(methodModel.getKey());
-                methodDescriptor.setEffectiveLineCount(methodModel.getEffectiveLineCount());
-                methodDescriptor.setLastLineNumber(methodModel.getLastLineNumber());
-                methodDescriptor.setFirstLineNumber(methodModel.getFirstLineNumber());
-                methodDescriptor.setName(methodModel.getName());
-                methodDescriptor.setFullQualifiedName(methodModel.getFqn());
-                methodDescriptor.setVisibility(methodModel.getAccessibility());
-                methodDescriptor.setCyclomaticComplexity(methodModel.getCyclomaticComplexity());
-
-                TypeDescriptor returnTypeDescriptor = typeCache.findOrCreate(methodModel.getReturnType());
-                methodDescriptor.setReturns(returnTypeDescriptor);
-
-                int index = 1;
-                for (ParameterModel parameterModel : methodModel.getParameters()) {
-
-                    ParameterDescriptor parameterDescriptor = store.create(ParameterDescriptor.class);
-                    parameterDescriptor.setIndex(index);
-                    TypeDescriptor parameterTypeDescriptor = typeCache.findOrCreate(parameterModel.getType());
-                    parameterDescriptor.setType(parameterTypeDescriptor);
-                    parameterDescriptor.setName(parameterModel.getName());
-
-                    methodDescriptor.getParameters().add(parameterDescriptor);
-                    index++;
-                }
+                MethodDescriptor methodDescriptor = createMethodDescriptor(methodModel);
 
                 cSharpClassDescriptor.getDeclaredMembers().add(methodDescriptor);
             }
         }
     }
-
 
     private void createMethodsForInterfaces(FileModel fileModel) {
 
@@ -337,33 +374,38 @@ public class JsonToNeo4JConverter {
 
             for (MethodModel methodModel : interfaceModel.getMethods()) {
 
-                MethodDescriptor methodDescriptor = methodCache.create(methodModel.getKey());
-                methodDescriptor.setEffectiveLineCount(methodModel.getEffectiveLineCount());
-                methodDescriptor.setLastLineNumber(methodModel.getLastLineNumber());
-                methodDescriptor.setFirstLineNumber(methodModel.getFirstLineNumber());
-                methodDescriptor.setName(methodModel.getName());
-                methodDescriptor.setFullQualifiedName(methodModel.getFqn());
-                methodDescriptor.setVisibility(methodModel.getAccessibility());
-
-                TypeDescriptor returnTypeDescriptor = typeCache.findOrCreate(methodModel.getReturnType());
-                methodDescriptor.setReturns(returnTypeDescriptor);
-
-                int index = 1;
-                for (ParameterModel parameterModel : methodModel.getParameters()) {
-
-                    ParameterDescriptor parameterDescriptor = store.create(ParameterDescriptor.class);
-                    parameterDescriptor.setIndex(index);
-                    TypeDescriptor parameterTypeDescriptor = typeCache.findOrCreate(parameterModel.getType());
-                    parameterDescriptor.setType(parameterTypeDescriptor);
-                    parameterDescriptor.setName(parameterModel.getName());
-
-                    methodDescriptor.getParameters().add(parameterDescriptor);
-                    index++;
-                }
+                MethodDescriptor methodDescriptor = createMethodDescriptor(methodModel);
 
                 interfaceTypeDescriptor.getDeclaredMembers().add(methodDescriptor);
             }
         }
+    }
+
+    private MethodDescriptor createMethodDescriptor(MethodModel methodModel) {
+        MethodDescriptor methodDescriptor = methodCache.create(methodModel.getKey());
+        methodDescriptor.setEffectiveLineCount(methodModel.getEffectiveLineCount());
+        methodDescriptor.setLastLineNumber(methodModel.getLastLineNumber());
+        methodDescriptor.setFirstLineNumber(methodModel.getFirstLineNumber());
+        methodDescriptor.setName(methodModel.getName());
+        methodDescriptor.setFullQualifiedName(methodModel.getFqn());
+        methodDescriptor.setVisibility(methodModel.getAccessibility());
+        methodDescriptor.setCyclomaticComplexity(methodModel.getCyclomaticComplexity());
+        TypeDescriptor returnTypeDescriptor = typeCache.findOrCreate(methodModel.getReturnType());
+        methodDescriptor.setReturns(returnTypeDescriptor);
+
+        int index = 1;
+        for (ParameterModel parameterModel : methodModel.getParameters()) {
+
+            ParameterDescriptor parameterDescriptor = store.create(ParameterDescriptor.class);
+            parameterDescriptor.setIndex(index);
+            TypeDescriptor parameterTypeDescriptor = typeCache.findOrCreate(parameterModel.getType());
+            parameterDescriptor.setType(parameterTypeDescriptor);
+            parameterDescriptor.setName(parameterModel.getName());
+
+            methodDescriptor.getParameters().add(parameterDescriptor);
+            index++;
+        }
+        return methodDescriptor;
     }
 
     private void createInvokations() {
