@@ -2,14 +2,12 @@ package org.jqassistant.contrib.plugin.csharp.scanner;
 
 import com.buschmais.jqassistant.core.scanner.api.DefaultScope;
 import com.buschmais.jqassistant.plugin.common.test.AbstractPluginIT;
-import org.jqassistant.contrib.plugin.csharp.model.CSharpClassDescriptor;
-import org.jqassistant.contrib.plugin.csharp.model.InterfaceTypeDescriptor;
-import org.jqassistant.contrib.plugin.csharp.model.NamespaceDescriptor;
-import org.jqassistant.contrib.plugin.csharp.model.UsesNamespaceDescriptor;
+import org.jqassistant.contrib.plugin.csharp.model.*;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.util.List;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -28,6 +26,7 @@ public class ScannerTestIT extends AbstractPluginIT {
         testClasses();
         testBaseTypes();
         testInterfaces();
+        testProperties();
 
         store.commitTransaction();
     }
@@ -117,6 +116,77 @@ public class ScannerTestIT extends AbstractPluginIT {
 
         assertThat(interfaceTypeDescriptor.getInterfaces()).hasSize(1);
         assertThat(interfaceTypeDescriptor.getInterfaces().get(0).getName()).isEqualTo("ParentInterface");
+    }
+
+    private void testProperties() {
+        List<Map<String, Object>> propertyDescriptorList = query("Match (p:Property) Return p").getRows();
+        assertThat(propertyDescriptorList.size()).isEqualTo(8);
+
+        testPropertyInlineGetSetDefinition();
+        testPropertyPrivate();
+        testPropertyStatic();
+        testPropertyInlineGetSetWithVisibility();
+        testPropertyExpressionBodiedGetSet();
+        testPropertyInit();
+    }
+
+    private void testPropertyStatic() {
+        List<Map<String, Object>> property7 = query("Match (p:Property {name: \"property8\"}) Return p").getRows();
+        assertThat(property7.size()).isEqualTo(1);
+        assertThat(((PropertyDescriptor)property7.get(0).get("p")).isStatic()).isEqualTo(true);
+    }
+
+    private void testPropertyPrivate() {
+        List<Map<String, Object>> property7 = query("Match (p:Property {name: \"property7\"}) Return p").getRows();
+        assertThat(property7.size()).isEqualTo(1);
+        assertThat(((PropertyDescriptor)property7.get(0).get("p")).getVisibility()).isEqualTo("Private");
+    }
+
+    private void testPropertyInlineGetSetDefinition() {
+        List<Map<String, Object>> property1 = query("Match (p:Property {name: \"property1\"}) Return p").getRows();
+        assertThat(property1.size()).isEqualTo(1);
+
+        List<Object> accessors = query("Match r=((p:Property {name: \"property1\"})-[:DECLARES]->(m)) Return m").getColumn("m");
+        assertThat(accessors.size()).isEqualTo(2);
+        assertThat(((MethodDescriptor) accessors.get(0)).getVisibility()).isEqualTo("Public");
+        assertThat(((MethodDescriptor) accessors.get(1)).getVisibility()).isEqualTo("Public");
+    }
+
+    private void testPropertyInlineGetSetWithVisibility() {
+        List<Map<String, Object>> property1 = query("Match (p:Property {name: \"property2\"}) Return p").getRows();
+        assertThat(property1.size()).isEqualTo(1);
+
+        List<Object> accessors = query("Match r=((p:Property {name: \"property2\"})-[:DECLARES]->(m)) Return m").getColumn("m");
+        assertThat(accessors.size()).isEqualTo(2);
+        for (Object accessor : accessors){
+            if (((MethodDescriptor) accessor).getFullQualifiedName().endsWith("set")){
+                assertThat(((MethodDescriptor) accessor).getVisibility()).isEqualTo("Private");
+            } else {
+                assertThat(((MethodDescriptor) accessor).getVisibility()).isEqualTo("Public");
+            }
+        }
+    }
+
+    private void testPropertyExpressionBodiedGetSet() {
+        List<Map<String, Object>> property1 = query("Match (p:Property {name: \"property3\"}) Return p").getRows();
+        assertThat(property1.size()).isEqualTo(1);
+
+        List<Object> accessors = query("Match r=((p:Property {name: \"property3\"})-[:DECLARES]->(m)) Return m").getColumn("m");
+        assertThat(accessors.size()).isEqualTo(1);
+        assertThat(((MethodDescriptor) accessors.get(0)).getVisibility()).isEqualTo("Public");
+    }
+
+    private void testPropertyInit() {
+        boolean initDetected = false;
+        List<Object> accessors = query("Match r=((p:Property {name: \"property6\"})-[:DECLARES]->(m)) Return m").getColumn("m");
+        assertThat(accessors.size()).isEqualTo(2);
+        for (Object accessor : accessors){
+            if (((MethodDescriptor)accessor).getFullQualifiedName().endsWith("init")){
+                initDetected = true;
+                break;
+            }
+        }
+        assertThat(initDetected).isTrue();
     }
 
 }
