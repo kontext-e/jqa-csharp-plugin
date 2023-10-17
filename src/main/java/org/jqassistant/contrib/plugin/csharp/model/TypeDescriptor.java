@@ -1,44 +1,30 @@
 package org.jqassistant.contrib.plugin.csharp.model;
 
-import static com.buschmais.xo.neo4j.api.annotation.Relation.Outgoing;
-
+import com.buschmais.jqassistant.core.store.api.model.FullQualifiedNameDescriptor;
+import com.buschmais.jqassistant.plugin.common.api.model.MD5Descriptor;
 import com.buschmais.jqassistant.plugin.common.api.model.NamedDescriptor;
 import com.buschmais.xo.neo4j.api.annotation.Label;
 import com.buschmais.xo.neo4j.api.annotation.Relation;
+
 import java.util.List;
 
-@Label("Type")
-public interface TypeDescriptor extends CSharpDescriptor, NamedDescriptor {
-  String getFqn();
-  void setFqn(String fqn);
 
-  String getName();
-  void setName(String name);
+@Label(value = "Type", usingIndexedPropertyOf = FullQualifiedNameDescriptor.class)
+public interface TypeDescriptor extends CSharpDescriptor, NamedDescriptor, FullQualifiedNameDescriptor, MD5Descriptor {
 
-  boolean getPartial();
-  void setPartial(boolean partial);
+    @Relation.Outgoing
+    @Declares
+    List<MemberDescriptor> getDeclaredMembers();
 
-  boolean getNewMod();
-  void setNewMod(boolean newMod);
+    Integer getFirstLineNumber();
 
-  String getVisibility();
-  void setVisibility(String visibility);
+    void setFirstLineNumber(Integer firstLineNumber);
 
-  @Outgoing
-  @Relation("DECLARES")
-  List<TypeDescriptor> getType();
+    Integer getLastLineNumber();
 
-  void setType(List<TypeDescriptor> typeDescriptor);
+    void setLastLineNumber(Integer lastLineNumber);
 
-  @Outgoing
-  @Relation("DECLARES")
-  List<FieldDescriptor> getField();
+    Integer getEffectiveLineCount();
 
-  void setField(List<FieldDescriptor> fieldDescriptor);
-
-  @Outgoing
-  @Relation("DECLARES")
-  List<MethodDescriptor> getMethod();
-
-  void setMethod(List<MethodDescriptor> methodDescriptor);
+    void setEffectiveLineCount(Integer effectiveLineCount);
 }
