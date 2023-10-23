@@ -120,7 +120,7 @@ public class ScannerTestIT extends AbstractPluginIT {
 
     private void testProperties() {
         List<Map<String, Object>> propertyDescriptorList = query("Match (p:Property) Return p").getRows();
-        assertThat(propertyDescriptorList.size()).isEqualTo(8);
+        assertThat(propertyDescriptorList.size()).isEqualTo(10);
 
         testPropertyInlineGetSetDefinition();
         testPropertyPrivate();
@@ -128,35 +128,36 @@ public class ScannerTestIT extends AbstractPluginIT {
         testPropertyInlineGetSetWithVisibility();
         testPropertyExpressionBodiedGetSet();
         testPropertyInit();
+        testImplicitAccessModifier();
     }
 
     private void testPropertyStatic() {
-        List<Map<String, Object>> property7 = query("Match (p:Property {name: \"property8\"}) Return p").getRows();
+        List<Map<String, Object>> property7 = query("Match (p:Property {name: \"Property8\"}) Return p").getRows();
         assertThat(property7.size()).isEqualTo(1);
         assertThat(((PropertyDescriptor)property7.get(0).get("p")).isStatic()).isEqualTo(true);
     }
 
     private void testPropertyPrivate() {
-        List<Map<String, Object>> property7 = query("Match (p:Property {name: \"property7\"}) Return p").getRows();
+        List<Map<String, Object>> property7 = query("Match (p:Property {name: \"Property7\"}) Return p").getRows();
         assertThat(property7.size()).isEqualTo(1);
         assertThat(((PropertyDescriptor)property7.get(0).get("p")).getVisibility()).isEqualTo("Private");
     }
 
     private void testPropertyInlineGetSetDefinition() {
-        List<Map<String, Object>> property1 = query("Match (p:Property {name: \"property1\"}) Return p").getRows();
+        List<Map<String, Object>> property1 = query("Match (p:Property {name: \"Property1\"}) Return p").getRows();
         assertThat(property1.size()).isEqualTo(1);
 
-        List<Object> accessors = query("Match r=((p:Property {name: \"property1\"})-[:DECLARES]->(m)) Return m").getColumn("m");
+        List<Object> accessors = query("Match r=((p:Property {name: \"Property1\"})-[:DECLARES]->(m)) Return m").getColumn("m");
         assertThat(accessors.size()).isEqualTo(2);
         assertThat(((MethodDescriptor) accessors.get(0)).getVisibility()).isEqualTo("Public");
         assertThat(((MethodDescriptor) accessors.get(1)).getVisibility()).isEqualTo("Public");
     }
 
     private void testPropertyInlineGetSetWithVisibility() {
-        List<Map<String, Object>> property1 = query("Match (p:Property {name: \"property2\"}) Return p").getRows();
+        List<Map<String, Object>> property1 = query("Match (p:Property {name: \"Property2\"}) Return p").getRows();
         assertThat(property1.size()).isEqualTo(1);
 
-        List<Object> accessors = query("Match r=((p:Property {name: \"property2\"})-[:DECLARES]->(m)) Return m").getColumn("m");
+        List<Object> accessors = query("Match r=((p:Property {name: \"Property2\"})-[:DECLARES]->(m)) Return m").getColumn("m");
         assertThat(accessors.size()).isEqualTo(2);
         for (Object accessor : accessors){
             if (((MethodDescriptor) accessor).getFullQualifiedName().endsWith("set")){
@@ -168,17 +169,17 @@ public class ScannerTestIT extends AbstractPluginIT {
     }
 
     private void testPropertyExpressionBodiedGetSet() {
-        List<Map<String, Object>> property1 = query("Match (p:Property {name: \"property3\"}) Return p").getRows();
+        List<Map<String, Object>> property1 = query("Match (p:Property {name: \"Property3\"}) Return p").getRows();
         assertThat(property1.size()).isEqualTo(1);
 
-        List<Object> accessors = query("Match r=((p:Property {name: \"property3\"})-[:DECLARES]->(m)) Return m").getColumn("m");
+        List<Object> accessors = query("Match r=((p:Property {name: \"Property3\"})-[:DECLARES]->(m)) Return m").getColumn("m");
         assertThat(accessors.size()).isEqualTo(1);
         assertThat(((MethodDescriptor) accessors.get(0)).getVisibility()).isEqualTo("Public");
     }
 
     private void testPropertyInit() {
         boolean initDetected = false;
-        List<Object> accessors = query("Match r=((p:Property {name: \"property6\"})-[:DECLARES]->(m)) Return m").getColumn("m");
+        List<Object> accessors = query("Match r=((p:Property {name: \"Property6\"})-[:DECLARES]->(m)) Return m").getColumn("m");
         assertThat(accessors.size()).isEqualTo(2);
         for (Object accessor : accessors){
             if (((MethodDescriptor)accessor).getFullQualifiedName().endsWith("init")){
@@ -187,6 +188,12 @@ public class ScannerTestIT extends AbstractPluginIT {
             }
         }
         assertThat(initDetected).isTrue();
+    }
+
+    private void testImplicitAccessModifier(){
+        List<Map<String, Object>> property10 = query("Match (p:Property {name: \"Property10\"}) Return p").getRows();
+        assertThat(property10.size()).isEqualTo(1);
+        assertThat(((PropertyDescriptor)property10.get(0).get("p")).getVisibility()).isEqualTo("Private");
     }
 
 }

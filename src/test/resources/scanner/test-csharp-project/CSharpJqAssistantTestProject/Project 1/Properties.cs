@@ -28,5 +28,8 @@ namespace Project_1
 
         private string Property7 {  get; set; }
         public static string Property8 { get; set; }
+
+        int Property10 { get; set; }
+
     }
 }

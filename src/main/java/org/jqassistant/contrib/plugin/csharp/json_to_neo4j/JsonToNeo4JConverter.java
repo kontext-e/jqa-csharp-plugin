@@ -303,7 +303,6 @@ public class JsonToNeo4JConverter {
                     propertyDescriptor.setType(typeDescriptor);
 
                     List<MethodDescriptor> accessors = findAndCreateAccessors(propertyModel);
-
                     propertyDescriptor.getAccessors().addAll(accessors);
 
                     cSharpClassDescriptor.getDeclaredMembers().add(propertyDescriptor);
@@ -329,7 +328,7 @@ public class JsonToNeo4JConverter {
 
     private MethodDescriptor createAccessors(PropertyModel propertyModel, String accessor) {
         String kindOfAccessor = accessor.contains(" ") ?
-                accessor.substring(accessor.lastIndexOf(" "), accessor.length()).trim() : accessor;
+                accessor.substring(accessor.lastIndexOf(" ")).trim() : accessor;
 
         MethodModel methodModel = new MethodModel();
         methodModel.setName(kindOfAccessor + propertyModel.getName());
