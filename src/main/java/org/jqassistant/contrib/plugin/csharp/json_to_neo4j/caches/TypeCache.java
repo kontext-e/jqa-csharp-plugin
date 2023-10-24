@@ -4,10 +4,8 @@ import com.buschmais.jqassistant.core.store.api.Store;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.ClassModel;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.EnumModel;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.InterfaceModel;
-import org.jqassistant.contrib.plugin.csharp.model.ClassDescriptor;
-import org.jqassistant.contrib.plugin.csharp.model.EnumTypeDescriptor;
-import org.jqassistant.contrib.plugin.csharp.model.InterfaceTypeDescriptor;
-import org.jqassistant.contrib.plugin.csharp.model.TypeDescriptor;
+import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.TypeModel;
+import org.jqassistant.contrib.plugin.csharp.model.*;
 import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
@@ -77,10 +75,24 @@ public class TypeCache {
         return (ClassDescriptor) cache.get(classModel.getKey());
     }
 
+    public TypeDescriptor create(TypeModel typeModel){
+        if (typeModel instanceof  ClassModel){
+            return  create((ClassModel) typeModel);
+
+        } else if (typeModel instanceof EnumModel) {
+            return create((EnumModel) typeModel);
+
+        } else if (typeModel instanceof  InterfaceModel) {
+            return create((InterfaceModel) typeModel);
+
+        } else {
+            return null;
+        }
+    }
+
     public ClassDescriptor create(ClassModel classModel) {
         ClassDescriptor descriptor = store.create(ClassDescriptor.class);
         cache.put(classModel.getKey(), descriptor);
-
         fillDescriptor(descriptor, classModel);
 
         return descriptor;
@@ -102,7 +114,6 @@ public class TypeCache {
     public EnumTypeDescriptor create(EnumModel enumModel) {
         EnumTypeDescriptor descriptor = store.create(EnumTypeDescriptor.class);
         cache.put(enumModel.getKey(), descriptor);
-
         fillDescriptor(descriptor, enumModel);
 
         return descriptor;
@@ -121,7 +132,6 @@ public class TypeCache {
     public InterfaceTypeDescriptor create(InterfaceModel interfaceModel) {
         InterfaceTypeDescriptor descriptor = store.create(InterfaceTypeDescriptor.class);
         cache.put(interfaceModel.getKey(), descriptor);
-
         fillDescriptor(descriptor, interfaceModel);
 
         return descriptor;
