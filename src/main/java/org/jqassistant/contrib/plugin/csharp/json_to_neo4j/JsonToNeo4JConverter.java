@@ -26,12 +26,12 @@ public class JsonToNeo4JConverter {
     private final NamespaceCache namespaceCache;
     private final TypeCache typeCache;
     private final CSharpFileCache cSharpFileCache;
-    private final MethodCache methodCache;
     private final EnumValueCache enumValueCache;
     private final FieldCache fieldCache;
     private final PropertyCache propertyCache;
+    private final MethodAnalyzer methodAnalyzer;
 
-    private List<FileModel> fileModelList;
+    public static List<FileModel> fileModelList;
 
     public JsonToNeo4JConverter(Store store,
                                 File inputDirectory,
@@ -48,7 +48,9 @@ public class JsonToNeo4JConverter {
         this.namespaceCache = namespaceCache;
         this.typeCache = typeCache;
         this.cSharpFileCache = cSharpFileCache;
-        this.methodCache = methodCache;
+
+        this.methodAnalyzer = new MethodAnalyzer(methodCache, typeCache, store);
+
         this.enumValueCache = enumValueCache;
         this.fieldCache = fieldCache;
         this.propertyCache = propertyCache;
@@ -66,8 +68,8 @@ public class JsonToNeo4JConverter {
         linkInterfaces();
         createEnumMembers();
         createConstructors();
-        createMethods();
-        createInvocations();
+        methodAnalyzer.createMethods();
+        methodAnalyzer.createInvocations();
         createFields();
         createProperties();
     }
@@ -336,82 +338,7 @@ public class JsonToNeo4JConverter {
         } else {
             methodModel.setAccessibility(propertyModel.getAccessibility());
         }
-        return createMethodDescriptor(methodModel);
+        return methodAnalyzer.createMethodDescriptor(methodModel);
     }
 
-    private void createMethods() {
-
-        for (FileModel fileModel : fileModelList) {
-            createMethodsForClasses(fileModel);
-            createMethodsForInterfaces(fileModel);
-        }
-    }
-
-    private void createMethodsForClasses(FileModel fileModel) {
-        for (ClassModel classModel : fileModel.getClasses()) {
-            ClassDescriptor classDescriptor = (ClassDescriptor) typeCache.get(classModel.getKey());
-
-            for (MethodModel methodModel : classModel.getMethods()) {
-                MethodDescriptor methodDescriptor = createMethodDescriptor(methodModel);
-                classDescriptor.getDeclaredMembers().add(methodDescriptor);
-            }
-        }
-    }
-
-    private void createMethodsForInterfaces(FileModel fileModel) {
-
-        for (InterfaceModel interfaceModel : fileModel.getInterfaces()) {
-            InterfaceTypeDescriptor interfaceTypeDescriptor = (InterfaceTypeDescriptor) typeCache.get(interfaceModel.getKey());
-
-            for (MethodModel methodModel : interfaceModel.getMethods()) {
-                MethodDescriptor methodDescriptor = createMethodDescriptor(methodModel);
-                interfaceTypeDescriptor.getDeclaredMembers().add(methodDescriptor);
-            }
-        }
-    }
-
-    private MethodDescriptor createMethodDescriptor(MethodModel methodModel) {
-
-        MethodDescriptor methodDescriptor = methodCache.create(methodModel.getKey());
-        methodDescriptor.setEffectiveLineCount(methodModel.getEffectiveLineCount());
-        methodDescriptor.setLastLineNumber(methodModel.getLastLineNumber());
-        methodDescriptor.setFirstLineNumber(methodModel.getFirstLineNumber());
-        methodDescriptor.setName(methodModel.getName());
-        methodDescriptor.setFullQualifiedName(methodModel.getFqn());
-        methodDescriptor.setVisibility(methodModel.getAccessibility());
-        methodDescriptor.setCyclomaticComplexity(methodModel.getCyclomaticComplexity());
-        TypeDescriptor returnTypeDescriptor = typeCache.findOrCreate(methodModel.getReturnType());
-        methodDescriptor.setReturns(returnTypeDescriptor);
-
-        int index = 1;
-        for (ParameterModel parameterModel : methodModel.getParameters()) {
-
-            ParameterDescriptor parameterDescriptor = store.create(ParameterDescriptor.class);
-            parameterDescriptor.setIndex(index);
-            TypeDescriptor parameterTypeDescriptor = typeCache.findOrCreate(parameterModel.getType());
-            parameterDescriptor.setType(parameterTypeDescriptor);
-            parameterDescriptor.setName(parameterModel.getName());
-
-            methodDescriptor.getParameters().add(parameterDescriptor);
-            index++;
-        }
-        return methodDescriptor;
-    }
-
-    private void createInvocations() {
-
-        for (FileModel fileModel : fileModelList) {
-            for (ClassModel classModel : fileModel.getClasses()) {
-                for (MethodModel methodModel : classModel.getMethods()) {
-                    MethodDescriptor methodDescriptor = methodCache.find(methodModel.getKey());
-
-                    for (InvokesModel invokesModel : methodModel.getInvocations()) {
-                        MethodDescriptor invokedMethodDescriptor = methodCache.findOrCreate(invokesModel.getMethodId());
-                        InvokesDescriptor invokesDescriptor = store.create(methodDescriptor, InvokesDescriptor.class, invokedMethodDescriptor);
-                        invokesDescriptor.setLineNumber(invokesModel.getLineNumber());
-                    }
-                }
-            }
-        }
-    }
 }
