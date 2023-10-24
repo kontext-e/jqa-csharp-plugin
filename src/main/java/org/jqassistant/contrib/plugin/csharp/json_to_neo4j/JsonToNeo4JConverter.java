@@ -287,7 +287,6 @@ public class JsonToNeo4JConverter {
     }
 
     private void createProperties(){
-        //TODO what to do, when neither public nor private is given
         for (FileModel fileModel : fileModelList){
             for (ClassModel classModel : fileModel.getClasses()){
                 CSharpClassDescriptor cSharpClassDescriptor = (CSharpClassDescriptor) typeCache.get(classModel.getKey());

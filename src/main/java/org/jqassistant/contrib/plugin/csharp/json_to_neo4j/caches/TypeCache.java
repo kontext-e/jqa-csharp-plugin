@@ -52,12 +52,12 @@ public class TypeCache {
         return descriptor;
     }
 
-    public InterfaceTypeDescriptor findOrCreateEmptyInterface(String fqn) {
+    public TypeDescriptor findOrCreateEmptyInterface(String fqn) {
 
         if (cache.containsKey(fqn)) {
 
             try {
-                return (InterfaceTypeDescriptor) cache.get(fqn);
+                return cache.get(fqn);
 
             } catch (Exception e) {
                 LOGGER.error("Failed to cast interface in cache: " + fqn, e);
@@ -66,7 +66,7 @@ public class TypeCache {
             }
         }
 
-        InterfaceTypeDescriptor descriptor = store.create(InterfaceTypeDescriptor.class);
+        TypeDescriptor descriptor = store.create(TypeDescriptor.class);
         descriptor.setFullQualifiedName(fqn);
         cache.put(fqn, descriptor);
 
