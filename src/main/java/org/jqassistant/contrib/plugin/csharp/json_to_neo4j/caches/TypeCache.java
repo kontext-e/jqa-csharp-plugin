@@ -4,7 +4,7 @@ import com.buschmais.jqassistant.core.store.api.Store;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.ClassModel;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.EnumModel;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.InterfaceModel;
-import org.jqassistant.contrib.plugin.csharp.model.CSharpClassDescriptor;
+import org.jqassistant.contrib.plugin.csharp.model.ClassDescriptor;
 import org.jqassistant.contrib.plugin.csharp.model.EnumTypeDescriptor;
 import org.jqassistant.contrib.plugin.csharp.model.InterfaceTypeDescriptor;
 import org.jqassistant.contrib.plugin.csharp.model.TypeDescriptor;
@@ -39,13 +39,13 @@ public class TypeCache {
     }
 
 
-    public CSharpClassDescriptor findOrCreateEmptyClass(String fqn) {
+    public ClassDescriptor findOrCreateEmptyClass(String fqn) {
 
         if (cache.containsKey(fqn)) {
-            return (CSharpClassDescriptor) cache.get(fqn);
+            return (ClassDescriptor) cache.get(fqn);
         }
 
-        CSharpClassDescriptor descriptor = store.create(CSharpClassDescriptor.class);
+        ClassDescriptor descriptor = store.create(ClassDescriptor.class);
         descriptor.setFullQualifiedName(fqn);
         cache.put(fqn, descriptor);
 
@@ -73,12 +73,12 @@ public class TypeCache {
         return descriptor;
     }
 
-    public CSharpClassDescriptor find(ClassModel classModel) {
-        return (CSharpClassDescriptor) cache.get(classModel.getKey());
+    public ClassDescriptor find(ClassModel classModel) {
+        return (ClassDescriptor) cache.get(classModel.getKey());
     }
 
-    public CSharpClassDescriptor create(ClassModel classModel) {
-        CSharpClassDescriptor descriptor = store.create(CSharpClassDescriptor.class);
+    public ClassDescriptor create(ClassModel classModel) {
+        ClassDescriptor descriptor = store.create(ClassDescriptor.class);
         cache.put(classModel.getKey(), descriptor);
 
         fillDescriptor(descriptor, classModel);
@@ -86,8 +86,7 @@ public class TypeCache {
         return descriptor;
     }
 
-
-    protected void fillDescriptor(CSharpClassDescriptor descriptor, ClassModel classModel) {
+    protected void fillDescriptor(ClassDescriptor descriptor, ClassModel classModel) {
         descriptor.setName(classModel.getName());
         descriptor.setFullQualifiedName(classModel.getFqn());
         descriptor.setAbstract(classModel.isAbstractKeyword());

@@ -7,7 +7,7 @@
         <class>org.jqassistant.contrib.plugin.csharp.model.CSharpDescriptor</class>
         <class>org.jqassistant.contrib.plugin.csharp.model.CSharpClassesDirectoryDescriptor</class>
         <class>org.jqassistant.contrib.plugin.csharp.model.CSharpFileDescriptor</class>
-        <class>org.jqassistant.contrib.plugin.csharp.model.CSharpClassDescriptor</class>
+        <class>org.jqassistant.contrib.plugin.csharp.model.ClassDescriptor</class>
         <class>org.jqassistant.contrib.plugin.csharp.model.NamespaceDescriptor</class>
         <class>org.jqassistant.contrib.plugin.csharp.model.MethodDescriptor</class>
         <class>org.jqassistant.contrib.plugin.csharp.model.ConstructorDescriptor</class>

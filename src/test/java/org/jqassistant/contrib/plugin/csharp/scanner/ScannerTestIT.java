@@ -79,32 +79,32 @@ public class ScannerTestIT extends AbstractPluginIT {
 
     private void testClass(String className, boolean expectStatic, boolean expectAbstract) {
 
-        List<CSharpClassDescriptor> cSharpClassDescriptorList = query("MATCH (c:Class {name: \"" + className + "\"}) RETURN c").getColumn("c");
-        assertThat(cSharpClassDescriptorList).hasSize(1);
-        CSharpClassDescriptor cSharpClassDescriptor = cSharpClassDescriptorList.get(0);
+        List<ClassDescriptor> classDescriptorList = query("MATCH (c:Class {name: \"" + className + "\"}) RETURN c").getColumn("c");
+        assertThat(classDescriptorList).hasSize(1);
+        ClassDescriptor classDescriptor = classDescriptorList.get(0);
 
         if (expectAbstract) {
-            assertThat(cSharpClassDescriptor.isAbstract()).isTrue();
+            assertThat(classDescriptor.isAbstract()).isTrue();
         } else {
-            assertThat(cSharpClassDescriptor.isAbstract()).isFalse();
+            assertThat(classDescriptor.isAbstract()).isFalse();
         }
 
         if (expectStatic) {
-            assertThat(cSharpClassDescriptor.isStatic()).isTrue();
+            assertThat(classDescriptor.isStatic()).isTrue();
         } else {
-            assertThat(cSharpClassDescriptor.isStatic()).isFalse();
+            assertThat(classDescriptor.isStatic()).isFalse();
         }
     }
 
     private void testBaseTypes() {
 
-        List<CSharpClassDescriptor> cSharpClassDescriptorList = query("MATCH (c:Class {name: \"Rectangle\"}) RETURN c").getColumn("c");
+        List<ClassDescriptor> classDescriptorList = query("MATCH (c:Class {name: \"Rectangle\"}) RETURN c").getColumn("c");
 
-        assertThat(cSharpClassDescriptorList).hasSize(1);
-        CSharpClassDescriptor cSharpClassDescriptor = cSharpClassDescriptorList.get(0);
+        assertThat(classDescriptorList).hasSize(1);
+        ClassDescriptor classDescriptor = classDescriptorList.get(0);
 
-        assertThat(cSharpClassDescriptor.getSuperClass()).isNotNull();
-        assertThat(cSharpClassDescriptor.getSuperClass().getName()).isEqualTo("Form");
+        assertThat(classDescriptor.getSuperClass()).isNotNull();
+        assertThat(classDescriptor.getSuperClass().getName()).isEqualTo("Form");
     }
 
     private void testInterfaces() {
