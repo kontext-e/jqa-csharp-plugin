@@ -7,11 +7,7 @@ import java.util.List;
 
 @Setter
 @Getter
-public class InterfaceModel implements JsonModel {
-
-    private String name;
-
-    private String fqn;
+public class InterfaceModel extends TypeModel implements JsonModel {
 
     private String accessibility;
 
@@ -21,14 +17,8 @@ public class InterfaceModel implements JsonModel {
 
     private List<String> implementedInterfaces;
 
-    private int firstLineNumber;
-
-    private int lastLineNumber;
-
-    private int effectiveLineCount;
-
     @Override
     public String getKey() {
-        return fqn;
+        return super.getFqn();
     }
 }

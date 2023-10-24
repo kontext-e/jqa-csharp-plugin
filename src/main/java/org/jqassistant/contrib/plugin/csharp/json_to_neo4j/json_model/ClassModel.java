@@ -10,11 +10,8 @@ import java.util.List;
 @Setter
 @Getter
 @NoArgsConstructor
-public class ClassModel implements JsonModel {
+public class ClassModel extends TypeModel implements JsonModel {
 
-    private String name;
-
-    private String fqn;
 
     @JsonProperty("abstract")
     private boolean abstractKeyword;
@@ -28,8 +25,6 @@ public class ClassModel implements JsonModel {
 
     private String baseType;
 
-    private String md5;
-
     private List<String> implementedInterfaces;
 
     private List<MethodModel> methods;
@@ -40,13 +35,7 @@ public class ClassModel implements JsonModel {
 
     private List<PropertyModel> properties;
 
-    private int firstLineNumber;
-
-    private int lastLineNumber;
-
-    private int effectiveLineCount;
-
     public String getKey() {
-        return fqn;
+        return super.getFqn();
     }
 }
