@@ -33,7 +33,15 @@ public class JsonToNeo4JConverter {
 
     private List<FileModel> fileModelList;
 
-    public JsonToNeo4JConverter(Store store, File inputDirectory, NamespaceCache namespaceCache, TypeCache typeCache, CSharpFileCache cSharpFileCache, MethodCache methodCache, EnumValueCache enumValueCache, FieldCache fieldCache, PropertyCache propertyCache) {
+    public JsonToNeo4JConverter(Store store,
+                                File inputDirectory,
+                                NamespaceCache namespaceCache,
+                                TypeCache typeCache,
+                                CSharpFileCache cSharpFileCache,
+                                MethodCache methodCache,
+                                EnumValueCache enumValueCache,
+                                FieldCache fieldCache,
+                                PropertyCache propertyCache) {
 
         this.store = store;
         this.inputDirectory = inputDirectory;
@@ -67,35 +75,28 @@ public class JsonToNeo4JConverter {
     private void readAllJsonFilesRecursivelyAndCreateDirectoryDescriptors(File currentDirectory, CSharpClassesDirectoryDescriptor parentDirectoryDescriptor) {
 
         File[] filesAndDirectories = currentDirectory.listFiles();
-
-        if (filesAndDirectories == null) {
-            return;
-        }
+        if (filesAndDirectories == null) { return; }
 
         for (File file : filesAndDirectories) {
-
             if (file.isDirectory()) {
-                CSharpClassesDirectoryDescriptor cSharpClassesDirectoryDescriptor = store.create(CSharpClassesDirectoryDescriptor.class);
-                cSharpClassesDirectoryDescriptor.setFileName(file.getName());
-
-                if (parentDirectoryDescriptor != null) {
-                    parentDirectoryDescriptor.getContains().add(cSharpClassesDirectoryDescriptor);
-                }
-
-                readAllJsonFilesRecursivelyAndCreateDirectoryDescriptors(file, cSharpClassesDirectoryDescriptor);
+                scanDirectory(parentDirectoryDescriptor, file);
             } else {
-
-                FileModel fileModel = parseAndCache(file);
-                fileModelList.add(fileModel);
-
-                CSharpFileDescriptor cSharpFileDescriptor = cSharpFileCache.create(fileModel.getAbsolutePath());
-                cSharpFileDescriptor.setName(fileModel.getName());
-                cSharpFileDescriptor.setFileName(fileModel.getRelativePath());
-
-                if (parentDirectoryDescriptor != null) {
-                    parentDirectoryDescriptor.getContains().add(cSharpFileDescriptor);
-                }
+                scanFile(parentDirectoryDescriptor, file);
             }
+        }
+    }
+
+    private void scanFile(CSharpClassesDirectoryDescriptor parentDirectoryDescriptor, File file) {
+
+        FileModel fileModel = parseAndCache(file);
+        fileModelList.add(fileModel);
+
+        CSharpFileDescriptor cSharpFileDescriptor = cSharpFileCache.create(fileModel.getAbsolutePath());
+        cSharpFileDescriptor.setName(fileModel.getName());
+        cSharpFileDescriptor.setFileName(fileModel.getRelativePath());
+
+        if (parentDirectoryDescriptor != null) {
+            parentDirectoryDescriptor.getContains().add(cSharpFileDescriptor);
         }
     }
 
@@ -110,8 +111,19 @@ public class JsonToNeo4JConverter {
         } catch (IOException e) {
             LOGGER.error("Failed to parse JSON.", e);
         }
-
         return null;
+    }
+
+    private void scanDirectory(CSharpClassesDirectoryDescriptor parentDirectoryDescriptor, File file) {
+
+        CSharpClassesDirectoryDescriptor cSharpClassesDirectoryDescriptor = store.create(CSharpClassesDirectoryDescriptor.class);
+        cSharpClassesDirectoryDescriptor.setFileName(file.getName());
+
+        if (parentDirectoryDescriptor != null) {
+            parentDirectoryDescriptor.getContains().add(cSharpClassesDirectoryDescriptor);
+        }
+
+        readAllJsonFilesRecursivelyAndCreateDirectoryDescriptors(file, cSharpClassesDirectoryDescriptor);
     }
 
     private void createUsings() {
@@ -134,29 +146,25 @@ public class JsonToNeo4JConverter {
             CSharpFileDescriptor cSharpFileDescriptor = cSharpFileCache.get(fileModel.getAbsolutePath());
 
             for (ClassModel classModel : fileModel.getClasses()) {
-                ClassDescriptor classDescriptor = typeCache.create(classModel);
-                cSharpFileDescriptor.getTypes().add(classDescriptor);
-
-                findOrCreateNamespace(classModel.getFqn())
-                        .ifPresent(namespaceDescriptor -> namespaceDescriptor.getContains().add(classDescriptor));
+                createType(cSharpFileDescriptor, classModel);
             }
 
             for (EnumModel enumModel : fileModel.getEnums()) {
-                EnumTypeDescriptor enumTypeDescriptor = typeCache.create(enumModel);
-                cSharpFileDescriptor.getTypes().add(enumTypeDescriptor);
-
-                findOrCreateNamespace(enumModel.getFqn())
-                        .ifPresent(namespaceDescriptor -> namespaceDescriptor.getContains().add(enumTypeDescriptor));
+                createType(cSharpFileDescriptor, enumModel);
             }
 
             for (InterfaceModel interfaceModel : fileModel.getInterfaces()) {
-                InterfaceTypeDescriptor interfaceTypeDescriptor = typeCache.create(interfaceModel);
-                cSharpFileDescriptor.getTypes().add(interfaceTypeDescriptor);
-
-                findOrCreateNamespace(interfaceModel.getFqn())
-                        .ifPresent(namespaceDescriptor -> namespaceDescriptor.getContains().add(interfaceTypeDescriptor));
+                createType(cSharpFileDescriptor, interfaceModel);
             }
         }
+    }
+
+    private void createType(CSharpFileDescriptor cSharpFileDescriptor, TypeModel typeModel) {
+        TypeDescriptor typeDescriptor = typeCache.create(typeModel);
+        cSharpFileDescriptor.getTypes().add(typeDescriptor);
+
+        findOrCreateNamespace(typeModel.getFqn())
+                .ifPresent(namespaceDescriptor -> namespaceDescriptor.getContains().add(typeDescriptor));
     }
 
     private Optional<NamespaceDescriptor> findOrCreateNamespace(String fqn) {
@@ -184,13 +192,10 @@ public class JsonToNeo4JConverter {
 
         for (FileModel fileModel : fileModelList) {
             for (ClassModel classModel : fileModel.getClasses()) {
-
                 ClassDescriptor classDescriptor = (ClassDescriptor) typeCache.get(classModel.getKey());
 
                 if (CollectionUtils.isNotEmpty(classModel.getImplementedInterfaces())) {
-
                     for (String interfaceFqn : classModel.getImplementedInterfaces()) {
-
                         TypeDescriptor typeDescriptor = typeCache.findOrCreateEmptyInterface(interfaceFqn);
                         classDescriptor.getInterfaces().add(typeDescriptor);
                     }
@@ -201,9 +206,7 @@ public class JsonToNeo4JConverter {
                 InterfaceTypeDescriptor interfaceTypeDescriptor = (InterfaceTypeDescriptor) typeCache.get(interfaceModel.getKey());
 
                 if (CollectionUtils.isNotEmpty(interfaceModel.getImplementedInterfaces())) {
-
                     for (String interfaceFqn : interfaceModel.getImplementedInterfaces()) {
-
                         TypeDescriptor typeDescriptor = typeCache.findOrCreateEmptyInterface(interfaceFqn);
                         interfaceTypeDescriptor.getInterfaces().add(typeDescriptor);
                     }
