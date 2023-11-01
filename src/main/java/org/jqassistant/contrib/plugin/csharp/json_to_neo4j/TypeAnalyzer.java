@@ -4,6 +4,7 @@ import com.buschmais.jqassistant.core.store.api.Store;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.caches.CSharpFileCache;
+import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.caches.EnumValueCache;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.caches.NamespaceCache;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.caches.TypeCache;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.*;
@@ -13,21 +14,27 @@ import java.util.Optional;
 
 public class TypeAnalyzer {
 
-    protected final TypeCache typeCache;
+    private final JsonToNeo4JConverter jsonToNeo4JConverter;
     private final Store store;
+
+    private final TypeCache typeCache;
     private final NamespaceCache namespaceCache;
     private final CSharpFileCache fileCache;
+    private final EnumValueCache enumValueCache;
 
-    public TypeAnalyzer(TypeCache typeCache, NamespaceCache namespaceCache, CSharpFileCache fileCache, Store store) {
+    public TypeAnalyzer(JsonToNeo4JConverter jsonToNeo4JConverter, Store store, TypeCache typeCache, NamespaceCache namespaceCache,
+                        CSharpFileCache fileCache, EnumValueCache enumValueCache) {
+        this.jsonToNeo4JConverter = jsonToNeo4JConverter;
         this.store = store;
         this.typeCache = typeCache;
-        this.fileCache = fileCache;
         this.namespaceCache = namespaceCache;
+        this.fileCache = fileCache;
+        this.enumValueCache = enumValueCache;
     }
 
     protected void createUsings() {
 
-        for (FileModel fileModel : JsonToNeo4JConverter.fileModelList) {
+        for (FileModel fileModel : jsonToNeo4JConverter.fileModelList) {
             CSharpFileDescriptor cSharpFileDescriptor = fileCache.get(fileModel.getAbsolutePath());
 
             for (UsingModel usingModel : fileModel.getUsings()) {
@@ -41,7 +48,7 @@ public class TypeAnalyzer {
 
     protected void createTypes() {
 
-        for (FileModel fileModel : JsonToNeo4JConverter.fileModelList) {
+        for (FileModel fileModel : jsonToNeo4JConverter.fileModelList) {
             CSharpFileDescriptor cSharpFileDescriptor = fileCache.get(fileModel.getAbsolutePath());
 
             for (ClassModel classModel : fileModel.getClasses()) {
@@ -77,7 +84,7 @@ public class TypeAnalyzer {
 
     protected void linkBaseTypes() {
 
-        for (FileModel fileModel : JsonToNeo4JConverter.fileModelList) {
+        for (FileModel fileModel : jsonToNeo4JConverter.fileModelList) {
             for (ClassModel classModel : fileModel.getClasses()) {
                 ClassDescriptor classDescriptor = (ClassDescriptor) typeCache.get(classModel.getKey());
 
@@ -91,7 +98,7 @@ public class TypeAnalyzer {
 
     protected void linkInterfaces() {
 
-        for (FileModel fileModel : JsonToNeo4JConverter.fileModelList) {
+        for (FileModel fileModel : jsonToNeo4JConverter.fileModelList) {
             for (ClassModel classModel : fileModel.getClasses()) {
                 ClassDescriptor classDescriptor = (ClassDescriptor) typeCache.get(classModel.getKey());
 
@@ -114,5 +121,40 @@ public class TypeAnalyzer {
                 }
             }
         }
+    }
+
+    public void createEnumMembers() {
+
+        for (FileModel fileModel : jsonToNeo4JConverter.fileModelList) {
+            for (EnumModel enumModel : fileModel.getEnums()) {
+                EnumTypeDescriptor enumTypeDescriptor = (EnumTypeDescriptor) typeCache.get(enumModel.getKey());
+
+                for (EnumMemberModel enumMemberModel : enumModel.getMembers()) {
+                    EnumValueDescriptor enumValueDescriptor = enumValueCache.create(enumMemberModel.getKey());
+                    enumValueDescriptor.setType(enumTypeDescriptor);
+                }
+            }
+        }
+    }
+
+    public void createConstructors() {
+        for (FileModel fileModel : jsonToNeo4JConverter.fileModelList) {
+            for (ClassModel classModel : fileModel.getClasses()) {
+
+                ClassDescriptor classDescriptor = typeCache.find(classModel);
+
+                for (ConstructorModel constructorModel : classModel.getConstructors()) {
+                    ConstructorDescriptor constructorDescriptor = store.create(ConstructorDescriptor.class);
+                    constructorDescriptor.setName(constructorModel.getName());
+                    constructorDescriptor.setVisibility(constructorModel.getAccessibility());
+                    constructorDescriptor.setFirstLineNumber(constructorModel.getFirstLineNumber());
+                    constructorDescriptor.setLastLineNumber(constructorModel.getLastLineNumber());
+                    constructorDescriptor.setEffectiveLineCount(constructorModel.getEffectiveLineCount());
+
+                    classDescriptor.getDeclaredMembers().add(constructorDescriptor);
+                }
+            }
+        }
+
     }
 }
