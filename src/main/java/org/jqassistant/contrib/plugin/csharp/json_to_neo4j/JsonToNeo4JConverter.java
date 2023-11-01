@@ -20,16 +20,16 @@ public class JsonToNeo4JConverter {
     private final Store store;
     private final File inputDirectory;
 
-    protected TypeCache typeCache;
-    protected CSharpFileCache cSharpFileCache;
-    protected EnumValueCache enumValueCache;
-    protected NamespaceCache namespaceCache;
-    protected MethodCache methodCache;
-    protected FieldCache fieldCache;
-    protected PropertyCache propertyCache;
-    protected TypeCache classCache;
+    private TypeCache typeCache;
+    private CSharpFileCache cSharpFileCache;
+    private EnumValueCache enumValueCache;
+    private NamespaceCache namespaceCache;
+    private MethodCache methodCache;
+    private FieldCache fieldCache;
+    private PropertyCache propertyCache;
+    private TypeCache classCache;
 
-    public static List<FileModel> fileModelList;
+    protected List<FileModel> fileModelList;
 
     protected final MethodAnalyzer methodAnalyzer;
     protected final MemberAnalyzer memberAnalyzer;
@@ -40,9 +40,9 @@ public class JsonToNeo4JConverter {
         this.store = store;
         this.inputDirectory = inputDirectory;
 
-        this.methodAnalyzer = new MethodAnalyzer(methodCache, typeCache, store);
-        this.memberAnalyzer = new MemberAnalyzer(this, fieldCache, propertyCache, store);
-        this.typeAnalyzer = new TypeAnalyzer(typeCache, namespaceCache, cSharpFileCache, store);
+        this.methodAnalyzer = new MethodAnalyzer(this, store, methodCache, typeCache);
+        this.memberAnalyzer = new MemberAnalyzer(this, store, fieldCache, propertyCache, typeCache);
+        this.typeAnalyzer = new TypeAnalyzer(this, store, typeCache, namespaceCache, cSharpFileCache, enumValueCache);
     }
 
     private void initCaches(Store store) {
@@ -88,8 +88,8 @@ public class JsonToNeo4JConverter {
         typeAnalyzer.createTypes();
         typeAnalyzer.linkBaseTypes();
         typeAnalyzer.linkInterfaces();
-        createEnumMembers();
-        createConstructors();
+        typeAnalyzer.createEnumMembers();
+        typeAnalyzer.createConstructors();
         methodAnalyzer.createMethods();
         methodAnalyzer.createInvocations();
         memberAnalyzer.createFields();
@@ -150,38 +150,4 @@ public class JsonToNeo4JConverter {
         readJsonFilesRecursively(file, cSharpClassesDirectoryDescriptor);
     }
 
-    private void createConstructors() {
-
-        for (FileModel fileModel : fileModelList) {
-            for (ClassModel classModel : fileModel.getClasses()) {
-
-                ClassDescriptor classDescriptor = typeCache.find(classModel);
-
-                for (ConstructorModel constructorModel : classModel.getConstructors()) {
-                    ConstructorDescriptor constructorDescriptor = store.create(ConstructorDescriptor.class);
-                    constructorDescriptor.setName(constructorModel.getName());
-                    constructorDescriptor.setVisibility(constructorModel.getAccessibility());
-                    constructorDescriptor.setFirstLineNumber(constructorModel.getFirstLineNumber());
-                    constructorDescriptor.setLastLineNumber(constructorModel.getLastLineNumber());
-                    constructorDescriptor.setEffectiveLineCount(constructorModel.getEffectiveLineCount());
-
-                    classDescriptor.getDeclaredMembers().add(constructorDescriptor);
-                }
-            }
-        }
-    }
-
-    private void createEnumMembers() {
-
-        for (FileModel fileModel : fileModelList) {
-            for (EnumModel enumModel : fileModel.getEnums()) {
-                EnumTypeDescriptor enumTypeDescriptor = (EnumTypeDescriptor) typeCache.get(enumModel.getKey());
-
-                for (EnumMemberModel enumMemberModel : enumModel.getMembers()) {
-                    EnumValueDescriptor enumValueDescriptor = enumValueCache.create(enumMemberModel.getKey());
-                    enumValueDescriptor.setType(enumTypeDescriptor);
-                }
-            }
-        }
-    }
 }

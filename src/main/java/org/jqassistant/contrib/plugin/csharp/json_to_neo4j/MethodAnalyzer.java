@@ -8,18 +8,21 @@ import org.jqassistant.contrib.plugin.csharp.model.*;
 
 public class MethodAnalyzer {
 
-    private final MethodCache methodCache;
-    private final TypeCache typeCache;
+    private final JsonToNeo4JConverter jsonToNeo4JConverter;
     private final Store store;
 
-    public MethodAnalyzer(MethodCache methodCache, TypeCache typeCache, Store store) {
+    private final MethodCache methodCache;
+    private final TypeCache typeCache;
+
+    public MethodAnalyzer(JsonToNeo4JConverter jsonToNeo4JConverter, Store store, MethodCache methodCache, TypeCache typeCache) {
+        this.jsonToNeo4JConverter = jsonToNeo4JConverter;
+        this.store = store;
         this.methodCache = methodCache;
         this.typeCache = typeCache;
-        this.store = store;
     }
 
     public void createMethods() {
-        for (FileModel fileModel : JsonToNeo4JConverter.fileModelList) {
+        for (FileModel fileModel : jsonToNeo4JConverter.fileModelList) {
             createMethodsForClasses(fileModel);
             createMethodsForInterfaces(fileModel);
         }
@@ -78,7 +81,7 @@ public class MethodAnalyzer {
 
     public void createInvocations() {
 
-        for (FileModel fileModel : JsonToNeo4JConverter.fileModelList) {
+        for (FileModel fileModel : jsonToNeo4JConverter.fileModelList) {
             for (ClassModel classModel : fileModel.getClasses()) {
                 for (MethodModel methodModel : classModel.getMethods()) {
                     MethodDescriptor methodDescriptor = methodCache.find(methodModel.getKey());

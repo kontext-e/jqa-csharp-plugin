@@ -4,6 +4,7 @@ import com.buschmais.jqassistant.core.store.api.Store;
 import org.apache.commons.lang.StringUtils;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.caches.FieldCache;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.caches.PropertyCache;
+import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.caches.TypeCache;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.*;
 import org.jqassistant.contrib.plugin.csharp.model.*;
 
@@ -13,24 +14,26 @@ import java.util.Optional;
 
 public class MemberAnalyzer {
     private final JsonToNeo4JConverter jsonToNeo4JConverter;
+    private final Store store;
 
     private final FieldCache fieldCache;
     private final PropertyCache propertyCache;
-    private final Store store;
+    private final TypeCache typeCache;
 
-    public MemberAnalyzer(JsonToNeo4JConverter jsonToNeo4JConverter, FieldCache fieldCache, PropertyCache propertyCache, Store store) {
+    public MemberAnalyzer(JsonToNeo4JConverter jsonToNeo4JConverter, Store store, FieldCache fieldCache, PropertyCache propertyCache, TypeCache typeCache) {
         this.jsonToNeo4JConverter = jsonToNeo4JConverter;
+        this.store = store;
         this.fieldCache = fieldCache;
         this.propertyCache = propertyCache;
-        this.store = store;
+        this.typeCache = typeCache;
     }
 
     protected void createFields() {
 
-        for (FileModel fileModel : JsonToNeo4JConverter.fileModelList) {
+        for (FileModel fileModel : jsonToNeo4JConverter.fileModelList) {
             for (ClassModel classModel : fileModel.getClasses()) {
 
-                ClassDescriptor classDescriptor = (ClassDescriptor) jsonToNeo4JConverter.typeCache.get(classModel.getKey());
+                ClassDescriptor classDescriptor = (ClassDescriptor) typeCache.get(classModel.getKey());
 
                 for (FieldModel fieldModel : classModel.getFields()) {
 
@@ -39,7 +42,7 @@ public class MemberAnalyzer {
                     fieldDescriptor.setName(fieldModel.getName());
                     fieldDescriptor.setVisibility(fieldModel.getAccessibility());
 
-                    TypeDescriptor typeDescriptor = jsonToNeo4JConverter.typeCache.findOrCreate(fieldModel.getType());
+                    TypeDescriptor typeDescriptor = typeCache.findOrCreate(fieldModel.getType());
                     fieldDescriptor.setType(typeDescriptor);
 
                     fieldDescriptor.setVolatile(fieldModel.isVolatileKeyword());
@@ -59,9 +62,9 @@ public class MemberAnalyzer {
     }
 
     protected void createProperties() {
-        for (FileModel fileModel : JsonToNeo4JConverter.fileModelList) {
+        for (FileModel fileModel : jsonToNeo4JConverter.fileModelList) {
             for (ClassModel classModel : fileModel.getClasses()) {
-                ClassDescriptor classDescriptor = (ClassDescriptor) jsonToNeo4JConverter.typeCache.get(classModel.getKey());
+                ClassDescriptor classDescriptor = (ClassDescriptor) typeCache.get(classModel.getKey());
 
                 for (PropertyModel propertyModel : classModel.getProperties()) {
                     PropertyDescriptor propertyDescriptor = propertyCache.create(propertyModel.getKey());
@@ -70,7 +73,7 @@ public class MemberAnalyzer {
                     propertyDescriptor.setVisibility(propertyModel.getAccessibility());
                     propertyDescriptor.setStatic(propertyModel.isStaticKeyword());
 
-                    TypeDescriptor typeDescriptor = jsonToNeo4JConverter.typeCache.findOrCreate(propertyModel.getType());
+                    TypeDescriptor typeDescriptor = typeCache.findOrCreate(propertyModel.getType());
                     propertyDescriptor.setType(typeDescriptor);
 
                     List<MethodDescriptor> accessors = findAndCreateAccessors(propertyModel);
