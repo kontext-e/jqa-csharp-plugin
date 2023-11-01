@@ -3,8 +3,6 @@ package org.jqassistant.contrib.plugin.csharp.json_to_neo4j;
 import com.buschmais.jqassistant.core.store.api.Store;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.StringUtils;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.caches.*;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.*;
 import org.jqassistant.contrib.plugin.csharp.model.*;
@@ -14,7 +12,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 public class JsonToNeo4JConverter {
 
@@ -23,15 +20,14 @@ public class JsonToNeo4JConverter {
     private final Store store;
     private final File inputDirectory;
 
-    private final NamespaceCache namespaceCache;
-    private final TypeCache typeCache;
+    protected final TypeCache typeCache;
     private final CSharpFileCache cSharpFileCache;
     private final EnumValueCache enumValueCache;
-    private final FieldCache fieldCache;
-    private final PropertyCache propertyCache;
-    private final MethodAnalyzer methodAnalyzer;
-
     public static List<FileModel> fileModelList;
+
+    protected final MethodAnalyzer methodAnalyzer;
+    protected final MemberAnalyzer memberAnalyzer;
+    protected final TypeAnalyzer typeAnalyzer;
 
     public JsonToNeo4JConverter(Store store,
                                 File inputDirectory,
@@ -45,36 +41,35 @@ public class JsonToNeo4JConverter {
 
         this.store = store;
         this.inputDirectory = inputDirectory;
-        this.namespaceCache = namespaceCache;
         this.typeCache = typeCache;
         this.cSharpFileCache = cSharpFileCache;
+        this.enumValueCache = enumValueCache;
 
         this.methodAnalyzer = new MethodAnalyzer(methodCache, typeCache, store);
+        this.memberAnalyzer = new MemberAnalyzer(this, fieldCache, propertyCache, store);
+        this.typeAnalyzer = new TypeAnalyzer(typeCache, namespaceCache, cSharpFileCache, store);
 
-        this.enumValueCache = enumValueCache;
-        this.fieldCache = fieldCache;
-        this.propertyCache = propertyCache;
     }
 
     public void readAllJsonFilesAndSaveToNeo4J() {
 
         fileModelList = new ArrayList<>();
 
-        readAllJsonFilesRecursivelyAndCreateDirectoryDescriptors(inputDirectory, null);
+        readJsonFilesRecursively(inputDirectory, null);
 
-        createUsings();
-        createTypes();
-        linkBaseTypes();
-        linkInterfaces();
+        typeAnalyzer.createUsings();
+        typeAnalyzer.createTypes();
+        typeAnalyzer.linkBaseTypes();
+        typeAnalyzer.linkInterfaces();
         createEnumMembers();
         createConstructors();
         methodAnalyzer.createMethods();
         methodAnalyzer.createInvocations();
-        createFields();
-        createProperties();
+        memberAnalyzer.createFields();
+        memberAnalyzer.createProperties();
     }
 
-    private void readAllJsonFilesRecursivelyAndCreateDirectoryDescriptors(File currentDirectory, CSharpClassesDirectoryDescriptor parentDirectoryDescriptor) {
+    private void readJsonFilesRecursively(File currentDirectory, CSharpClassesDirectoryDescriptor parentDirectoryDescriptor) {
 
         File[] filesAndDirectories = currentDirectory.listFiles();
         if (filesAndDirectories == null) { return; }
@@ -125,96 +120,7 @@ public class JsonToNeo4JConverter {
             parentDirectoryDescriptor.getContains().add(cSharpClassesDirectoryDescriptor);
         }
 
-        readAllJsonFilesRecursivelyAndCreateDirectoryDescriptors(file, cSharpClassesDirectoryDescriptor);
-    }
-
-    private void createUsings() {
-
-        for (FileModel fileModel : fileModelList) {
-            CSharpFileDescriptor cSharpFileDescriptor = cSharpFileCache.get(fileModel.getAbsolutePath());
-
-            for (UsingModel usingModel : fileModel.getUsings()) {
-                NamespaceDescriptor namespaceDescriptor = namespaceCache.findOrCreate(usingModel.getKey());
-
-                UsesNamespaceDescriptor usesNamespaceDescriptor = store.create(cSharpFileDescriptor, UsesNamespaceDescriptor.class, namespaceDescriptor);
-                usesNamespaceDescriptor.setAlias(usingModel.getAlias());
-            }
-        }
-    }
-
-    private void createTypes() {
-
-        for (FileModel fileModel : fileModelList) {
-            CSharpFileDescriptor cSharpFileDescriptor = cSharpFileCache.get(fileModel.getAbsolutePath());
-
-            for (ClassModel classModel : fileModel.getClasses()) {
-                createType(cSharpFileDescriptor, classModel);
-            }
-
-            for (EnumModel enumModel : fileModel.getEnums()) {
-                createType(cSharpFileDescriptor, enumModel);
-            }
-
-            for (InterfaceModel interfaceModel : fileModel.getInterfaces()) {
-                createType(cSharpFileDescriptor, interfaceModel);
-            }
-        }
-    }
-
-    private void createType(CSharpFileDescriptor cSharpFileDescriptor, TypeModel typeModel) {
-        TypeDescriptor typeDescriptor = typeCache.create(typeModel);
-        cSharpFileDescriptor.getTypes().add(typeDescriptor);
-
-        findOrCreateNamespace(typeModel.getFqn())
-                .ifPresent(namespaceDescriptor -> namespaceDescriptor.getContains().add(typeDescriptor));
-    }
-
-    private Optional<NamespaceDescriptor> findOrCreateNamespace(String fqn) {
-        if (!fqn.contains(".")) { return Optional.empty(); }
-
-        String namespaceFqn = fqn.substring(0, fqn.lastIndexOf("."));
-        return Optional.of(namespaceCache.findOrCreate(namespaceFqn));
-    }
-
-    private void linkBaseTypes() {
-
-        for (FileModel fileModel : fileModelList) {
-            for (ClassModel classModel : fileModel.getClasses()) {
-                ClassDescriptor classDescriptor = (ClassDescriptor) typeCache.get(classModel.getKey());
-
-                if (StringUtils.isNotBlank(classModel.getBaseType())) {
-                    TypeDescriptor typeDescriptor = typeCache.findOrCreateEmptyClass(classModel.getBaseType());
-                    classDescriptor.setSuperClass(typeDescriptor);
-                }
-            }
-        }
-    }
-
-    private void linkInterfaces() {
-
-        for (FileModel fileModel : fileModelList) {
-            for (ClassModel classModel : fileModel.getClasses()) {
-                ClassDescriptor classDescriptor = (ClassDescriptor) typeCache.get(classModel.getKey());
-
-                if (CollectionUtils.isNotEmpty(classModel.getImplementedInterfaces())) {
-                    for (String interfaceFqn : classModel.getImplementedInterfaces()) {
-                        TypeDescriptor typeDescriptor = typeCache.findOrCreateEmptyInterface(interfaceFqn);
-                        classDescriptor.getInterfaces().add(typeDescriptor);
-                    }
-                }
-            }
-
-            for (InterfaceModel interfaceModel : fileModel.getInterfaces()) {
-                InterfaceTypeDescriptor interfaceTypeDescriptor = (InterfaceTypeDescriptor) typeCache.get(interfaceModel.getKey());
-
-                if (CollectionUtils.isNotEmpty(interfaceModel.getImplementedInterfaces())) {
-                    for (String interfaceFqn : interfaceModel.getImplementedInterfaces()) {
-                        TypeDescriptor typeDescriptor = typeCache.findOrCreateEmptyInterface(interfaceFqn);
-                        interfaceTypeDescriptor.getInterfaces().add(typeDescriptor);
-                    }
-                }
-            }
-        }
+        readJsonFilesRecursively(file, cSharpClassesDirectoryDescriptor);
     }
 
     private void createConstructors() {
@@ -251,94 +157,4 @@ public class JsonToNeo4JConverter {
             }
         }
     }
-
-    private void createFields() {
-
-        for (FileModel fileModel : fileModelList) {
-            for (ClassModel classModel : fileModel.getClasses()) {
-
-                ClassDescriptor classDescriptor = (ClassDescriptor) typeCache.get(classModel.getKey());
-
-                for (FieldModel fieldModel : classModel.getFields()) {
-
-                    FieldDescriptor fieldDescriptor = fieldCache.create(fieldModel.getKey());
-                    fieldDescriptor.setFullQualifiedName(fieldModel.getFqn());
-                    fieldDescriptor.setName(fieldModel.getName());
-                    fieldDescriptor.setVisibility(fieldModel.getAccessibility());
-
-                    TypeDescriptor typeDescriptor = typeCache.findOrCreate(fieldModel.getType());
-                    fieldDescriptor.setType(typeDescriptor);
-
-                    fieldDescriptor.setVolatile(fieldModel.isVolatileKeyword());
-                    fieldDescriptor.setSealed(fieldModel.isSealed());
-                    fieldDescriptor.setStatic(fieldModel.isStaticKeyword());
-
-                    if (StringUtils.isNotBlank(fieldModel.getConstantValue())) {
-                        PrimitiveValueDescriptor primitiveValueDescriptor = store.create(PrimitiveValueDescriptor.class);
-                        primitiveValueDescriptor.setValue(fieldModel.getConstantValue());
-                        fieldDescriptor.setValue(primitiveValueDescriptor);
-                    }
-
-                    classDescriptor.getDeclaredMembers().add(fieldDescriptor);
-                }
-            }
-        }
-    }
-
-    private void createProperties(){
-        for (FileModel fileModel : fileModelList){
-            for (ClassModel classModel : fileModel.getClasses()){
-                ClassDescriptor classDescriptor = (ClassDescriptor) typeCache.get(classModel.getKey());
-
-                for (PropertyModel propertyModel : classModel.getProperties()){
-                    PropertyDescriptor propertyDescriptor = propertyCache.create(propertyModel.getKey());
-                    propertyDescriptor.setFullQualifiedName(propertyModel.getFqn());
-                    propertyDescriptor.setName(propertyModel.getName());
-                    propertyDescriptor.setVisibility(propertyModel.getAccessibility());
-                    propertyDescriptor.setStatic(propertyModel.isStaticKeyword());
-
-                    TypeDescriptor typeDescriptor = typeCache.findOrCreate(propertyModel.getType());
-                    propertyDescriptor.setType(typeDescriptor);
-
-                    List<MethodDescriptor> accessors = findAndCreateAccessors(propertyModel);
-                    propertyDescriptor.getAccessors().addAll(accessors);
-
-                    classDescriptor.getDeclaredMembers().add(propertyDescriptor);
-                }
-            }
-        }
-    }
-
-    private List<MethodDescriptor> findAndCreateAccessors(PropertyModel propertyModel) {
-        List<MethodDescriptor> accessors = new ArrayList<>();
-
-        Optional<String> getter = propertyModel.getAccessors().stream().filter(t -> t.contains("get")).findAny();
-        getter.ifPresent(s -> accessors.add(createAccessors(propertyModel, s.trim())));
-
-        Optional<String> setter = propertyModel.getAccessors().stream().filter(t -> t.contains("set")).findAny();
-        setter.ifPresent(s -> accessors.add(createAccessors(propertyModel, s.trim())));
-
-        Optional<String> init = propertyModel.getAccessors().stream().filter(t -> t.contains("init")).findAny();
-        init.ifPresent(s -> accessors.add(createAccessors(propertyModel, s.trim())));
-
-        return accessors;
-    }
-
-    private MethodDescriptor createAccessors(PropertyModel propertyModel, String accessor) {
-        String kindOfAccessor = accessor.contains(" ") ?
-                accessor.substring(accessor.lastIndexOf(" ")).trim() : accessor;
-
-        MethodModel methodModel = new MethodModel();
-        methodModel.setName(kindOfAccessor + propertyModel.getName());
-        methodModel.setFqn(propertyModel.getFqn() + "." + kindOfAccessor);
-        methodModel.setParameters(new ArrayList<>());
-
-        if (accessor.contains(" ")){
-            methodModel.setAccessibility(StringUtils.capitalize(StringUtils.substringBeforeLast(accessor, " ").trim()));
-        } else {
-            methodModel.setAccessibility(propertyModel.getAccessibility());
-        }
-        return methodAnalyzer.createMethodDescriptor(methodModel);
-    }
-
 }

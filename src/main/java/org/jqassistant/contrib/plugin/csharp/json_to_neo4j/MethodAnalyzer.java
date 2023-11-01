@@ -6,8 +6,6 @@ import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.caches.TypeCache;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.*;
 import org.jqassistant.contrib.plugin.csharp.model.*;
 
-import java.util.List;
-
 public class MethodAnalyzer {
 
     private final MethodCache methodCache;
@@ -21,7 +19,6 @@ public class MethodAnalyzer {
     }
 
     public void createMethods() {
-
         for (FileModel fileModel : JsonToNeo4JConverter.fileModelList) {
             createMethodsForClasses(fileModel);
             createMethodsForInterfaces(fileModel);
