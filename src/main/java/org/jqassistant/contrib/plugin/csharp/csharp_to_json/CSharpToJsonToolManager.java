@@ -44,9 +44,13 @@ public class CSharpToJsonToolManager {
 
         if (directory.exists()) {
             LOGGER.info("{} is already available under '{}'.", NAME, path);
-            return;
+        } else {
+            LOGGER.info("Installing {} to {}", NAME, path);
+            installParser(path, directory);
         }
+    }
 
+    private void installParser(String path, File directory) throws CSharpPluginException {
         LOGGER.info("Creating directory '{}' ...", path);
         boolean succeed = directory.mkdirs();
         if (!succeed) {
@@ -60,7 +64,6 @@ public class CSharpToJsonToolManager {
         } catch (IOException e) {
             throw new CSharpPluginException("Failed to download and extract parser.", e);
         }
-
     }
 
     private void downloadParserFromGitHub(File directory) throws IOException {

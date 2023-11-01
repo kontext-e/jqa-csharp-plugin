@@ -20,35 +20,62 @@ public class JsonToNeo4JConverter {
     private final Store store;
     private final File inputDirectory;
 
-    protected final TypeCache typeCache;
-    private final CSharpFileCache cSharpFileCache;
-    private final EnumValueCache enumValueCache;
+    protected TypeCache typeCache;
+    protected CSharpFileCache cSharpFileCache;
+    protected EnumValueCache enumValueCache;
+    protected NamespaceCache namespaceCache;
+    protected MethodCache methodCache;
+    protected FieldCache fieldCache;
+    protected PropertyCache propertyCache;
+    protected TypeCache classCache;
+
     public static List<FileModel> fileModelList;
 
     protected final MethodAnalyzer methodAnalyzer;
     protected final MemberAnalyzer memberAnalyzer;
     protected final TypeAnalyzer typeAnalyzer;
 
-    public JsonToNeo4JConverter(Store store,
-                                File inputDirectory,
-                                NamespaceCache namespaceCache,
-                                TypeCache typeCache,
-                                CSharpFileCache cSharpFileCache,
-                                MethodCache methodCache,
-                                EnumValueCache enumValueCache,
-                                FieldCache fieldCache,
-                                PropertyCache propertyCache) {
-
+    public JsonToNeo4JConverter(Store store, File inputDirectory) {
+        initCaches(store);
         this.store = store;
         this.inputDirectory = inputDirectory;
-        this.typeCache = typeCache;
-        this.cSharpFileCache = cSharpFileCache;
-        this.enumValueCache = enumValueCache;
 
         this.methodAnalyzer = new MethodAnalyzer(methodCache, typeCache, store);
         this.memberAnalyzer = new MemberAnalyzer(this, fieldCache, propertyCache, store);
         this.typeAnalyzer = new TypeAnalyzer(typeCache, namespaceCache, cSharpFileCache, store);
+    }
 
+    private void initCaches(Store store) {
+        if (namespaceCache == null) {
+            namespaceCache = new NamespaceCache(store);
+        }
+
+        if (classCache == null) {
+            classCache = new TypeCache(store);
+        }
+
+        if (cSharpFileCache == null) {
+            cSharpFileCache = new CSharpFileCache(store);
+        }
+
+        if (methodCache == null) {
+            methodCache = new MethodCache(store);
+        }
+
+        if (enumValueCache == null) {
+            enumValueCache = new EnumValueCache(store);
+        }
+
+        if (fieldCache == null) {
+            fieldCache = new FieldCache(store);
+        }
+
+        if (propertyCache == null){
+            propertyCache = new PropertyCache(store);
+        }
+        if (typeCache == null){
+            typeCache = new TypeCache(store);
+        }
     }
 
     public void readAllJsonFilesAndSaveToNeo4J() {
