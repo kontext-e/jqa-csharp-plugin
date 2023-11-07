@@ -5,9 +5,9 @@ import lombok.Setter;
 
 @Setter
 @Getter
-public class InvokesModel {
+public class MemberAccessModel {
 
     private int lineNumber;
 
-    private String methodId;
+    private String memberId;
 }

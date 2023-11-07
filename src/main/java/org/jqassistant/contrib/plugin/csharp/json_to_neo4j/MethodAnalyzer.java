@@ -86,10 +86,10 @@ public class MethodAnalyzer {
                 for (MethodModel methodModel : classModel.getMethods()) {
                     MethodDescriptor methodDescriptor = methodCache.find(methodModel.getKey());
 
-                    for (InvokesModel invokesModel : methodModel.getInvocations()) {
-                        MethodDescriptor invokedMethodDescriptor = methodCache.findOrCreate(invokesModel.getMethodId());
-                        InvokesDescriptor invokesDescriptor = store.create(methodDescriptor, InvokesDescriptor.class, invokedMethodDescriptor);
-                        invokesDescriptor.setLineNumber(invokesModel.getLineNumber());
+                    for (MemberAccessModel memberAccesses : methodModel.getMemberAccesses()) {
+                        MethodDescriptor invokedMethodDescriptor = methodCache.findOrCreate(memberAccesses.getMemberId());
+                        CallDescriptor callDescriptor = store.create(methodDescriptor, CallDescriptor.class, invokedMethodDescriptor);
+                        callDescriptor.setLineNumber(memberAccesses.getLineNumber());
                     }
                 }
             }
