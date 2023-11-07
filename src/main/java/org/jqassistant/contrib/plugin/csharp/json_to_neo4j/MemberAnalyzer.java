@@ -20,7 +20,8 @@ public class MemberAnalyzer {
     private final PropertyCache propertyCache;
     private final TypeCache typeCache;
 
-    public MemberAnalyzer(JsonToNeo4JConverter jsonToNeo4JConverter, Store store, FieldCache fieldCache, PropertyCache propertyCache, TypeCache typeCache) {
+    public MemberAnalyzer(JsonToNeo4JConverter jsonToNeo4JConverter, Store store, FieldCache fieldCache,
+                          PropertyCache propertyCache, TypeCache typeCache) {
         this.jsonToNeo4JConverter = jsonToNeo4JConverter;
         this.store = store;
         this.fieldCache = fieldCache;
