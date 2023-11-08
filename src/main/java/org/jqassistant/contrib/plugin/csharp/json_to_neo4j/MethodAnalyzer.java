@@ -2,6 +2,7 @@ package org.jqassistant.contrib.plugin.csharp.json_to_neo4j;
 
 import com.buschmais.jqassistant.core.store.api.Store;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.caches.MethodCache;
+import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.caches.PropertyCache;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.caches.TypeCache;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.*;
 import org.jqassistant.contrib.plugin.csharp.model.*;
@@ -13,12 +14,14 @@ public class MethodAnalyzer {
 
     private final MethodCache methodCache;
     private final TypeCache typeCache;
+    private final PropertyCache propertyCache;
 
-    public MethodAnalyzer(JsonToNeo4JConverter jsonToNeo4JConverter, Store store, MethodCache methodCache, TypeCache typeCache) {
+    public MethodAnalyzer(JsonToNeo4JConverter jsonToNeo4JConverter, Store store, MethodCache methodCache, TypeCache typeCache, PropertyCache propertyCache) {
         this.jsonToNeo4JConverter = jsonToNeo4JConverter;
         this.store = store;
         this.methodCache = methodCache;
         this.typeCache = typeCache;
+        this.propertyCache = propertyCache;
     }
 
     public void createMethods() {
@@ -85,12 +88,15 @@ public class MethodAnalyzer {
             for (ClassModel classModel : fileModel.getClasses()) {
                 for (MethodModel methodModel : classModel.getMethods()) {
                     MethodDescriptor methodDescriptor = methodCache.find(methodModel.getKey());
-
-                    for (MemberAccessModel memberAccesses : methodModel.getMemberAccesses()) {
-                        MethodDescriptor invokedMethodDescriptor = methodCache.findOrCreate(memberAccesses.getMemberId());
-                        CallDescriptor callDescriptor = store.create(methodDescriptor, CallDescriptor.class, invokedMethodDescriptor);
-                        callDescriptor.setLineNumber(memberAccesses.getLineNumber());
+                    if (methodModel.getInvocations().isEmpty()){
+                        break;
                     }
+                    for (InvokesModel invokesModel : methodModel.getInvocations()) {
+                        MethodDescriptor invokedMethodDescriptor = methodCache.findOrCreate(invokesModel.getMethodId());
+                        InvokesDescriptor invokesDescriptor = store.create(methodDescriptor, InvokesDescriptor.class, invokedMethodDescriptor);
+                        invokesDescriptor.setLineNumber(invokesModel.getLineNumber());
+                    }
+
                 }
             }
         }

@@ -23,7 +23,10 @@ public interface MethodDescriptor extends MemberDescriptor, AbstractDescriptor {
     List<TypeDescriptor> getDeclaredThrowables();
 
     @Outgoing
-    List<CallDescriptor> getCalls();
+    List<InvokesDescriptor> getInvokes();
+
+    @Relation.Incoming
+    List<InvokesDescriptor> getInvokedBy();
 
     int getCyclomaticComplexity();
 

@@ -6,8 +6,6 @@ import com.buschmais.jqassistant.plugin.common.api.model.NamedDescriptor;
 import com.buschmais.xo.api.annotation.Abstract;
 import com.buschmais.xo.neo4j.api.annotation.Label;
 
-import java.util.List;
-
 import static com.buschmais.xo.neo4j.api.annotation.Relation.Incoming;
 
 
@@ -19,7 +17,5 @@ public interface MemberDescriptor extends CSharpDescriptor, NamedDescriptor, Sig
     @Declares
     TypeDescriptor getDeclaringType();
 
-    @Incoming
-    List<CallDescriptor> getCalledBy();
 
 }

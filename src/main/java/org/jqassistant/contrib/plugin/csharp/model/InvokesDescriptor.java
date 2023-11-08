@@ -7,12 +7,12 @@ import static com.buschmais.xo.neo4j.api.annotation.Relation.Incoming;
 import static com.buschmais.xo.neo4j.api.annotation.Relation.Outgoing;
 
 
-@Relation("CALLS")
-public interface CallDescriptor extends Descriptor, LineNumberDescriptor {
+@Relation("INVOKES")
+public interface InvokesDescriptor extends Descriptor, LineNumberDescriptor {
 
     @Outgoing
-    MethodDescriptor getCallingMethod();
+    MethodDescriptor getInvokedMethod();
 
     @Incoming
-    MemberDescriptor getCalledMember();
+    MethodDescriptor getInvokingMethod();
 }

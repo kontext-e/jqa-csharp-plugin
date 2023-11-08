@@ -11,7 +11,7 @@
         <class>org.jqassistant.contrib.plugin.csharp.model.NamespaceDescriptor</class>
         <class>org.jqassistant.contrib.plugin.csharp.model.MethodDescriptor</class>
         <class>org.jqassistant.contrib.plugin.csharp.model.ConstructorDescriptor</class>
-        <class>org.jqassistant.contrib.plugin.csharp.model.CallDescriptor</class>
+        <class>org.jqassistant.contrib.plugin.csharp.model.InvokesDescriptor</class>
         <class>org.jqassistant.contrib.plugin.csharp.model.EnumTypeDescriptor</class>
         <class>org.jqassistant.contrib.plugin.csharp.model.EnumDescriptor</class>
         <class>org.jqassistant.contrib.plugin.csharp.model.EnumValueDescriptor</class>

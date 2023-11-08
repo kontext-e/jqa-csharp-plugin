@@ -40,7 +40,7 @@ public class JsonToNeo4JConverter {
         this.store = store;
         this.inputDirectory = inputDirectory;
 
-        this.methodAnalyzer = new MethodAnalyzer(this, store, methodCache, typeCache);
+        this.methodAnalyzer = new MethodAnalyzer(this, store, methodCache, typeCache, propertyCache );
         this.memberAnalyzer = new MemberAnalyzer(this, store, fieldCache, propertyCache, typeCache);
         this.typeAnalyzer = new TypeAnalyzer(this, store, typeCache, namespaceCache, cSharpFileCache, enumValueCache);
     }

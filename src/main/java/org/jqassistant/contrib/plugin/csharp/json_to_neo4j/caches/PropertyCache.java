@@ -21,4 +21,8 @@ public class PropertyCache {
 
         return descriptor;
     }
+
+    public PropertyDescriptor find(String key){
+        return cache.get(key);
+    }
 }
