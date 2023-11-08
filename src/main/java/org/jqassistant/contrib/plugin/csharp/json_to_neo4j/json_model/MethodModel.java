@@ -40,7 +40,7 @@ public class MethodModel implements JsonModel {
 
     protected int cyclomaticComplexity;
 
-    protected List<MemberAccessModel> memberAccesses;
+    protected List<InvokesModel> invocations;
 
     protected List<ParameterModel> parameters;
 

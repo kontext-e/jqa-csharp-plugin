@@ -22,20 +22,16 @@ public class MethodCache {
     public MethodDescriptor create(String key) {
 
         MethodDescriptor descriptor = store.create(MethodDescriptor.class);
+        descriptor.setFullQualifiedName(key);
         cache.put(key, descriptor);
         return descriptor;
     }
 
     public MethodDescriptor findOrCreate(String key) {
 
-        if (cache.containsKey(key)) {
-            return cache.get(key);
+        if (!cache.containsKey(key)) {
+            return create(key);
         }
-
-        MethodDescriptor descriptor = store.create(MethodDescriptor.class);
-        descriptor.setFullQualifiedName(key);
-        cache.put(key, descriptor);
-
-        return descriptor;
+        return find(key);
     }
 }
