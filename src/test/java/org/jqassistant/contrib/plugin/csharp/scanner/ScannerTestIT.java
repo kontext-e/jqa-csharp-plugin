@@ -120,7 +120,7 @@ public class ScannerTestIT extends AbstractPluginIT {
 
     private void testProperties() {
         List<Map<String, Object>> propertyDescriptorList = query("Match (p:Property) Return p").getRows();
-        assertThat(propertyDescriptorList.size()).isEqualTo(11);
+        assertThat(propertyDescriptorList.size()).isEqualTo(12);
 
         testPropertyInlineGetSetDefinition();
         testPropertyPrivate();
