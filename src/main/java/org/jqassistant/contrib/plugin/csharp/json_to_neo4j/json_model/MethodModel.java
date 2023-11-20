@@ -42,6 +42,8 @@ public class MethodModel implements JsonModel {
 
     protected List<InvokesModel> invocations;
 
+    protected List<MemberAccessModel> memberAccesses;
+
     protected List<ParameterModel> parameters;
 
     @Override

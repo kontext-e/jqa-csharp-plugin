@@ -21,6 +21,7 @@
         <class>org.jqassistant.contrib.plugin.csharp.model.PrimitiveValueDescriptor</class>
         <class>org.jqassistant.contrib.plugin.csharp.model.UsesNamespaceDescriptor</class>
         <class>org.jqassistant.contrib.plugin.csharp.model.PropertyDescriptor</class>
+        <class>org.jqassistant.contrib.plugin.csharp.model.MemberAccessDescriptor</class>
     </model>
     <scanner>
         <class>org.jqassistant.contrib.plugin.csharp.scanner.CSharpDirectoryScannerPlugin</class>

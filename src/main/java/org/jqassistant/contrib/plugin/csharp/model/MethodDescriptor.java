@@ -28,6 +28,9 @@ public interface MethodDescriptor extends MemberDescriptor, AbstractDescriptor {
     @Relation.Incoming
     List<InvokesDescriptor> getInvokedBy();
 
+    @Outgoing
+    List<MemberAccessDescriptor> getAccessedMember();
+
     int getCyclomaticComplexity();
 
     void setCyclomaticComplexity(int cyclomaticComplexity);
