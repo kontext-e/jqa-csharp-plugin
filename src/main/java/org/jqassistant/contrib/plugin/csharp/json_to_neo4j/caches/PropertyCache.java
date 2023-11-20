@@ -28,7 +28,6 @@ public class PropertyCache {
     }
 
     public Optional<PropertyDescriptor> getPropertyFromSubstring(String substring) {
-        System.out.println(substring);
         if (substring == null || substring.isEmpty()) return Optional.empty();
 
         for (String key : cache.keySet()){
