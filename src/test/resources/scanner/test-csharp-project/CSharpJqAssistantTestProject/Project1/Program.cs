@@ -15,8 +15,17 @@ namespace Project_1
 
             Console.WriteLine("Hello World!");
 
-            MyClass myClass = new();
-            myClass.Name = "Something";
+            MyClass myClass = new("a random name");
+            MyClass yourClass = myClass;
+            String yourname;
+            var something = myClass.Name;
+            yourname = yourClass.Name;
+            if (something == myClass.Name)
+            {
+                myClass.doSomethingAgain();
+            }
+            myClass.ID = "ID";
+            myClass.doSomethingAgain();
             CallDep1();
             CallDep2();
         }
@@ -35,6 +44,17 @@ namespace Project_1
 
     class MyClass
     {
-        public String Name { get; set; }
+        public String Name { get; }
+        public String ID { get; set; }
+
+        public MyClass(String name)
+        {
+            Name = name;
+        }
+
+        public void doSomethingAgain()
+        {
+            Console.WriteLine();
+        }
     }
 }
