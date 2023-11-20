@@ -94,6 +94,7 @@ public class JsonToNeo4JConverter {
         memberAnalyzer.createProperties();
         methodAnalyzer.createMethods();
         methodAnalyzer.createInvocations();
+        methodAnalyzer.createPropertyAccesses();
     }
 
     private void readJsonFilesRecursively(File currentDirectory, CSharpClassesDirectoryDescriptor parentDirectoryDescriptor) {

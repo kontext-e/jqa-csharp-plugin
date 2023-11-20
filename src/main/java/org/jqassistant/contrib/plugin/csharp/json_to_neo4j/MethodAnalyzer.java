@@ -7,6 +7,8 @@ import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.caches.TypeCache;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.*;
 import org.jqassistant.contrib.plugin.csharp.model.*;
 
+import java.util.Optional;
+
 public class MethodAnalyzer {
 
     private final JsonToNeo4JConverter jsonToNeo4JConverter;
@@ -97,6 +99,23 @@ public class MethodAnalyzer {
                         invokesDescriptor.setLineNumber(invokesModel.getLineNumber());
                     }
 
+                }
+            }
+        }
+    }
+
+    public void createPropertyAccesses(){
+        for (FileModel fileModel : jsonToNeo4JConverter.fileModelList) {
+            for (ClassModel classModel : fileModel.getClasses()){
+                for (MethodModel methodModel : classModel.getMethods()){
+                    MethodDescriptor methodDescriptor = methodCache.find(methodModel.getKey());
+                    for (MemberAccessModel memberAccessModel : methodModel.getMemberAccesses()){
+                        Optional<PropertyDescriptor> propertyDescriptor = propertyCache.getPropertyFromSubstring(memberAccessModel.getMemberId());
+                        if (!propertyDescriptor.isPresent()) continue;
+                        MemberAccessDescriptor memberAccessDescriptor = store.create(methodDescriptor, MemberAccessDescriptor.class, propertyDescriptor.get());
+                        memberAccessDescriptor.setLineNumber(memberAccessModel.getLineNumber());
+                        System.out.println(memberAccessDescriptor );
+                    }
                 }
             }
         }

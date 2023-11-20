@@ -4,6 +4,7 @@ import com.buschmais.jqassistant.core.store.api.Store;
 import org.jqassistant.contrib.plugin.csharp.model.PropertyDescriptor;
 
 import java.util.HashMap;
+import java.util.Optional;
 
 public class PropertyCache {
 
@@ -24,5 +25,17 @@ public class PropertyCache {
 
     public PropertyDescriptor find(String key){
         return cache.get(key);
+    }
+
+    public Optional<PropertyDescriptor> getPropertyFromSubstring(String substring) {
+        System.out.println(substring);
+        if (substring == null || substring.isEmpty()) return Optional.empty();
+
+        for (String key : cache.keySet()){
+            if (key.contains(substring)){
+                return Optional.of(cache.get(key));
+            }
+        }
+        return Optional.empty();
     }
 }
