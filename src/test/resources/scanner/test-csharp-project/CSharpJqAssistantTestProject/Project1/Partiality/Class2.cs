@@ -5,7 +5,8 @@ namespace Project_1.Partiality
     public partial class Class2
     {
         private string Name;
-        public Class2(string name)
+
+        protected Class2(string name)
         {
             Name = name;
         }
@@ -16,7 +17,8 @@ namespace Project_1.Partiality
         protected void PrintName()
         {
             Console.WriteLine(Name);
-        }    
+            UnimplementedMethod();
+        }
     }
     
     public partial class Class2
@@ -28,5 +30,7 @@ namespace Project_1.Partiality
                 Name = name;
             }
         }
+
+        partial void UnimplementedMethod();
     }
 }
