@@ -88,6 +88,7 @@ public class JsonToNeo4JConverter {
         typeAnalyzer.createTypes();
         typeAnalyzer.linkBaseTypes();
         typeAnalyzer.linkInterfaces();
+        typeAnalyzer.linkPartialClasses();
         typeAnalyzer.createEnumMembers();
         typeAnalyzer.createConstructors();
         memberAnalyzer.createFields();

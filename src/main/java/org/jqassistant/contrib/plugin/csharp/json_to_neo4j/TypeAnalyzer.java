@@ -10,7 +10,7 @@ import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.caches.TypeCache;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.*;
 import org.jqassistant.contrib.plugin.csharp.model.*;
 
-import java.util.Optional;
+import java.util.*;
 
 public class TypeAnalyzer {
 
