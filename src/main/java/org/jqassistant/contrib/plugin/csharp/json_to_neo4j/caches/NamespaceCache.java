@@ -4,6 +4,8 @@ import com.buschmais.jqassistant.core.store.api.Store;
 import org.jqassistant.contrib.plugin.csharp.model.NamespaceDescriptor;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 
 public class NamespaceCache {
 
@@ -26,5 +28,9 @@ public class NamespaceCache {
         cache.put(key, descriptor);
 
         return descriptor;
+    }
+
+    public List<NamespaceDescriptor> getAllNamespaces() {
+        return new LinkedList<>(cache.values());
     }
 }

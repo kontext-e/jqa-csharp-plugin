@@ -27,4 +27,9 @@ public interface TypeDescriptor extends CSharpDescriptor, NamedDescriptor, FullQ
     Integer getEffectiveLineCount();
 
     void setEffectiveLineCount(Integer effectiveLineCount);
+
+    @Relation("PARTIAL_WITH")
+    List<TypeDescriptor> getClassFragments();
+
+//    void setClassFragments(List<TypeDescriptor> classFragments);
 }
