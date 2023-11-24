@@ -157,4 +157,36 @@ public class TypeAnalyzer {
         }
 
     }
+
+    public void linkPartialClasses() {
+        for (NamespaceDescriptor namespace : namespaceCache.getAllNamespaces()) {
+
+            Map<String, List<TypeDescriptor>> partialityList = sortTypesByPartiality(namespace);
+            for (String key : partialityList.keySet()) {
+                List<TypeDescriptor> classFragments = partialityList.get(key);
+                for (TypeDescriptor self : classFragments) {
+                    List<TypeDescriptor> siblings = new LinkedList<>(classFragments);
+                    siblings.remove(self);
+                    //.addAll() does not work, as relations won't show up
+                    for (TypeDescriptor sibling : siblings) {
+                        self.getClassFragments().add(sibling);
+                    }
+                }
+            }
+        }
+    }
+
+    private static Map<String, List<TypeDescriptor>> sortTypesByPartiality(NamespaceDescriptor namespace) {
+        Map<String, List<TypeDescriptor>> partialityList = new HashMap<>();
+        for (TypeDescriptor type : namespace.getContains()){
+            if (partialityList.containsKey(type.getName())){
+                partialityList.get(type.getName()).add(type);
+            } else {
+                List<TypeDescriptor> typeDescriptors = new ArrayList<>();
+                typeDescriptors.add(type);
+                partialityList.put(type.getName(), typeDescriptors);
+            }
+        }
+        return partialityList;
+    }
 }
