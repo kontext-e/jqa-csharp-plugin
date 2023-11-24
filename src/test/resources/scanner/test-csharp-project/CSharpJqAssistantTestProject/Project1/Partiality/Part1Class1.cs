@@ -1,12 +1,22 @@
-﻿namespace Project_1.Partiality
+﻿using System;
+
+namespace Project_1.Partiality
 {
     public partial class Class1 : Class2
     {
-        private readonly int Number;
+        private readonly int _number;
         
         public Class1(string name, int number) : base(name)
         {
-            Number = number;
+            _number = number;
+            var returnValue = PartialMethod();
+            Console.WriteLine(returnValue);
+        }
+
+        private partial int PartialMethod()
+        {
+            Console.WriteLine(_number);
+            return 0;
         }
     }
 }

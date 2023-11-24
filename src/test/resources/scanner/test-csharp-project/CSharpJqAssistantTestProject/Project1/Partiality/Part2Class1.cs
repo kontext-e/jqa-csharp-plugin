@@ -6,5 +6,7 @@
         {
             return null;
         }
+
+        private partial int PartialMethod();
     }
 }

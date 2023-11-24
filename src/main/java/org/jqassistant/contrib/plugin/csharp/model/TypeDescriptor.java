@@ -31,5 +31,4 @@ public interface TypeDescriptor extends CSharpDescriptor, NamedDescriptor, FullQ
     @Relation("PARTIAL_WITH")
     List<TypeDescriptor> getClassFragments();
 
-//    void setClassFragments(List<TypeDescriptor> classFragments);
 }
