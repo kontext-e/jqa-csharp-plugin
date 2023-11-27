@@ -176,13 +176,13 @@ public class TypeAnalyzer {
         }
     }
 
-    private static Map<String, List<TypeDescriptor>> sortTypesByPartiality(NamespaceDescriptor namespace) {
+    protected Map<String, List<TypeDescriptor>> sortTypesByPartiality(NamespaceDescriptor namespace) {
         Map<String, List<TypeDescriptor>> partialityList = new HashMap<>();
         for (TypeDescriptor type : namespace.getContains()){
             if (partialityList.containsKey(type.getName())){
                 partialityList.get(type.getName()).add(type);
             } else {
-                List<TypeDescriptor> typeDescriptors = new ArrayList<>();
+                List<TypeDescriptor> typeDescriptors = new LinkedList<>();
                 typeDescriptors.add(type);
                 partialityList.put(type.getName(), typeDescriptors);
             }

@@ -27,7 +27,6 @@ public class JsonToNeo4JConverter {
     private MethodCache methodCache;
     private FieldCache fieldCache;
     private PropertyCache propertyCache;
-    private TypeCache classCache;
 
     protected List<FileModel> fileModelList;
 
@@ -46,37 +45,15 @@ public class JsonToNeo4JConverter {
     }
 
     private void initCaches(Store store) {
-        if (namespaceCache == null) {
             namespaceCache = new NamespaceCache(store);
-        }
-
-        if (classCache == null) {
-            classCache = new TypeCache(store);
-        }
-
-        if (cSharpFileCache == null) {
             cSharpFileCache = new CSharpFileCache(store);
-        }
-
-        if (methodCache == null) {
             methodCache = new MethodCache(store);
-        }
-
-        if (enumValueCache == null) {
             enumValueCache = new EnumValueCache(store);
-        }
-
-        if (fieldCache == null) {
             fieldCache = new FieldCache(store);
-        }
-
-        if (propertyCache == null){
             propertyCache = new PropertyCache(store);
-        }
-        if (typeCache == null){
             typeCache = new TypeCache(store);
-        }
     }
+
 
     public void readAllJsonFilesAndSaveToNeo4J() {
 
