@@ -66,7 +66,9 @@ public class TypeAnalyzer {
     }
 
     private void createType(CSharpFileDescriptor cSharpFileDescriptor, TypeModel typeModel) {
+
         TypeDescriptor typeDescriptor = typeCache.create(typeModel);
+        fillDescriptor(typeDescriptor, typeModel);
         cSharpFileDescriptor.getTypes().add(typeDescriptor);
 
         findOrCreateNamespace(typeModel.getFqn())
@@ -86,10 +88,10 @@ public class TypeAnalyzer {
 
         for (FileModel fileModel : jsonToNeo4JConverter.fileModelList) {
             for (ClassModel classModel : fileModel.getClasses()) {
-                ClassDescriptor classDescriptor = (ClassDescriptor) typeCache.get(classModel.getKey());
+                ClassDescriptor classDescriptor = (ClassDescriptor) typeCache.find(classModel.getKey());
 
                 if (StringUtils.isNotBlank(classModel.getBaseType())) {
-                    TypeDescriptor typeDescriptor = typeCache.findOrCreateEmptyClass(classModel.getBaseType());
+                    TypeDescriptor typeDescriptor = typeCache.findOrCreate(classModel.getBaseType());
                     classDescriptor.setSuperClass(typeDescriptor);
                 }
             }
@@ -100,22 +102,22 @@ public class TypeAnalyzer {
 
         for (FileModel fileModel : jsonToNeo4JConverter.fileModelList) {
             for (ClassModel classModel : fileModel.getClasses()) {
-                ClassDescriptor classDescriptor = (ClassDescriptor) typeCache.get(classModel.getKey());
+                ClassDescriptor classDescriptor = (ClassDescriptor) typeCache.find(classModel.getKey());
 
                 if (CollectionUtils.isNotEmpty(classModel.getImplementedInterfaces())) {
                     for (String interfaceFqn : classModel.getImplementedInterfaces()) {
-                        TypeDescriptor typeDescriptor = typeCache.findOrCreateEmptyInterface(interfaceFqn);
+                        TypeDescriptor typeDescriptor = typeCache.findOrCreate(interfaceFqn);
                         classDescriptor.getInterfaces().add(typeDescriptor);
                     }
                 }
             }
 
             for (InterfaceModel interfaceModel : fileModel.getInterfaces()) {
-                InterfaceTypeDescriptor interfaceTypeDescriptor = (InterfaceTypeDescriptor) typeCache.get(interfaceModel.getKey());
+                InterfaceTypeDescriptor interfaceTypeDescriptor = (InterfaceTypeDescriptor) typeCache.find(interfaceModel.getKey());
 
                 if (CollectionUtils.isNotEmpty(interfaceModel.getImplementedInterfaces())) {
                     for (String interfaceFqn : interfaceModel.getImplementedInterfaces()) {
-                        TypeDescriptor typeDescriptor = typeCache.findOrCreateEmptyInterface(interfaceFqn);
+                        TypeDescriptor typeDescriptor = typeCache.findOrCreate(interfaceFqn);
                         interfaceTypeDescriptor.getInterfaces().add(typeDescriptor);
                     }
                 }
@@ -127,7 +129,7 @@ public class TypeAnalyzer {
 
         for (FileModel fileModel : jsonToNeo4JConverter.fileModelList) {
             for (EnumModel enumModel : fileModel.getEnums()) {
-                EnumTypeDescriptor enumTypeDescriptor = (EnumTypeDescriptor) typeCache.get(enumModel.getKey());
+                EnumTypeDescriptor enumTypeDescriptor = (EnumTypeDescriptor) typeCache.find(enumModel.getKey());
 
                 for (EnumMemberModel enumMemberModel : enumModel.getMembers()) {
                     EnumValueDescriptor enumValueDescriptor = enumValueCache.create(enumMemberModel.getKey());
@@ -141,7 +143,7 @@ public class TypeAnalyzer {
         for (FileModel fileModel : jsonToNeo4JConverter.fileModelList) {
             for (ClassModel classModel : fileModel.getClasses()) {
 
-                ClassDescriptor classDescriptor = typeCache.find(classModel);
+                ClassDescriptor classDescriptor = (ClassDescriptor) typeCache.find(classModel.getKey());
 
                 for (ConstructorModel constructorModel : classModel.getConstructors()) {
                     ConstructorDescriptor constructorDescriptor = store.create(ConstructorDescriptor.class);
@@ -188,5 +190,29 @@ public class TypeAnalyzer {
             }
         }
         return partialityList;
+    }
+
+
+    protected void fillDescriptor(TypeDescriptor descriptor, TypeModel typeModel) {
+        descriptor.setName(typeModel.getName());
+        descriptor.setFullQualifiedName(typeModel.getFqn());
+        descriptor.setMd5(typeModel.getMd5());
+        descriptor.setFirstLineNumber(typeModel.getFirstLineNumber());
+        descriptor.setLastLineNumber(typeModel.getLastLineNumber());
+        descriptor.setEffectiveLineCount(typeModel.getEffectiveLineCount());
+
+        if (typeModel instanceof InterfaceModel && descriptor instanceof InterfaceTypeDescriptor){
+            InterfaceModel interfaceModel = (InterfaceModel) typeModel;
+            InterfaceTypeDescriptor interfaceDescriptor = (InterfaceTypeDescriptor) descriptor;
+            interfaceDescriptor.setVisibility(interfaceModel.getAccessibility());
+        }
+
+        if (typeModel instanceof ClassModel && descriptor instanceof ClassDescriptor) {
+            ClassModel classModel = (ClassModel) typeModel;
+            ClassDescriptor classDescriptor = (ClassDescriptor) descriptor;
+            classDescriptor.setAbstract(classModel.isAbstractKeyword());
+            classDescriptor.setSealed(classModel.isSealed());
+            classDescriptor.setStatic(classModel.isStaticKeyword());
+        }
     }
 }

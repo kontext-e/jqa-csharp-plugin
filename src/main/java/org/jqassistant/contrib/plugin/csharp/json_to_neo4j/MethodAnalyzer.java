@@ -35,7 +35,7 @@ public class MethodAnalyzer {
 
     private void createMethodsForClasses(FileModel fileModel) {
         for (ClassModel classModel : fileModel.getClasses()) {
-            ClassDescriptor classDescriptor = (ClassDescriptor) typeCache.get(classModel.getKey());
+            ClassDescriptor classDescriptor = (ClassDescriptor) typeCache.find(classModel.getKey());
 
             for (MethodModel methodModel : classModel.getMethods()) {
                 MethodDescriptor methodDescriptor = createMethodDescriptor(methodModel);
@@ -47,7 +47,7 @@ public class MethodAnalyzer {
     private void createMethodsForInterfaces(FileModel fileModel) {
 
         for (InterfaceModel interfaceModel : fileModel.getInterfaces()) {
-            InterfaceTypeDescriptor interfaceTypeDescriptor = (InterfaceTypeDescriptor) typeCache.get(interfaceModel.getKey());
+            InterfaceTypeDescriptor interfaceTypeDescriptor = (InterfaceTypeDescriptor) typeCache.find(interfaceModel.getKey());
 
             for (MethodModel methodModel : interfaceModel.getMethods()) {
                 MethodDescriptor methodDescriptor = createMethodDescriptor(methodModel);
