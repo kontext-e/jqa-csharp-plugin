@@ -203,6 +203,26 @@ class TypeAnalyzerTest {
         public <D> D getDelegate() {
             throw new NotImplementedException();
         }
+
+        @Override
+        public void setRelativePath(String path) {
+            throw new NotImplementedException();
+        }
+
+        @Override
+        public String getRelativePath() {
+            throw new NotImplementedException();
+        }
+
+        @Override
+        public void setPartial(boolean partial) {
+            throw new NotImplementedException();
+        }
+
+        @Override
+        public boolean getPartial() {
+            throw new NotImplementedException();
+        }
     }
 
 }

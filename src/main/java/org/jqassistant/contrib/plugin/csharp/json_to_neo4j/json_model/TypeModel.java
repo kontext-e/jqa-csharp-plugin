@@ -7,6 +7,8 @@ import lombok.Setter;
 @Getter
 public class TypeModel {
 
+    private String relativePath;
+
     private String name;
 
     private String fqn;

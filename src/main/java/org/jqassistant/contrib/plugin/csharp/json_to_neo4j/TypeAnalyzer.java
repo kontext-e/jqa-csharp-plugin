@@ -164,9 +164,9 @@ public class TypeAnalyzer {
 
             Map<String, List<TypeDescriptor>> partialityList = sortTypesByPartiality(namespace);
             for (String key : partialityList.keySet()) {
-                List<TypeDescriptor> classFragments = partialityList.get(key);
-                for (TypeDescriptor self : classFragments) {
-                    List<TypeDescriptor> siblings = new LinkedList<>(classFragments);
+                List<TypeDescriptor> fragments = partialityList.get(key);
+                for (TypeDescriptor self : fragments) {
+                    List<TypeDescriptor> siblings = new LinkedList<>(fragments);
                     siblings.remove(self);
                     //.addAll() does not work, as relations won't show up
                     for (TypeDescriptor sibling : siblings) {
@@ -196,6 +196,7 @@ public class TypeAnalyzer {
         descriptor.setName(typeModel.getName());
         descriptor.setFullQualifiedName(typeModel.getFqn());
         descriptor.setMd5(typeModel.getMd5());
+        descriptor.setRelativePath(typeModel.getRelativePath());
         descriptor.setFirstLineNumber(typeModel.getFirstLineNumber());
         descriptor.setLastLineNumber(typeModel.getLastLineNumber());
         descriptor.setEffectiveLineCount(typeModel.getEffectiveLineCount());
@@ -204,11 +205,13 @@ public class TypeAnalyzer {
             InterfaceModel interfaceModel = (InterfaceModel) typeModel;
             InterfaceTypeDescriptor interfaceDescriptor = (InterfaceTypeDescriptor) descriptor;
             interfaceDescriptor.setVisibility(interfaceModel.getAccessibility());
+            interfaceDescriptor.setPartial(interfaceModel.isPartial());
         }
 
         if (typeModel instanceof ClassModel && descriptor instanceof ClassDescriptor) {
             ClassModel classModel = (ClassModel) typeModel;
             ClassDescriptor classDescriptor = (ClassDescriptor) descriptor;
+            classDescriptor.setPartial(classModel.isPartial());
             classDescriptor.setAbstract(classModel.isAbstractKeyword());
             classDescriptor.setSealed(classModel.isSealed());
             classDescriptor.setStatic(classModel.isStaticKeyword());
