@@ -14,10 +14,8 @@ import java.util.HashMap;
 
 public class TypeCache {
 
-
     private final Store store;
     private final HashMap<String, TypeDescriptor> cache;
-
 
     public TypeCache(Store store) {
         this.store = store;
