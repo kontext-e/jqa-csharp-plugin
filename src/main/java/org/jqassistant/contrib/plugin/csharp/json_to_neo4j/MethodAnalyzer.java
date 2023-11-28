@@ -18,7 +18,7 @@ public class MethodAnalyzer {
     private final TypeCache typeCache;
     private final PropertyCache propertyCache;
 
-    public MethodAnalyzer(JsonToNeo4JConverter jsonToNeo4JConverter, Store store, MethodCache methodCache, TypeCache typeCache, PropertyCache propertyCache) {
+    public MethodAnalyzer(JsonToNeo4JConverter jsonToNeo4JConverter, Store store, MethodCache methodCache, PropertyCache propertyCache, TypeCache typeCache) {
         this.jsonToNeo4JConverter = jsonToNeo4JConverter;
         this.store = store;
         this.methodCache = methodCache;
@@ -59,6 +59,41 @@ public class MethodAnalyzer {
     public MethodDescriptor createMethodDescriptor(MethodModel methodModel) {
 
         MethodDescriptor methodDescriptor = methodCache.create(methodModel.getKey());
+        fillMethodDescriptor(methodModel, methodDescriptor);
+        TypeDescriptor returnTypeDescriptor = typeCache.findOrCreate(methodModel.getReturnType());
+        methodDescriptor.setReturns(returnTypeDescriptor);
+        List<ParameterDescriptor> parameterDescriptors = createParameterDescriptors(methodModel);
+        methodDescriptor.getParameters().addAll(parameterDescriptors);
+
+        return methodDescriptor;
+    }
+
+    private List<ParameterDescriptor> createParameterDescriptors(MethodModel methodModel) {
+
+        List<ParameterDescriptor> parameterDescriptors = new ArrayList<>();
+        int index = 1;
+
+        for (ParameterModel parameterModel : methodModel.getParameters()) {
+            ParameterDescriptor parameterDescriptor = store.create(ParameterDescriptor.class);
+            fillParameterDescriptor(index, parameterModel, parameterDescriptor);
+            parameterDescriptors.add(parameterDescriptor);
+
+            index++;
+        }
+
+        return parameterDescriptors;
+    }
+
+    private void fillParameterDescriptor(int index, ParameterModel parameterModel, ParameterDescriptor parameterDescriptor) {
+
+        parameterDescriptor.setIndex(index);
+        TypeDescriptor parameterTypeDescriptor = typeCache.findOrCreate(parameterModel.getType());
+        parameterDescriptor.setType(parameterTypeDescriptor);
+        parameterDescriptor.setName(parameterModel.getName());
+    }
+
+    private static void fillMethodDescriptor(MethodModel methodModel, MethodDescriptor methodDescriptor) {
+
         methodDescriptor.setEffectiveLineCount(methodModel.getEffectiveLineCount());
         methodDescriptor.setLastLineNumber(methodModel.getLastLineNumber());
         methodDescriptor.setFirstLineNumber(methodModel.getFirstLineNumber());
@@ -66,22 +101,6 @@ public class MethodAnalyzer {
         methodDescriptor.setFullQualifiedName(methodModel.getFqn());
         methodDescriptor.setVisibility(methodModel.getAccessibility());
         methodDescriptor.setCyclomaticComplexity(methodModel.getCyclomaticComplexity());
-        TypeDescriptor returnTypeDescriptor = typeCache.findOrCreate(methodModel.getReturnType());
-        methodDescriptor.setReturns(returnTypeDescriptor);
-
-        int index = 1;
-        for (ParameterModel parameterModel : methodModel.getParameters()) {
-
-            ParameterDescriptor parameterDescriptor = store.create(ParameterDescriptor.class);
-            parameterDescriptor.setIndex(index);
-            TypeDescriptor parameterTypeDescriptor = typeCache.findOrCreate(parameterModel.getType());
-            parameterDescriptor.setType(parameterTypeDescriptor);
-            parameterDescriptor.setName(parameterModel.getName());
-
-            methodDescriptor.getParameters().add(parameterDescriptor);
-            index++;
-        }
-        return methodDescriptor;
     }
 
     public void createInvocations() {
@@ -89,10 +108,10 @@ public class MethodAnalyzer {
         for (FileModel fileModel : jsonToNeo4JConverter.fileModelList) {
             for (ClassModel classModel : fileModel.getClasses()) {
                 for (MethodModel methodModel : classModel.getMethods()) {
+
                     MethodDescriptor methodDescriptor = methodCache.find(methodModel.getKey());
-                    if (methodModel.getInvocations().isEmpty()){
-                        break;
-                    }
+                    if (methodModel.getInvocations().isEmpty()) continue;
+
                     for (InvokesModel invokesModel : methodModel.getInvocations()) {
                         MethodDescriptor invokedMethodDescriptor = methodCache.findOrCreate(invokesModel.getMethodId());
                         InvokesDescriptor invokesDescriptor = store.create(methodDescriptor, InvokesDescriptor.class, invokedMethodDescriptor);
@@ -105,6 +124,7 @@ public class MethodAnalyzer {
     }
 
     public void createPropertyAccesses(){
+
         for (FileModel fileModel : jsonToNeo4JConverter.fileModelList) {
             for (ClassModel classModel : fileModel.getClasses()){
                 for (MethodModel methodModel : classModel.getMethods()){
@@ -112,7 +132,6 @@ public class MethodAnalyzer {
                     MethodDescriptor methodDescriptor = methodCache.find(methodModel.getKey());
 
                     for (MemberAccessModel memberAccessModel : methodModel.getMemberAccesses()){
-
                         Optional<PropertyDescriptor> propertyDescriptor = propertyCache.getPropertyFromSubstring(memberAccessModel.getMemberId());
                         if (!propertyDescriptor.isPresent()) continue;
 

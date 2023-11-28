@@ -43,10 +43,10 @@ class TypeAnalyzerTest {
         typeAnalyzer = new TypeAnalyzer(
                 jsonToNeo4JConverter,
                 storeMock,
-                typeCacheMock,
                 namespaceCacheMock,
                 cSharpFileCacheMock,
-                enumValueCacheMock
+                enumValueCacheMock,
+                typeCacheMock
         );
     }
 

@@ -22,8 +22,7 @@ public class TypeAnalyzer {
     private final CSharpFileCache fileCache;
     private final EnumValueCache enumValueCache;
 
-    public TypeAnalyzer(JsonToNeo4JConverter jsonToNeo4JConverter, Store store, TypeCache typeCache, NamespaceCache namespaceCache,
-                        CSharpFileCache fileCache, EnumValueCache enumValueCache) {
+    public TypeAnalyzer(JsonToNeo4JConverter jsonToNeo4JConverter, Store store, NamespaceCache namespaceCache, CSharpFileCache fileCache, EnumValueCache enumValueCache, TypeCache typeCache) {
         this.jsonToNeo4JConverter = jsonToNeo4JConverter;
         this.store = store;
         this.typeCache = typeCache;
