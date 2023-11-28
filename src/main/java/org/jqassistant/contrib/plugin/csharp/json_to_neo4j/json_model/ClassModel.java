@@ -18,6 +18,8 @@ public class ClassModel extends TypeModel implements JsonModel {
 
     private boolean sealed;
 
+    private boolean partial;
+
     @JsonProperty("static")
     private boolean staticKeyword;
 

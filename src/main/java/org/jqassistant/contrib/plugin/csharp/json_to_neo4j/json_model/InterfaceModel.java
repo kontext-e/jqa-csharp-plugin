@@ -11,6 +11,8 @@ public class InterfaceModel extends TypeModel implements JsonModel {
 
     private String accessibility;
 
+    private boolean partial;
+
     private String md5;
 
     private List<MethodModel> methods;

@@ -10,7 +10,7 @@ import java.util.List;
 
 
 @Label(value = "Type", usingIndexedPropertyOf = FullQualifiedNameDescriptor.class)
-public interface TypeDescriptor extends CSharpDescriptor, NamedDescriptor, FullQualifiedNameDescriptor, MD5Descriptor {
+public interface TypeDescriptor extends CSharpDescriptor, NamedDescriptor, FullQualifiedNameDescriptor, MD5Descriptor, PartialDescriptor {
 
     @Relation.Outgoing
     @Declares
