@@ -94,9 +94,12 @@ public class JsonToNeo4JConverter {
         FileModel fileModel = parseAndCache(file);
         fileModelList.add(fileModel);
 
-        CSharpFileDescriptor cSharpFileDescriptor = cSharpFileCache.create(fileModel.getAbsolutePath());
-        cSharpFileDescriptor.setName(fileModel.getName());
-        cSharpFileDescriptor.setFileName(fileModel.getRelativePath());
+        CSharpFileDescriptor cSharpFileDescriptor = null;
+        if (fileModel != null) {
+            cSharpFileDescriptor = cSharpFileCache.create(fileModel.getAbsolutePath());
+            cSharpFileDescriptor.setName(fileModel.getName());
+            cSharpFileDescriptor.setFileName(fileModel.getRelativePath());
+        }
 
         if (parentDirectoryDescriptor != null) {
             parentDirectoryDescriptor.getContains().add(cSharpFileDescriptor);

@@ -34,7 +34,7 @@ public class MemberAnalyzer {
         for (FileModel fileModel : jsonToNeo4JConverter.fileModelList) {
             for (ClassModel classModel : fileModel.getClasses()) {
 
-                ClassDescriptor classDescriptor = (ClassDescriptor) typeCache.get(classModel.getKey());
+                ClassDescriptor classDescriptor = (ClassDescriptor) typeCache.find(classModel.getKey());
 
                 for (FieldModel fieldModel : classModel.getFields()) {
 
@@ -65,7 +65,7 @@ public class MemberAnalyzer {
     protected void createProperties() {
         for (FileModel fileModel : jsonToNeo4JConverter.fileModelList) {
             for (ClassModel classModel : fileModel.getClasses()) {
-                ClassDescriptor classDescriptor = (ClassDescriptor) typeCache.get(classModel.getKey());
+                ClassDescriptor classDescriptor = (ClassDescriptor) typeCache.find(classModel.getKey());
 
                 for (PropertyModel propertyModel : classModel.getProperties()) {
                     PropertyDescriptor propertyDescriptor = propertyCache.create(propertyModel.getKey());
