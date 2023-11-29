@@ -29,7 +29,7 @@ public class MethodAnalyzer {
     }
 
     public void createMethods() {
-        for (FileModel fileModel : jsonToNeo4JConverter.fileModelList) {
+        for (FileModel fileModel : jsonToNeo4JConverter.getFileModelList()) {
             createMethodsForClasses(fileModel);
             createMethodsForInterfaces(fileModel);
         }
@@ -112,7 +112,7 @@ public class MethodAnalyzer {
 
     public void createInvocations() {
 
-        for (FileModel fileModel : jsonToNeo4JConverter.fileModelList) {
+        for (FileModel fileModel : jsonToNeo4JConverter.getFileModelList()) {
             for (ClassModel classModel : fileModel.getClasses()) {
                 for (MethodModel methodModel : classModel.getMethods()) {
 
@@ -132,7 +132,7 @@ public class MethodAnalyzer {
 
     public void createPropertyAccesses(){
 
-        for (FileModel fileModel : jsonToNeo4JConverter.fileModelList) {
+        for (FileModel fileModel : jsonToNeo4JConverter.getFileModelList()) {
             for (ClassModel classModel : fileModel.getClasses()){
                 for (MethodModel methodModel : classModel.getMethods()){
 

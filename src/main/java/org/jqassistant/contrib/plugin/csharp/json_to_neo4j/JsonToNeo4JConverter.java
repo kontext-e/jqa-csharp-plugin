@@ -28,7 +28,7 @@ public class JsonToNeo4JConverter {
     private FieldCache fieldCache;
     private PropertyCache propertyCache;
 
-    protected List<FileModel> fileModelList;
+    private List<FileModel> fileModelList;
 
     protected final MethodAnalyzer methodAnalyzer;
     protected final MemberAnalyzer memberAnalyzer;
@@ -132,4 +132,7 @@ public class JsonToNeo4JConverter {
         readJsonFilesRecursively(file, cSharpClassesDirectoryDescriptor);
     }
 
+    public List<FileModel> getFileModelList() {
+        return fileModelList;
+    }
 }

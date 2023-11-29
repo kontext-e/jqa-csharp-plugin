@@ -6,13 +6,13 @@ import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.caches.CSharpFileCach
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.caches.EnumValueCache;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.caches.NamespaceCache;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.caches.TypeCache;
-import org.jqassistant.contrib.plugin.csharp.model.MemberDescriptor;
-import org.jqassistant.contrib.plugin.csharp.model.NamespaceDescriptor;
-import org.jqassistant.contrib.plugin.csharp.model.TypeDescriptor;
+import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.*;
+import org.jqassistant.contrib.plugin.csharp.model.*;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -24,10 +24,10 @@ import static org.mockito.Mockito.*;
 class TypeAnalyzerTest {
 
     private TypeAnalyzer typeAnalyzer;
-    private final JsonToNeo4JConverter jsonToNeo4JConverter = mock(JsonToNeo4JConverter.class);
+    private JsonToNeo4JConverter jsonToNeo4JConverter;
     private final Store storeMock = mock(Store.class);
     private final TypeCache typeCacheMock = mock(TypeCache.class);
-    private final CSharpFileCache cSharpFileCacheMock = mock(CSharpFileCache.class);
+    private CSharpFileCache cSharpFileCacheMock;
     private final EnumValueCache enumValueCacheMock = mock(EnumValueCache.class);
     private List<TypeDescriptor> typeDescriptors;
     private List<NamespaceDescriptor> namespaceDescriptorMocks;
@@ -36,7 +36,9 @@ class TypeAnalyzerTest {
 
     @BeforeAll
     void setUp() {
+        jsonToNeo4JConverter = createJsonToNeo4JConverter();
         typeDescriptors = createTypeDescriptor();
+        cSharpFileCacheMock = createCSharpFileCacheMock();
         namespaceDescriptorMocks = createNamespaceMocks(typeDescriptors);
         namespaceCacheMock = createNameSpaceCacheMock(namespaceDescriptorMocks);
 
@@ -48,6 +50,48 @@ class TypeAnalyzerTest {
                 enumValueCacheMock,
                 typeCacheMock
         );
+    }
+
+    private CSharpFileCache createCSharpFileCacheMock() {
+        CSharpFileCache mockCSharpFileCache = mock();
+        CSharpFileDescriptor cSharpFileDescriptor = mock(CSharpFileDescriptor.class);
+        doReturn(cSharpFileDescriptor).when(mockCSharpFileCache).get(any());
+        return mockCSharpFileCache;
+    }
+
+    private JsonToNeo4JConverter createJsonToNeo4JConverter() {
+        JsonToNeo4JConverter mockJsonToNeo4JConverter = mock();
+        List<FileModel> fileModelList = createFileModelList();
+        when(mockJsonToNeo4JConverter.getFileModelList()).thenReturn(fileModelList);
+        return mockJsonToNeo4JConverter;
+    }
+
+    private List<FileModel> createFileModelList() {
+
+        FileModel fileModel1 = mock();
+
+        List<ClassModel> classModels = createTypeModelList(3, ClassModel.class);
+        List<InterfaceModel> interfaceModels = createTypeModelList(2, InterfaceModel.class);
+        List<EnumModel> enumModels = createTypeModelList(1, EnumModel.class);
+
+        when(fileModel1.getClasses()).thenReturn(classModels);
+        when(fileModel1.getInterfaces()).thenReturn(interfaceModels);
+        when(fileModel1.getEnums()).thenReturn(enumModels);
+
+        List<FileModel> fileModelList = new ArrayList<>();
+        fileModelList.add(fileModel1);
+
+        return fileModelList;
+    }
+
+    private static <T extends TypeModel> List<T> createTypeModelList(int amount, Class<T> tClass){
+        List<T> list = new ArrayList<>();
+        for (int i = 0;  i < amount; i++){
+            T type = mock(tClass);
+            when(type.getName()).thenReturn(tClass.toString() + i);
+            list.add(type);
+        }
+        return list;
     }
 
     private static NamespaceCache createNameSpaceCacheMock(List<NamespaceDescriptor> namespaceDescriptorMocks) {
@@ -81,7 +125,19 @@ class TypeAnalyzerTest {
     }
 
     @Test
-    void sortTypesByPartiality(){
+    void testCreateTypes(){
+        TypeAnalyzer spyTypeAnalyzer = spy(typeAnalyzer);
+        doNothing().when(spyTypeAnalyzer).createType(any(CSharpFileDescriptor.class), any(TypeModel.class));
+
+        spyTypeAnalyzer.createTypes();
+
+        verify(spyTypeAnalyzer, times(3)).createType(any(CSharpFileDescriptor.class), any(ClassModel.class));
+        verify(spyTypeAnalyzer, times(2)).createType(any(CSharpFileDescriptor.class), any(InterfaceModel.class));
+        verify(spyTypeAnalyzer, times(1)).createType(any(CSharpFileDescriptor.class), any(EnumModel.class));
+    }
+
+    @Test
+    void testSortTypesByPartiality(){
 
         typeAnalyzer.sortTypesByPartiality(namespaceDescriptorMocks.get(0));
 
@@ -98,7 +154,7 @@ class TypeAnalyzerTest {
     }
 
     @Test
-    void linkPartialClassesTest() {
+    void testLinkPartialClassesTest() {
 
         typeAnalyzer.linkPartialClasses();
 

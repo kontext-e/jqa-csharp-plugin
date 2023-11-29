@@ -31,7 +31,7 @@ public class MemberAnalyzer {
 
     protected void createFields() {
 
-        for (FileModel fileModel : jsonToNeo4JConverter.fileModelList) {
+        for (FileModel fileModel : jsonToNeo4JConverter.getFileModelList()) {
             for (ClassModel classModel : fileModel.getClasses()) {
 
                 Optional<TypeDescriptor> descriptor = typeCache.findTypeByRelativePath(classModel.getKey(), fileModel.getRelativePath());
@@ -65,7 +65,7 @@ public class MemberAnalyzer {
     }
 
     protected void createProperties() {
-        for (FileModel fileModel : jsonToNeo4JConverter.fileModelList) {
+        for (FileModel fileModel : jsonToNeo4JConverter.getFileModelList()) {
             for (ClassModel classModel : fileModel.getClasses()) {
                 ClassDescriptor classDescriptor = (ClassDescriptor) typeCache.findAny(classModel.getKey());
 
