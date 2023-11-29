@@ -87,7 +87,7 @@ public class TypeAnalyzer {
 
         for (FileModel fileModel : jsonToNeo4JConverter.fileModelList) {
             for (ClassModel classModel : fileModel.getClasses()) {
-                ClassDescriptor classDescriptor = (ClassDescriptor) typeCache.find(classModel.getKey());
+                ClassDescriptor classDescriptor = (ClassDescriptor) typeCache.findAny(classModel.getKey());
 
                 if (StringUtils.isNotBlank(classModel.getBaseType())) {
                     TypeDescriptor typeDescriptor = typeCache.findOrCreate(classModel.getBaseType());
@@ -101,7 +101,7 @@ public class TypeAnalyzer {
 
         for (FileModel fileModel : jsonToNeo4JConverter.fileModelList) {
             for (ClassModel classModel : fileModel.getClasses()) {
-                ClassDescriptor classDescriptor = (ClassDescriptor) typeCache.find(classModel.getKey());
+                ClassDescriptor classDescriptor = (ClassDescriptor) typeCache.findAny(classModel.getKey());
 
                 if (CollectionUtils.isNotEmpty(classModel.getImplementedInterfaces())) {
                     for (String interfaceFqn : classModel.getImplementedInterfaces()) {
@@ -112,7 +112,7 @@ public class TypeAnalyzer {
             }
 
             for (InterfaceModel interfaceModel : fileModel.getInterfaces()) {
-                InterfaceTypeDescriptor interfaceTypeDescriptor = (InterfaceTypeDescriptor) typeCache.find(interfaceModel.getKey());
+                InterfaceTypeDescriptor interfaceTypeDescriptor = (InterfaceTypeDescriptor) typeCache.findAny(interfaceModel.getKey());
 
                 if (CollectionUtils.isNotEmpty(interfaceModel.getImplementedInterfaces())) {
                     for (String interfaceFqn : interfaceModel.getImplementedInterfaces()) {
@@ -128,7 +128,7 @@ public class TypeAnalyzer {
 
         for (FileModel fileModel : jsonToNeo4JConverter.fileModelList) {
             for (EnumModel enumModel : fileModel.getEnums()) {
-                EnumTypeDescriptor enumTypeDescriptor = (EnumTypeDescriptor) typeCache.find(enumModel.getKey());
+                EnumTypeDescriptor enumTypeDescriptor = (EnumTypeDescriptor) typeCache.findAny(enumModel.getKey());
 
                 for (EnumMemberModel enumMemberModel : enumModel.getMembers()) {
                     EnumValueDescriptor enumValueDescriptor = enumValueCache.create(enumMemberModel.getKey());
@@ -142,8 +142,10 @@ public class TypeAnalyzer {
         for (FileModel fileModel : jsonToNeo4JConverter.fileModelList) {
             for (ClassModel classModel : fileModel.getClasses()) {
 
-                ClassDescriptor classDescriptor = (ClassDescriptor) typeCache.find(classModel.getKey());
+                Optional<TypeDescriptor> descriptor = typeCache.findTypeByRelativePath(classModel.getKey(), fileModel.getRelativePath());
+                if (!descriptor.isPresent()) continue;
 
+                ClassDescriptor classDescriptor = (ClassDescriptor) descriptor.get();
                 for (ConstructorModel constructorModel : classModel.getConstructors()) {
                     ConstructorDescriptor constructorDescriptor = store.create(ConstructorDescriptor.class);
                     constructorDescriptor.setName(constructorModel.getName());
@@ -200,6 +202,7 @@ public class TypeAnalyzer {
         descriptor.setFirstLineNumber(typeModel.getFirstLineNumber());
         descriptor.setLastLineNumber(typeModel.getLastLineNumber());
         descriptor.setEffectiveLineCount(typeModel.getEffectiveLineCount());
+        descriptor.setRelativePath(typeModel.getRelativePath());
 
         if (typeModel instanceof InterfaceModel && descriptor instanceof InterfaceTypeDescriptor){
             InterfaceModel interfaceModel = (InterfaceModel) typeModel;
