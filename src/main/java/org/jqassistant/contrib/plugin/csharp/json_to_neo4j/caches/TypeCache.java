@@ -10,12 +10,15 @@ import org.jqassistant.contrib.plugin.csharp.model.EnumTypeDescriptor;
 import org.jqassistant.contrib.plugin.csharp.model.InterfaceTypeDescriptor;
 import org.jqassistant.contrib.plugin.csharp.model.TypeDescriptor;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Optional;
 
 public class TypeCache {
 
     private final Store store;
-    private final HashMap<String, TypeDescriptor> cache;
+    private final HashMap<String, List<TypeDescriptor>> cache;
 
     public TypeCache(Store store) {
         this.store = store;
@@ -24,7 +27,7 @@ public class TypeCache {
 
     public TypeDescriptor findOrCreate(String type) {
         if (cache.containsKey(type)) {
-            return find(type);
+            return findAny(type);
         }
         //Using TypeDescriptor as from name alone it
         //is not clear what kind of type it is
@@ -48,12 +51,30 @@ public class TypeCache {
 
     protected <D extends TypeDescriptor> D create(String fqn, Class<D> descriptorClass) {
         D descriptor = store.create(descriptorClass);
-        cache.put(fqn, descriptor);
         descriptor.setFullQualifiedName(fqn);
+
+        if (cache.containsKey(fqn)){
+            cache.get(fqn).add(descriptor);
+        } else {
+            List<TypeDescriptor> newList = new ArrayList<>();
+            newList.add(descriptor);
+            cache.put(fqn, newList);
+        }
+
         return descriptor;
     }
 
-    public TypeDescriptor find(String key) {
+    public TypeDescriptor findAny(String key){
+        List<TypeDescriptor> typeDescriptors = cache.get(key);
+        return typeDescriptors.get(0);
+    }
+
+    public List<TypeDescriptor> findAll(String key) {
         return cache.get(key);
+    }
+
+    public Optional<TypeDescriptor> findTypeByRelativePath(String key, String path){
+        List<TypeDescriptor> typeDescriptors = findAll(key);
+        return typeDescriptors.stream().filter(item -> item.getRelativePath().equals(path)).findAny();
     }
 }

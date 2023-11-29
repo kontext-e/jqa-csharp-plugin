@@ -7,6 +7,8 @@ import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.caches.TypeCache;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.*;
 import org.jqassistant.contrib.plugin.csharp.model.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 public class MethodAnalyzer {
@@ -34,12 +36,15 @@ public class MethodAnalyzer {
     }
 
     private void createMethodsForClasses(FileModel fileModel) {
-        for (ClassModel classModel : fileModel.getClasses()) {
-            ClassDescriptor classDescriptor = (ClassDescriptor) typeCache.find(classModel.getKey());
 
+        for (ClassModel classModel : fileModel.getClasses()) {
+            Optional<TypeDescriptor> typeDescriptor = typeCache.findTypeByRelativePath(classModel.getKey(), fileModel.getRelativePath());
+            if (!typeDescriptor.isPresent()) continue;
+
+            ClassDescriptor classDescriptor = (ClassDescriptor) typeDescriptor.get();
             for (MethodModel methodModel : classModel.getMethods()) {
-                MethodDescriptor methodDescriptor = createMethodDescriptor(methodModel);
-                classDescriptor.getDeclaredMembers().add(methodDescriptor);
+                    MethodDescriptor methodDescriptor = createMethodDescriptor(methodModel);
+                    classDescriptor.getDeclaredMembers().add(methodDescriptor);
             }
         }
     }
@@ -47,8 +52,10 @@ public class MethodAnalyzer {
     private void createMethodsForInterfaces(FileModel fileModel) {
 
         for (InterfaceModel interfaceModel : fileModel.getInterfaces()) {
-            InterfaceTypeDescriptor interfaceTypeDescriptor = (InterfaceTypeDescriptor) typeCache.find(interfaceModel.getKey());
+            Optional<TypeDescriptor> typeDescriptor = typeCache.findTypeByRelativePath(interfaceModel.getKey(), fileModel.getRelativePath());
+            if (!typeDescriptor.isPresent()) continue;
 
+            InterfaceTypeDescriptor interfaceTypeDescriptor = (InterfaceTypeDescriptor) typeDescriptor.get();
             for (MethodModel methodModel : interfaceModel.getMethods()) {
                 MethodDescriptor methodDescriptor = createMethodDescriptor(methodModel);
                 interfaceTypeDescriptor.getDeclaredMembers().add(methodDescriptor);
