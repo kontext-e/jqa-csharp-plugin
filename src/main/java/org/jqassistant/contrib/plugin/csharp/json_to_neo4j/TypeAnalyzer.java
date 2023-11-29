@@ -33,7 +33,7 @@ public class TypeAnalyzer {
 
     protected void createUsings() {
 
-        for (FileModel fileModel : jsonToNeo4JConverter.fileModelList) {
+        for (FileModel fileModel : jsonToNeo4JConverter.getFileModelList()) {
             CSharpFileDescriptor cSharpFileDescriptor = fileCache.get(fileModel.getAbsolutePath());
 
             for (UsingModel usingModel : fileModel.getUsings()) {
@@ -47,7 +47,7 @@ public class TypeAnalyzer {
 
     protected void createTypes() {
 
-        for (FileModel fileModel : jsonToNeo4JConverter.fileModelList) {
+        for (FileModel fileModel : jsonToNeo4JConverter.getFileModelList()) {
             CSharpFileDescriptor cSharpFileDescriptor = fileCache.get(fileModel.getAbsolutePath());
 
             for (ClassModel classModel : fileModel.getClasses()) {
@@ -64,7 +64,7 @@ public class TypeAnalyzer {
         }
     }
 
-    private void createType(CSharpFileDescriptor cSharpFileDescriptor, TypeModel typeModel) {
+    protected void createType(CSharpFileDescriptor cSharpFileDescriptor, TypeModel typeModel) {
 
         TypeDescriptor typeDescriptor = typeCache.create(typeModel);
         fillDescriptor(typeDescriptor, typeModel);
@@ -85,7 +85,7 @@ public class TypeAnalyzer {
 
     protected void linkBaseTypes() {
 
-        for (FileModel fileModel : jsonToNeo4JConverter.fileModelList) {
+        for (FileModel fileModel : jsonToNeo4JConverter.getFileModelList()) {
             for (ClassModel classModel : fileModel.getClasses()) {
                 ClassDescriptor classDescriptor = (ClassDescriptor) typeCache.findAny(classModel.getKey());
 
@@ -99,7 +99,7 @@ public class TypeAnalyzer {
 
     protected void linkInterfaces() {
 
-        for (FileModel fileModel : jsonToNeo4JConverter.fileModelList) {
+        for (FileModel fileModel : jsonToNeo4JConverter.getFileModelList()) {
             for (ClassModel classModel : fileModel.getClasses()) {
                 ClassDescriptor classDescriptor = (ClassDescriptor) typeCache.findAny(classModel.getKey());
 
@@ -126,7 +126,7 @@ public class TypeAnalyzer {
 
     public void createEnumMembers() {
 
-        for (FileModel fileModel : jsonToNeo4JConverter.fileModelList) {
+        for (FileModel fileModel : jsonToNeo4JConverter.getFileModelList()) {
             for (EnumModel enumModel : fileModel.getEnums()) {
                 EnumTypeDescriptor enumTypeDescriptor = (EnumTypeDescriptor) typeCache.findAny(enumModel.getKey());
 
@@ -139,7 +139,7 @@ public class TypeAnalyzer {
     }
 
     public void createConstructors() {
-        for (FileModel fileModel : jsonToNeo4JConverter.fileModelList) {
+        for (FileModel fileModel : jsonToNeo4JConverter.getFileModelList()) {
             for (ClassModel classModel : fileModel.getClasses()) {
 
                 Optional<TypeDescriptor> descriptor = typeCache.findTypeByRelativePath(classModel.getKey(), fileModel.getRelativePath());
