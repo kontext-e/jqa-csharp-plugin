@@ -74,7 +74,7 @@ public class TypeAnalyzer {
                 .ifPresent(namespaceDescriptor -> namespaceDescriptor.getContains().add(typeDescriptor));
     }
 
-    private Optional<NamespaceDescriptor> findOrCreateNamespace(String fqn) {
+    protected Optional<NamespaceDescriptor> findOrCreateNamespace(String fqn) {
         if (!fqn.contains(".")) {
             return Optional.empty();
         }

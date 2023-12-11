@@ -8,14 +8,11 @@ import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.caches.NamespaceCache
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.caches.TypeCache;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.*;
 import org.jqassistant.contrib.plugin.csharp.model.*;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
@@ -25,8 +22,8 @@ class TypeAnalyzerTest {
 
     private TypeAnalyzer typeAnalyzer;
     private JsonToNeo4JConverter jsonToNeo4JConverter;
-    private final Store storeMock = mock(Store.class);
-    private final TypeCache typeCacheMock = mock(TypeCache.class);
+    private Store mockStore;
+    private TypeCache typeCacheMock;
     private CSharpFileCache cSharpFileCacheMock;
     private final EnumValueCache enumValueCacheMock = mock(EnumValueCache.class);
     private List<TypeDescriptor> typeDescriptors;
@@ -34,9 +31,11 @@ class TypeAnalyzerTest {
     private NamespaceCache namespaceCacheMock;
 
 
-    @BeforeAll
+    @BeforeEach
     void setUp() {
         jsonToNeo4JConverter = createJsonToNeo4JConverter();
+        mockStore = createMockStore();
+        typeCacheMock = createTypeCacheMock();
         typeDescriptors = createTypeDescriptor();
         cSharpFileCacheMock = createCSharpFileCacheMock();
         namespaceDescriptorMocks = createNamespaceMocks(typeDescriptors);
@@ -44,12 +43,26 @@ class TypeAnalyzerTest {
 
         typeAnalyzer = new TypeAnalyzer(
                 jsonToNeo4JConverter,
-                storeMock,
+                mockStore,
                 namespaceCacheMock,
                 cSharpFileCacheMock,
                 enumValueCacheMock,
                 typeCacheMock
         );
+    }
+
+    private TypeCache createTypeCacheMock() {
+        TypeCache mockTypeCache = mock();
+        TypeDescriptor mockTypeDescriptor = mock();
+        when(mockTypeCache.create(any())).thenReturn(mockTypeDescriptor);
+        return mockTypeCache;
+    }
+
+    private Store createMockStore() {
+        Store mockStore = mock();
+        UsesNamespaceDescriptor mockUsesNamespaceDescriptor = mock();
+        when(mockStore.create(any(), eq(UsesNamespaceDescriptor.class), any())).thenReturn(mockUsesNamespaceDescriptor);
+        return mockStore;
     }
 
     private CSharpFileCache createCSharpFileCacheMock() {
@@ -68,20 +81,38 @@ class TypeAnalyzerTest {
 
     private List<FileModel> createFileModelList() {
 
-        FileModel fileModel1 = mock();
+        FileModel fileModel = mock();
 
         List<ClassModel> classModels = createTypeModelList(3, ClassModel.class);
         List<InterfaceModel> interfaceModels = createTypeModelList(2, InterfaceModel.class);
         List<EnumModel> enumModels = createTypeModelList(1, EnumModel.class);
 
-        when(fileModel1.getClasses()).thenReturn(classModels);
-        when(fileModel1.getInterfaces()).thenReturn(interfaceModels);
-        when(fileModel1.getEnums()).thenReturn(enumModels);
+        when(fileModel.getClasses()).thenReturn(classModels);
+        when(fileModel.getInterfaces()).thenReturn(interfaceModels);
+        when(fileModel.getEnums()).thenReturn(enumModels);
+
+        addUsingsToFileModel(fileModel);
 
         List<FileModel> fileModelList = new ArrayList<>();
-        fileModelList.add(fileModel1);
+        fileModelList.add(fileModel);
 
         return fileModelList;
+    }
+
+    private void addUsingsToFileModel(FileModel fileModel) {
+        UsingModel usingModel1 = mock();
+        UsingModel usingModel2 = mock();
+
+        when(usingModel1.getKey()).thenReturn("Class1");
+        when(usingModel1.getAlias()).thenReturn("Alias1");
+        when(usingModel2.getKey()).thenReturn("Class2");
+        when(usingModel2.getAlias()).thenReturn("Alias2");
+
+        LinkedList<UsingModel> usingModels = new LinkedList<>();
+        usingModels.add(usingModel1);
+        usingModels.add(usingModel2);
+
+        when(fileModel.getUsings()).thenReturn(usingModels);
     }
 
     private static <T extends TypeModel> List<T> createTypeModelList(int amount, Class<T> tClass){
@@ -97,6 +128,7 @@ class TypeAnalyzerTest {
     private static NamespaceCache createNameSpaceCacheMock(List<NamespaceDescriptor> namespaceDescriptorMocks) {
         NamespaceCache mockNamespaceCache = mock(NamespaceCache.class);
         when(mockNamespaceCache.getAllNamespaces()).thenReturn(namespaceDescriptorMocks);
+        when(mockNamespaceCache.findOrCreate(any())).thenReturn(namespaceDescriptorMocks.get(0));
 
         return mockNamespaceCache;
     }
@@ -164,6 +196,46 @@ class TypeAnalyzerTest {
         assertThat(typeDescriptors.get(2).getClassFragments().size()).isEqualTo(0);
         assertThat(typeDescriptors.get(0).getClassFragments().get(0)).isEqualTo(typeDescriptors.get(1));
         assertThat(typeDescriptors.get(1).getClassFragments().get(0)).isEqualTo(typeDescriptors.get(0));
+    }
+
+    @Test
+    void testCreateUsings() {
+        TypeAnalyzer spyTypeAnalyzer = spy(typeAnalyzer);
+
+        spyTypeAnalyzer.createUsings();
+
+        verify(mockStore, times(2)).create(any(), eq(UsesNamespaceDescriptor.class), any());
+    }
+
+    @Test
+    void testCreateType(){
+        CSharpFileDescriptor descriptor = mock();
+        TypeModel typeModel = mock();
+        List<TypeDescriptor> descriptors = mock();
+        when(typeModel.getFqn()).thenReturn("test.type");
+        when(descriptor.getTypes()).thenReturn(descriptors);
+
+        TypeAnalyzer spyTypeAnalyzer = spy(typeAnalyzer);
+        spyTypeAnalyzer.createType(descriptor, typeModel);
+
+        verify(typeCacheMock).create(typeModel);
+        verify(spyTypeAnalyzer).fillDescriptor(any(TypeDescriptor.class), eq(typeModel));
+        verify(descriptor.getTypes()).add(any(TypeDescriptor.class));
+        verify(spyTypeAnalyzer).findOrCreateNamespace(any());
+    }
+
+    @Test
+    void testFindOrCreateNamespace(){
+        NamespaceDescriptor namespaceDescriptorMock = mock();
+        when(namespaceCacheMock.findOrCreate(any())).thenReturn(namespaceDescriptorMock);
+
+        Optional<NamespaceDescriptor> emptyOptional = typeAnalyzer.findOrCreateNamespace("test");
+        assertThat(emptyOptional.isPresent()).isFalse();
+
+        Optional<NamespaceDescriptor> filledOptional = typeAnalyzer.findOrCreateNamespace("test.type");
+        verify(namespaceCacheMock, atMostOnce()).findOrCreate("test");
+        assertThat(filledOptional.isPresent()).isTrue();
+
     }
 
     private static class TypeDescriptorImpl implements TypeDescriptor {
