@@ -106,6 +106,7 @@ public class MethodAnalyzer {
         methodDescriptor.setFullQualifiedName(methodModel.getFqn());
         methodDescriptor.setVisibility(methodModel.getAccessibility());
         methodDescriptor.setCyclomaticComplexity(methodModel.getCyclomaticComplexity());
+        methodDescriptor.setIsImplementation(methodModel.isImplementation());
     }
 
     public void createInvocations() {
@@ -151,6 +152,7 @@ public class MethodAnalyzer {
         List<List<MethodDescriptor>> methodDescriptors = methodCache.findAllPartialMethods();
         for (List<MethodDescriptor> methodFragments : methodDescriptors){
             for (MethodDescriptor methodDescriptor : methodFragments){
+                if (!methodDescriptor.getIsImplementation()) continue;
                 List<MethodDescriptor> siblings = new LinkedList<>(methodFragments);
                 siblings.remove(methodDescriptor);
                 methodDescriptor.getMethodFragments().addAll(siblings);

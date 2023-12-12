@@ -2,8 +2,9 @@
 {
     public partial class Class1
     {
-        public static string ReturnNull()
+        public string ReturnNull()
         {
+            PartialMethod();
             return null;
         }
 

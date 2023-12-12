@@ -40,6 +40,9 @@ public class MethodModel implements JsonModel {
 
     protected int cyclomaticComplexity;
 
+    @JsonProperty("isImplementation")
+    protected boolean isImplementation;
+
     protected List<InvokesModel> invocations;
 
     protected List<MemberAccessModel> memberAccesses;

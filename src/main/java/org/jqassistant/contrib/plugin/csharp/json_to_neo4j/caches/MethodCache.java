@@ -6,6 +6,7 @@ import org.jqassistant.contrib.plugin.csharp.model.MethodDescriptor;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class MethodCache {
@@ -20,7 +21,8 @@ public class MethodCache {
 
     public MethodDescriptor findAny(String fqn) {
         List<MethodDescriptor> methodDescriptors = cache.get(fqn);
-        return methodDescriptors.get(0);
+        Optional<MethodDescriptor> methodDescriptor = methodDescriptors.stream().filter(MethodDescriptor::getIsImplementation).findAny();
+        return methodDescriptor.orElseGet(() -> methodDescriptors.get(0));
     }
 
     public List<MethodDescriptor> findAll(String fqn){

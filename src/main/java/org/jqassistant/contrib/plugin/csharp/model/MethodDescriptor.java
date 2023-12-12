@@ -34,6 +34,10 @@ public interface MethodDescriptor extends MemberDescriptor, AbstractDescriptor {
     @Relation("PARTIAL_WITH")
     List<MethodDescriptor> getMethodFragments();
 
+    boolean getIsImplementation();
+
+    void setIsImplementation(boolean isImplementation);
+
     int getCyclomaticComplexity();
 
     void setCyclomaticComplexity(int cyclomaticComplexity);
