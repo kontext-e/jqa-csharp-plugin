@@ -71,6 +71,7 @@ public class JsonToNeo4JConverter {
         memberAnalyzer.createFields();
         memberAnalyzer.createProperties();
         methodAnalyzer.createMethods();
+        methodAnalyzer.linkPartialMethods();
         methodAnalyzer.createInvocations();
         methodAnalyzer.createPropertyAccesses();
     }

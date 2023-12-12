@@ -32,7 +32,7 @@ namespace Project_1
 
         private static void CallDep1()
         {
-            new Dependency1().DoSomething();
+            new Dependency1().DoNothing();
         }
 
         private static float CallDep2()
