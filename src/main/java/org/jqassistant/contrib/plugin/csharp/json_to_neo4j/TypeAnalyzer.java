@@ -164,7 +164,7 @@ public class TypeAnalyzer {
     public void linkPartialClasses() {
         for (NamespaceDescriptor namespace : namespaceCache.getAllNamespaces()) {
 
-            Map<String, List<TypeDescriptor>> partialityList = sortTypesByPartiality(namespace);
+            Map<String, List<TypeDescriptor>> partialityList = sortTypesByPartiality(namespace.getContains());
             for (String key : partialityList.keySet()) {
                 List<TypeDescriptor> fragments = partialityList.get(key);
                 for (TypeDescriptor self : fragments) {
@@ -179,15 +179,16 @@ public class TypeAnalyzer {
         }
     }
 
-    protected Map<String, List<TypeDescriptor>> sortTypesByPartiality(NamespaceDescriptor namespace) {
+    //TODO Remove Duplicate code with MethodAnalyzer.sortMethodsByPartiality(...)
+    protected Map<String, List<TypeDescriptor>> sortTypesByPartiality(List<TypeDescriptor> typeDescriptors) {
         Map<String, List<TypeDescriptor>> partialityList = new HashMap<>();
-        for (TypeDescriptor type : namespace.getContains()){
+        for (TypeDescriptor type : typeDescriptors){
             if (partialityList.containsKey(type.getName())){
                 partialityList.get(type.getName()).add(type);
             } else {
-                List<TypeDescriptor> typeDescriptors = new LinkedList<>();
-                typeDescriptors.add(type);
-                partialityList.put(type.getName(), typeDescriptors);
+                List<TypeDescriptor> partialTypes = new LinkedList<>();
+                partialTypes.add(type);
+                partialityList.put(type.getName(), partialTypes);
             }
         }
         return partialityList;

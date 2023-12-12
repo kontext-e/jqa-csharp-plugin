@@ -171,9 +171,9 @@ class TypeAnalyzerTest {
     @Test
     void testSortTypesByPartiality(){
 
-        typeAnalyzer.sortTypesByPartiality(namespaceDescriptorMocks.get(0));
+        typeAnalyzer.sortTypesByPartiality(namespaceDescriptorMocks.get(0).getContains());
 
-        Map<String, List<TypeDescriptor>> partialityMap = typeAnalyzer.sortTypesByPartiality(namespaceDescriptorMocks.get(0));
+        Map<String, List<TypeDescriptor>> partialityMap = typeAnalyzer.sortTypesByPartiality(namespaceDescriptorMocks.get(0).getContains());
         assertThat(partialityMap.keySet().size()).isEqualTo(2);
         assertThat(partialityMap.containsKey("Class1")).isTrue();
         assertThat(partialityMap.containsKey("Class2")).isTrue();
