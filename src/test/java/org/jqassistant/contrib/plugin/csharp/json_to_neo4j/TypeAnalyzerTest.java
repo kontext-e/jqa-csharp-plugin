@@ -35,8 +35,8 @@ class TypeAnalyzerTest {
     void setUp() {
         jsonToNeo4JConverter = createJsonToNeo4JConverter();
         mockStore = createMockStore();
-        typeCacheMock = createTypeCacheMock();
         typeDescriptors = createTypeDescriptor();
+        typeCacheMock = createTypeCacheMock();
         cSharpFileCacheMock = createCSharpFileCacheMock();
         namespaceDescriptorMocks = createNamespaceMocks(typeDescriptors);
         namespaceCacheMock = createNameSpaceCacheMock(namespaceDescriptorMocks);
@@ -55,6 +55,12 @@ class TypeAnalyzerTest {
         TypeCache mockTypeCache = mock();
         TypeDescriptor mockTypeDescriptor = mock();
         when(mockTypeCache.create(any())).thenReturn(mockTypeDescriptor);
+        List<TypeDescriptor> descriptorList = new ArrayList<>();
+        descriptorList.add(typeDescriptors.get(0));
+        descriptorList.add(typeDescriptors.get(1));
+        List<List<TypeDescriptor>> partialityList = new ArrayList<>();
+        partialityList.add(descriptorList);
+        when(mockTypeCache.findAllPartialClasses()).thenReturn(partialityList);
         return mockTypeCache;
     }
 
@@ -168,29 +174,12 @@ class TypeAnalyzerTest {
         verify(spyTypeAnalyzer, times(1)).createType(any(CSharpFileDescriptor.class), any(EnumModel.class));
     }
 
-    @Test
-    void testSortTypesByPartiality(){
-
-        typeAnalyzer.sortTypesByPartiality(namespaceDescriptorMocks.get(0).getContains());
-
-        Map<String, List<TypeDescriptor>> partialityMap = typeAnalyzer.sortTypesByPartiality(namespaceDescriptorMocks.get(0).getContains());
-        assertThat(partialityMap.keySet().size()).isEqualTo(2);
-        assertThat(partialityMap.containsKey("Class1")).isTrue();
-        assertThat(partialityMap.containsKey("Class2")).isTrue();
-        assertThat(partialityMap.get("Class1").size()).isEqualTo(2);
-        assertThat(partialityMap.get("Class2").size()).isEqualTo(1);
-        assertThat(partialityMap.get("Class1").contains(typeDescriptors.get(0))).isTrue();
-        assertThat(partialityMap.get("Class1").contains(typeDescriptors.get(1))).isTrue();
-        assertThat(partialityMap.get("Class2").contains(typeDescriptors.get(2))).isTrue();
-
-    }
 
     @Test
     void testLinkPartialClassesTest() {
 
         typeAnalyzer.linkPartialClasses();
 
-        verify(namespaceCacheMock).getAllNamespaces();
         assertThat(typeDescriptors.get(0).getClassFragments().size()).isEqualTo(1);
         assertThat(typeDescriptors.get(1).getClassFragments().size()).isEqualTo(1);
         assertThat(typeDescriptors.get(2).getClassFragments().size()).isEqualTo(0);

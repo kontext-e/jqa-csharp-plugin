@@ -162,36 +162,14 @@ public class TypeAnalyzer {
     }
 
     public void linkPartialClasses() {
-        for (NamespaceDescriptor namespace : namespaceCache.getAllNamespaces()) {
-
-            Map<String, List<TypeDescriptor>> partialityList = sortTypesByPartiality(namespace.getContains());
-            for (String key : partialityList.keySet()) {
-                List<TypeDescriptor> fragments = partialityList.get(key);
-                for (TypeDescriptor self : fragments) {
-                    List<TypeDescriptor> siblings = new LinkedList<>(fragments);
-                    siblings.remove(self);
-                    //.addAll() does not work, as relations won't show up
-                    for (TypeDescriptor sibling : siblings) {
-                        self.getClassFragments().add(sibling);
-                    }
-                }
+        List<List<TypeDescriptor>> partialClasses = typeCache.findAllPartialClasses();
+        for (List<TypeDescriptor> classFragments : partialClasses){
+            for (TypeDescriptor classFragment : classFragments){
+                List<TypeDescriptor> siblings = new LinkedList<>(classFragments);
+                siblings.remove(classFragment);
+                classFragment.getClassFragments().addAll(siblings);
             }
         }
-    }
-
-    //TODO Remove Duplicate code with MethodAnalyzer.sortMethodsByPartiality(...)
-    protected Map<String, List<TypeDescriptor>> sortTypesByPartiality(List<TypeDescriptor> typeDescriptors) {
-        Map<String, List<TypeDescriptor>> partialityList = new HashMap<>();
-        for (TypeDescriptor type : typeDescriptors){
-            if (partialityList.containsKey(type.getName())){
-                partialityList.get(type.getName()).add(type);
-            } else {
-                List<TypeDescriptor> partialTypes = new LinkedList<>();
-                partialTypes.add(type);
-                partialityList.put(type.getName(), partialTypes);
-            }
-        }
-        return partialityList;
     }
 
 
