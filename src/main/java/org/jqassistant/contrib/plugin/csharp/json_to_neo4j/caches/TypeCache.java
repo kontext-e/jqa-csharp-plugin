@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class TypeCache {
 
@@ -76,5 +77,12 @@ public class TypeCache {
     public Optional<TypeDescriptor> findTypeByRelativePath(String key, String path){
         List<TypeDescriptor> typeDescriptors = findAll(key);
         return typeDescriptors.stream().filter(item -> item.getRelativePath().equals(path)).findAny();
+    }
+
+    public List<List<TypeDescriptor>> findAllPartialClasses(){
+        return cache.values()
+                    .stream()
+                    .filter(list -> list.size() > 1)
+                    .collect(Collectors.toList());
     }
 }
