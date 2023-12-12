@@ -7,9 +7,7 @@ import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.caches.TypeCache;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.*;
 import org.jqassistant.contrib.plugin.csharp.model.*;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 public class MethodAnalyzer {
 
@@ -116,7 +114,7 @@ public class MethodAnalyzer {
             for (ClassModel classModel : fileModel.getClasses()) {
                 for (MethodModel methodModel : classModel.getMethods()) {
 
-                    MethodDescriptor methodDescriptor = methodCache.find(methodModel.getKey());
+                    MethodDescriptor methodDescriptor = methodCache.findAny(methodModel.getKey());
                     if (methodModel.getInvocations().isEmpty()) continue;
 
                     for (InvokesModel invokesModel : methodModel.getInvocations()) {
@@ -124,7 +122,6 @@ public class MethodAnalyzer {
                         InvokesDescriptor invokesDescriptor = store.create(methodDescriptor, InvokesDescriptor.class, invokedMethodDescriptor);
                         invokesDescriptor.setLineNumber(invokesModel.getLineNumber());
                     }
-
                 }
             }
         }
@@ -136,7 +133,7 @@ public class MethodAnalyzer {
             for (ClassModel classModel : fileModel.getClasses()){
                 for (MethodModel methodModel : classModel.getMethods()){
 
-                    MethodDescriptor methodDescriptor = methodCache.find(methodModel.getKey());
+                    MethodDescriptor methodDescriptor = methodCache.findAny(methodModel.getKey());
 
                     for (MemberAccessModel memberAccessModel : methodModel.getMemberAccesses()){
                         Optional<PropertyDescriptor> propertyDescriptor = propertyCache.getPropertyFromSubstring(memberAccessModel.getMemberId());
@@ -146,6 +143,17 @@ public class MethodAnalyzer {
                         memberAccessDescriptor.setLineNumber(memberAccessModel.getLineNumber());
                     }
                 }
+            }
+        }
+    }
+
+    public void linkPartialMethods(){
+        List<List<MethodDescriptor>> methodDescriptors = methodCache.findAllPartialMethods();
+        for (List<MethodDescriptor> methodFragments : methodDescriptors){
+            for (MethodDescriptor methodDescriptor : methodFragments){
+                List<MethodDescriptor> siblings = new LinkedList<>(methodFragments);
+                siblings.remove(methodDescriptor);
+                methodDescriptor.getMethodFragments().addAll(siblings);
             }
         }
     }
