@@ -25,11 +25,11 @@ import org.jqassistant.contrib.plugin.csharp.model.NamespaceDescriptor;
 import org.jqassistant.contrib.plugin.csharp.model.TypeDescriptor;
 import org.jqassistant.contrib.plugin.csharp.model.UsesNamespaceDescriptor;
 
+import java.util.List;
 import java.util.Optional;
 
 public class TypeAnalyzer {
 
-    private final JsonToNeo4JConverter jsonToNeo4JConverter;
     private final Store store;
 
     private final TypeCache typeCache;
@@ -37,8 +37,7 @@ public class TypeAnalyzer {
     private final CSharpFileCache fileCache;
     private final EnumValueCache enumValueCache;
 
-    public TypeAnalyzer(JsonToNeo4JConverter jsonToNeo4JConverter, Store store, NamespaceCache namespaceCache, CSharpFileCache fileCache, EnumValueCache enumValueCache, TypeCache typeCache) {
-        this.jsonToNeo4JConverter = jsonToNeo4JConverter;
+    public TypeAnalyzer(Store store, NamespaceCache namespaceCache, CSharpFileCache fileCache, EnumValueCache enumValueCache, TypeCache typeCache) {
         this.store = store;
         this.typeCache = typeCache;
         this.namespaceCache = namespaceCache;
@@ -46,9 +45,9 @@ public class TypeAnalyzer {
         this.enumValueCache = enumValueCache;
     }
 
-    protected void createUsings() {
+    protected void createUsings(List<FileModel> fileModelList) {
 
-        for (FileModel fileModel : jsonToNeo4JConverter.getFileModelList()) {
+        for (FileModel fileModel : fileModelList) {
             CSharpFileDescriptor cSharpFileDescriptor = fileCache.get(fileModel.getAbsolutePath());
 
             for (UsingModel usingModel : fileModel.getUsings()) {
@@ -60,9 +59,9 @@ public class TypeAnalyzer {
         }
     }
 
-    protected void createTypes() {
+    protected void createTypes(List<FileModel> fileModelList) {
 
-        for (FileModel fileModel : jsonToNeo4JConverter.getFileModelList()) {
+        for (FileModel fileModel : fileModelList) {
             CSharpFileDescriptor cSharpFileDescriptor = fileCache.get(fileModel.getAbsolutePath());
 
             for (ClassModel classModel : fileModel.getClasses()) {
@@ -98,9 +97,9 @@ public class TypeAnalyzer {
         return Optional.of(namespaceCache.findOrCreate(namespaceFqn));
     }
 
-    protected void linkBaseTypes() {
+    protected void linkBaseTypes(List<FileModel> fileModelList) {
 
-        for (FileModel fileModel : jsonToNeo4JConverter.getFileModelList()) {
+        for (FileModel fileModel : fileModelList) {
             for (ClassModel classModel : fileModel.getClasses()) {
                 ClassDescriptor classDescriptor = (ClassDescriptor) typeCache.findAny(classModel.getKey());
 
@@ -112,9 +111,9 @@ public class TypeAnalyzer {
         }
     }
 
-    protected void linkInterfaces() {
+    protected void linkInterfaces(List<FileModel> fileModelList) {
 
-        for (FileModel fileModel : jsonToNeo4JConverter.getFileModelList()) {
+        for (FileModel fileModel : fileModelList) {
             for (ClassModel classModel : fileModel.getClasses()) {
                 ClassDescriptor classDescriptor = (ClassDescriptor) typeCache.findAny(classModel.getKey());
 
@@ -139,9 +138,9 @@ public class TypeAnalyzer {
         }
     }
 
-    public void createEnumMembers() {
+    public void createEnumMembers(List<FileModel> fileModelList) {
 
-        for (FileModel fileModel : jsonToNeo4JConverter.getFileModelList()) {
+        for (FileModel fileModel : fileModelList) {
             for (EnumModel enumModel : fileModel.getEnums()) {
                 EnumTypeDescriptor enumTypeDescriptor = (EnumTypeDescriptor) typeCache.findAny(enumModel.getKey());
 
@@ -153,8 +152,8 @@ public class TypeAnalyzer {
         }
     }
 
-    public void createConstructors() {
-        for (FileModel fileModel : jsonToNeo4JConverter.getFileModelList()) {
+    public void createConstructors(List<FileModel> fileModelList) {
+        for (FileModel fileModel : fileModelList) {
             for (ClassModel classModel : fileModel.getClasses()) {
 
                 Optional<TypeDescriptor> descriptor = typeCache.findTypeByRelativePath(classModel.getKey(), fileModel.getRelativePath());

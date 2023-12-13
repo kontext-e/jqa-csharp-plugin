@@ -3,35 +3,33 @@ package org.jqassistant.contrib.plugin.csharp.json_to_neo4j;
 import com.buschmais.jqassistant.core.store.api.Store;
 import org.apache.commons.lang.StringUtils;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.caches.FieldCache;
-import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.caches.PropertyCache;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.caches.TypeCache;
-import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.*;
-import org.jqassistant.contrib.plugin.csharp.model.*;
+import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.ClassModel;
+import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.FieldModel;
+import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.FileModel;
+import org.jqassistant.contrib.plugin.csharp.model.ClassDescriptor;
+import org.jqassistant.contrib.plugin.csharp.model.FieldDescriptor;
+import org.jqassistant.contrib.plugin.csharp.model.PrimitiveValueDescriptor;
+import org.jqassistant.contrib.plugin.csharp.model.TypeDescriptor;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 public class MemberAnalyzer {
-    private final JsonToNeo4JConverter jsonToNeo4JConverter;
     private final Store store;
 
     private final FieldCache fieldCache;
-    private final PropertyCache propertyCache;
     private final TypeCache typeCache;
 
-    public MemberAnalyzer(JsonToNeo4JConverter jsonToNeo4JConverter, Store store, FieldCache fieldCache,
-                          PropertyCache propertyCache, TypeCache typeCache) {
-        this.jsonToNeo4JConverter = jsonToNeo4JConverter;
+    public MemberAnalyzer(Store store, FieldCache fieldCache, TypeCache typeCache) {
         this.store = store;
         this.fieldCache = fieldCache;
-        this.propertyCache = propertyCache;
         this.typeCache = typeCache;
     }
 
-    protected void createFields() {
+    protected void createFields(List<FileModel> fileModelList) {
 
-        for (FileModel fileModel : jsonToNeo4JConverter.getFileModelList()) {
+        for (FileModel fileModel : fileModelList) {
             for (ClassModel classModel : fileModel.getClasses()) {
 
                 Optional<TypeDescriptor> descriptor = typeCache.findTypeByRelativePath(classModel.getKey(), fileModel.getRelativePath());
@@ -62,61 +60,5 @@ public class MemberAnalyzer {
                 }
             }
         }
-    }
-
-    protected void createProperties() {
-        for (FileModel fileModel : jsonToNeo4JConverter.getFileModelList()) {
-            for (ClassModel classModel : fileModel.getClasses()) {
-                ClassDescriptor classDescriptor = (ClassDescriptor) typeCache.findAny(classModel.getKey());
-
-                for (PropertyModel propertyModel : classModel.getProperties()) {
-                    PropertyDescriptor propertyDescriptor = propertyCache.create(propertyModel.getKey());
-                    propertyDescriptor.setFullQualifiedName(propertyModel.getFqn());
-                    propertyDescriptor.setName(propertyModel.getName());
-                    propertyDescriptor.setVisibility(propertyModel.getAccessibility());
-                    propertyDescriptor.setStatic(propertyModel.isStaticKeyword());
-
-                    TypeDescriptor typeDescriptor = typeCache.findOrCreate(propertyModel.getType());
-                    propertyDescriptor.setType(typeDescriptor);
-
-                    List<MethodDescriptor> accessors = findAndCreateAccessors(propertyModel);
-                    propertyDescriptor.getAccessors().addAll(accessors);
-
-                    classDescriptor.getDeclaredMembers().add(propertyDescriptor);
-                }
-            }
-        }
-    }
-
-    private List<MethodDescriptor> findAndCreateAccessors(PropertyModel propertyModel) {
-        List<MethodDescriptor> accessors = new ArrayList<>();
-
-        Optional<String> getter = propertyModel.getAccessors().stream().filter(t -> t.contains("get")).findAny();
-        getter.ifPresent(s -> accessors.add(createAccessors(propertyModel, s.trim())));
-
-        Optional<String> setter = propertyModel.getAccessors().stream().filter(t -> t.contains("set")).findAny();
-        setter.ifPresent(s -> accessors.add(createAccessors(propertyModel, s.trim())));
-
-        Optional<String> init = propertyModel.getAccessors().stream().filter(t -> t.contains("init")).findAny();
-        init.ifPresent(s -> accessors.add(createAccessors(propertyModel, s.trim())));
-
-        return accessors;
-    }
-
-    private MethodDescriptor createAccessors(PropertyModel propertyModel, String accessor) {
-        String kindOfAccessor = accessor.contains(" ") ?
-                accessor.substring(accessor.lastIndexOf(" ")).trim() : accessor;
-
-        MethodModel methodModel = new MethodModel();
-        methodModel.setName(kindOfAccessor + propertyModel.getName());
-        methodModel.setFqn(propertyModel.getFqn() + "." + kindOfAccessor);
-        methodModel.setParameters(new ArrayList<>());
-
-        if (accessor.contains(" ")) {
-            methodModel.setAccessibility(StringUtils.capitalize(StringUtils.substringBeforeLast(accessor, " ").trim()));
-        } else {
-            methodModel.setAccessibility(propertyModel.getAccessibility());
-        }
-        return jsonToNeo4JConverter.methodAnalyzer.createMethodDescriptor(methodModel);
     }
 }

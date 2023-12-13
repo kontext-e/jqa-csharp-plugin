@@ -2,49 +2,35 @@ package org.jqassistant.contrib.plugin.csharp.json_to_neo4j;
 
 import com.buschmais.jqassistant.core.store.api.Store;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.caches.MethodCache;
-import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.caches.PropertyCache;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.caches.TypeCache;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.ClassModel;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.FileModel;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.InterfaceModel;
-import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.InvocationAnalyzer;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.MethodModel;
 import org.jqassistant.contrib.plugin.csharp.model.ClassDescriptor;
 import org.jqassistant.contrib.plugin.csharp.model.InterfaceTypeDescriptor;
 import org.jqassistant.contrib.plugin.csharp.model.MethodDescriptor;
 import org.jqassistant.contrib.plugin.csharp.model.TypeDescriptor;
 
+import java.util.List;
 import java.util.Optional;
 
 public class MethodAnalyzer {
 
-    private final JsonToNeo4JConverter jsonToNeo4JConverter;
-
     private final ParameterAnalyzer parameterAnalyzer;
-    private final InvocationAnalyzer invocationAnalyzer;
-    private final PartialityAnalyzer partialityAnalyzer;
 
     private final MethodCache methodCache;
     private final TypeCache typeCache;
 
-    public MethodAnalyzer(JsonToNeo4JConverter jsonToNeo4JConverter, Store store, MethodCache methodCache, PropertyCache propertyCache, TypeCache typeCache, PartialityAnalyzer partialityAnalyzer) {
-        this.jsonToNeo4JConverter = jsonToNeo4JConverter;
+    public MethodAnalyzer(Store store, MethodCache methodCache, TypeCache typeCache) {
         this.methodCache = methodCache;
         this.typeCache = typeCache;
-        this.partialityAnalyzer = partialityAnalyzer;
 
         parameterAnalyzer = new ParameterAnalyzer(typeCache, store);
-        invocationAnalyzer = new InvocationAnalyzer(store, methodCache, propertyCache, jsonToNeo4JConverter);
     }
 
-    public void analyze() {
-        createMethods();
-        partialityAnalyzer.linkPartialMethods();
-        invocationAnalyzer.analyzeInvocations();
-    }
-
-    private void createMethods() {
-        for (FileModel fileModel : jsonToNeo4JConverter.getFileModelList()) {
+    public void createMethods(List<FileModel> fileModelList) {
+        for (FileModel fileModel : fileModelList) {
             createMethodsForClasses(fileModel);
             createMethodsForInterfaces(fileModel);
         }
