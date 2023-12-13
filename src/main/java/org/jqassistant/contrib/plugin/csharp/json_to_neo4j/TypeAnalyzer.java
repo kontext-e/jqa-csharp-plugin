@@ -7,10 +7,25 @@ import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.caches.CSharpFileCach
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.caches.EnumValueCache;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.caches.NamespaceCache;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.caches.TypeCache;
-import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.*;
-import org.jqassistant.contrib.plugin.csharp.model.*;
+import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.ClassModel;
+import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.ConstructorModel;
+import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.EnumMemberModel;
+import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.EnumModel;
+import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.FileModel;
+import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.InterfaceModel;
+import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.TypeModel;
+import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.UsingModel;
+import org.jqassistant.contrib.plugin.csharp.model.CSharpFileDescriptor;
+import org.jqassistant.contrib.plugin.csharp.model.ClassDescriptor;
+import org.jqassistant.contrib.plugin.csharp.model.ConstructorDescriptor;
+import org.jqassistant.contrib.plugin.csharp.model.EnumTypeDescriptor;
+import org.jqassistant.contrib.plugin.csharp.model.EnumValueDescriptor;
+import org.jqassistant.contrib.plugin.csharp.model.InterfaceTypeDescriptor;
+import org.jqassistant.contrib.plugin.csharp.model.NamespaceDescriptor;
+import org.jqassistant.contrib.plugin.csharp.model.TypeDescriptor;
+import org.jqassistant.contrib.plugin.csharp.model.UsesNamespaceDescriptor;
 
-import java.util.*;
+import java.util.Optional;
 
 public class TypeAnalyzer {
 
@@ -161,16 +176,7 @@ public class TypeAnalyzer {
 
     }
 
-    public void linkPartialClasses() {
-        List<List<TypeDescriptor>> partialClasses = typeCache.findAllPartialClasses();
-        for (List<TypeDescriptor> classFragments : partialClasses){
-            for (TypeDescriptor classFragment : classFragments){
-                List<TypeDescriptor> siblings = new LinkedList<>(classFragments);
-                siblings.remove(classFragment);
-                classFragment.getClassFragments().addAll(siblings);
-            }
-        }
-    }
+
 
 
     protected void fillDescriptor(TypeDescriptor descriptor, TypeModel typeModel) {
