@@ -7,48 +7,43 @@ import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.caches.TypeCache;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.ClassModel;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.FileModel;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.InterfaceModel;
-import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.InvokesModel;
-import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.MemberAccessModel;
+import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.InvocationAnalyzer;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.MethodModel;
-import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.ParameterModel;
 import org.jqassistant.contrib.plugin.csharp.model.ClassDescriptor;
 import org.jqassistant.contrib.plugin.csharp.model.InterfaceTypeDescriptor;
-import org.jqassistant.contrib.plugin.csharp.model.InvokesDescriptor;
-import org.jqassistant.contrib.plugin.csharp.model.MemberAccessDescriptor;
 import org.jqassistant.contrib.plugin.csharp.model.MethodDescriptor;
-import org.jqassistant.contrib.plugin.csharp.model.ParameterDescriptor;
-import org.jqassistant.contrib.plugin.csharp.model.PropertyDescriptor;
 import org.jqassistant.contrib.plugin.csharp.model.TypeDescriptor;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Optional;
 
 public class MethodAnalyzer {
 
     private final JsonToNeo4JConverter jsonToNeo4JConverter;
-    private final Store store;
+
+    private final ParameterAnalyzer parameterAnalyzer;
+    private final InvocationAnalyzer invocationAnalyzer;
+    private final PartialityAnalyzer partialityAnalyzer;
 
     private final MethodCache methodCache;
     private final TypeCache typeCache;
-    private final PropertyCache propertyCache;
 
-    public MethodAnalyzer(JsonToNeo4JConverter jsonToNeo4JConverter, Store store, MethodCache methodCache, PropertyCache propertyCache, TypeCache typeCache) {
+    public MethodAnalyzer(JsonToNeo4JConverter jsonToNeo4JConverter, Store store, MethodCache methodCache, PropertyCache propertyCache, TypeCache typeCache, PartialityAnalyzer partialityAnalyzer) {
         this.jsonToNeo4JConverter = jsonToNeo4JConverter;
-        this.store = store;
         this.methodCache = methodCache;
         this.typeCache = typeCache;
-        this.propertyCache = propertyCache;
+        this.partialityAnalyzer = partialityAnalyzer;
+
+        parameterAnalyzer = new ParameterAnalyzer(typeCache, store);
+        invocationAnalyzer = new InvocationAnalyzer(store, methodCache, propertyCache, jsonToNeo4JConverter);
     }
 
     public void analyze() {
         createMethods();
-        linkPartialMethods();
-        analyzeMethodBody();
+        partialityAnalyzer.linkPartialMethods();
+        invocationAnalyzer.analyzeInvocations();
     }
 
-    protected void createMethods() {
+    private void createMethods() {
         for (FileModel fileModel : jsonToNeo4JConverter.getFileModelList()) {
             createMethodsForClasses(fileModel);
             createMethodsForInterfaces(fileModel);
@@ -89,7 +84,7 @@ public class MethodAnalyzer {
 
         fillMethodDescriptor(methodModel, methodDescriptor);
         addReturnType(methodModel, methodDescriptor);
-        addParameters(methodModel, methodDescriptor);
+        parameterAnalyzer.addParameters(methodModel, methodDescriptor);
 
         return methodDescriptor;
     }
@@ -109,93 +104,5 @@ public class MethodAnalyzer {
     private void addReturnType(MethodModel methodModel, MethodDescriptor methodDescriptor) {
         TypeDescriptor returnTypeDescriptor = typeCache.findOrCreate(methodModel.getReturnType());
         methodDescriptor.setReturns(returnTypeDescriptor);
-    }
-
-    private void addParameters(MethodModel methodModel, MethodDescriptor methodDescriptor) {
-        List<ParameterDescriptor> parameterDescriptors = createParameterDescriptors(methodModel);
-        methodDescriptor.getParameters().addAll(parameterDescriptors);
-    }
-
-    private List<ParameterDescriptor> createParameterDescriptors(MethodModel methodModel) {
-
-        List<ParameterDescriptor> parameterDescriptors = new ArrayList<>();
-        for (int index = 0; index < methodModel.getParameters().size(); index++){
-            createParameterDescriptor(methodModel, parameterDescriptors, index);
-        }
-        return parameterDescriptors;
-    }
-
-    private void createParameterDescriptor(MethodModel methodModel, List<ParameterDescriptor> parameterDescriptors, int index) {
-
-        ParameterModel parameterModel = methodModel.getParameters().get(index);
-        ParameterDescriptor parameterDescriptor = store.create(ParameterDescriptor.class);
-        fillParameterDescriptor(index, parameterModel, parameterDescriptor);
-        parameterDescriptors.add(parameterDescriptor);
-    }
-
-    private void fillParameterDescriptor(int index, ParameterModel parameterModel, ParameterDescriptor parameterDescriptor) {
-
-        TypeDescriptor parameterTypeDescriptor = typeCache.findOrCreate(parameterModel.getType());
-        parameterDescriptor.setIndex(index);
-        parameterDescriptor.setType(parameterTypeDescriptor);
-        parameterDescriptor.setName(parameterModel.getName());
-    }
-
-    public void linkPartialMethods(){
-        List<List<MethodDescriptor>> methodDescriptors = methodCache.findAllPartialMethods();
-        for (List<MethodDescriptor> methodFragments : methodDescriptors){
-            for (MethodDescriptor methodDescriptor : methodFragments){
-                if (!methodDescriptor.getIsImplementation()) continue;
-                addSiblings(methodFragments, methodDescriptor);
-            }
-        }
-    }
-
-    private static void addSiblings(List<MethodDescriptor> methodFragments, MethodDescriptor methodDescriptor) {
-        List<MethodDescriptor> siblings = new LinkedList<>(methodFragments);
-        siblings.remove(methodDescriptor);
-        methodDescriptor.getMethodFragments().addAll(siblings);
-    }
-
-    private void analyzeMethodBody() {
-        for (FileModel fileModel : jsonToNeo4JConverter.getFileModelList()) {
-            for (ClassModel classModel : fileModel.getClasses()) {
-                for (MethodModel methodModel : classModel.getMethods()) {
-                    addInvocations(methodModel);
-                    addProperties(methodModel);
-                }
-            }
-        }
-    }
-
-    protected void addInvocations(MethodModel methodModel) {
-        if (methodModel.getInvocations().isEmpty()) return;
-
-        MethodDescriptor methodDescriptor = methodCache.findAny(methodModel.getKey());
-        for (InvokesModel invokesModel : methodModel.getInvocations()) {
-            addInvocation(methodDescriptor, invokesModel);
-        }
-    }
-
-    private void addInvocation(MethodDescriptor methodDescriptor, InvokesModel invokesModel) {
-        MethodDescriptor invokedMethodDescriptor = methodCache.findOrCreate(invokesModel.getMethodId());
-        InvokesDescriptor invokesDescriptor = store.create(methodDescriptor, InvokesDescriptor.class, invokedMethodDescriptor);
-        invokesDescriptor.setLineNumber(invokesModel.getLineNumber());
-    }
-
-    protected void addProperties(MethodModel methodModel){
-        MethodDescriptor methodDescriptor = methodCache.findAny(methodModel.getKey());
-
-        for (MemberAccessModel memberAccessModel : methodModel.getMemberAccesses()){
-            addProperty(methodDescriptor, memberAccessModel);
-        }
-    }
-
-    private void addProperty(MethodDescriptor methodDescriptor, MemberAccessModel memberAccessModel) {
-        Optional<PropertyDescriptor> propertyDescriptor = propertyCache.getPropertyFromSubstring(memberAccessModel.getMemberId());
-        if (!propertyDescriptor.isPresent()) return;
-
-        MemberAccessDescriptor memberAccessDescriptor = store.create(methodDescriptor, MemberAccessDescriptor.class, propertyDescriptor.get());
-        memberAccessDescriptor.setLineNumber(memberAccessModel.getLineNumber());
     }
 }

@@ -3,9 +3,16 @@ package org.jqassistant.contrib.plugin.csharp.json_to_neo4j;
 import com.buschmais.jqassistant.core.store.api.Store;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.caches.*;
-import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.*;
-import org.jqassistant.contrib.plugin.csharp.model.*;
+import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.caches.CSharpFileCache;
+import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.caches.EnumValueCache;
+import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.caches.FieldCache;
+import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.caches.MethodCache;
+import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.caches.NamespaceCache;
+import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.caches.PropertyCache;
+import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.caches.TypeCache;
+import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.FileModel;
+import org.jqassistant.contrib.plugin.csharp.model.CSharpClassesDirectoryDescriptor;
+import org.jqassistant.contrib.plugin.csharp.model.CSharpFileDescriptor;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
@@ -33,13 +40,15 @@ public class JsonToNeo4JConverter {
     protected final MethodAnalyzer methodAnalyzer;
     protected final MemberAnalyzer memberAnalyzer;
     protected final TypeAnalyzer typeAnalyzer;
+    protected final PartialityAnalyzer partialityAnalyzer;
 
     public JsonToNeo4JConverter(Store store, File inputDirectory) {
         initCaches(store);
         this.store = store;
         this.inputDirectory = inputDirectory;
 
-        this.methodAnalyzer = new MethodAnalyzer(this, store, methodCache, propertyCache, typeCache);
+        this.partialityAnalyzer = new PartialityAnalyzer(methodCache, typeCache);
+        this.methodAnalyzer = new MethodAnalyzer(this, store, methodCache, propertyCache, typeCache, partialityAnalyzer);
         this.memberAnalyzer = new MemberAnalyzer(this, store, fieldCache, propertyCache, typeCache);
         this.typeAnalyzer = new TypeAnalyzer(this, store, namespaceCache, cSharpFileCache, enumValueCache, typeCache);
     }
@@ -65,7 +74,7 @@ public class JsonToNeo4JConverter {
         typeAnalyzer.createTypes();
         typeAnalyzer.linkBaseTypes();
         typeAnalyzer.linkInterfaces();
-        typeAnalyzer.linkPartialClasses();
+        partialityAnalyzer.linkPartialClasses();
         typeAnalyzer.createEnumMembers();
         typeAnalyzer.createConstructors();
         memberAnalyzer.createFields();
