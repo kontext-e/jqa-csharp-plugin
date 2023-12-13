@@ -1,7 +1,6 @@
 package org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model;
 
 import com.buschmais.jqassistant.core.store.api.Store;
-import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.JsonToNeo4JConverter;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.caches.MethodCache;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.caches.PropertyCache;
 import org.jqassistant.contrib.plugin.csharp.model.InvokesDescriptor;
@@ -9,6 +8,7 @@ import org.jqassistant.contrib.plugin.csharp.model.MemberAccessDescriptor;
 import org.jqassistant.contrib.plugin.csharp.model.MethodDescriptor;
 import org.jqassistant.contrib.plugin.csharp.model.PropertyDescriptor;
 
+import java.util.List;
 import java.util.Optional;
 
 public class InvocationAnalyzer {
@@ -17,17 +17,15 @@ public class InvocationAnalyzer {
     private final Store store;
     private final MethodCache methodCache;
     private final PropertyCache propertyCache;
-    private final JsonToNeo4JConverter jsonToNeo4JConverter;
 
-    public InvocationAnalyzer(Store store, MethodCache methodCache, PropertyCache propertyCache, JsonToNeo4JConverter jsonToNeo4JConverter) {
+    public InvocationAnalyzer(Store store, MethodCache methodCache, PropertyCache propertyCache) {
         this.store = store;
         this.methodCache = methodCache;
         this.propertyCache = propertyCache;
-        this.jsonToNeo4JConverter = jsonToNeo4JConverter;
     }
 
-    public void analyzeInvocations() {
-        for (FileModel fileModel : jsonToNeo4JConverter.getFileModelList()) {
+    public void analyzeInvocations(List<FileModel> fileModelList) {
+        for (FileModel fileModel : fileModelList) {
             for (ClassModel classModel : fileModel.getClasses()) {
                 for (MethodModel methodModel : classModel.getMethods()) {
                     addInvocations(methodModel);

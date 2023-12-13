@@ -11,6 +11,7 @@ import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.caches.NamespaceCache
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.caches.PropertyCache;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.caches.TypeCache;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.FileModel;
+import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.InvocationAnalyzer;
 import org.jqassistant.contrib.plugin.csharp.model.CSharpClassesDirectoryDescriptor;
 import org.jqassistant.contrib.plugin.csharp.model.CSharpFileDescriptor;
 import org.slf4j.LoggerFactory;
@@ -37,10 +38,12 @@ public class JsonToNeo4JConverter {
 
     private List<FileModel> fileModelList;
 
-    protected final MethodAnalyzer methodAnalyzer;
-    protected final MemberAnalyzer memberAnalyzer;
-    protected final TypeAnalyzer typeAnalyzer;
-    protected final PartialityAnalyzer partialityAnalyzer;
+    private final MethodAnalyzer methodAnalyzer;
+    private final MemberAnalyzer memberAnalyzer;
+    private final TypeAnalyzer typeAnalyzer;
+    private final PartialityAnalyzer partialityAnalyzer;
+    private final PropertyAnalyzer propertyAnalyzer;
+    private final InvocationAnalyzer invocationAnalyzer;
 
     public JsonToNeo4JConverter(Store store, File inputDirectory) {
         initCaches(store);
@@ -48,9 +51,11 @@ public class JsonToNeo4JConverter {
         this.inputDirectory = inputDirectory;
 
         this.partialityAnalyzer = new PartialityAnalyzer(methodCache, typeCache);
-        this.methodAnalyzer = new MethodAnalyzer(this, store, methodCache, propertyCache, typeCache, partialityAnalyzer);
-        this.memberAnalyzer = new MemberAnalyzer(this, store, fieldCache, propertyCache, typeCache);
-        this.typeAnalyzer = new TypeAnalyzer(this, store, namespaceCache, cSharpFileCache, enumValueCache, typeCache);
+        this.invocationAnalyzer = new InvocationAnalyzer(store, methodCache, propertyCache);
+        this.methodAnalyzer = new MethodAnalyzer(store, methodCache, typeCache);
+        this.propertyAnalyzer = new PropertyAnalyzer(typeCache, propertyCache, methodAnalyzer);
+        this.memberAnalyzer = new MemberAnalyzer(store, fieldCache, typeCache);
+        this.typeAnalyzer = new TypeAnalyzer(store, namespaceCache, cSharpFileCache, enumValueCache, typeCache);
     }
 
     private void initCaches(Store store) {
@@ -70,16 +75,18 @@ public class JsonToNeo4JConverter {
 
         readJsonFilesRecursively(inputDirectory, null);
 
-        typeAnalyzer.createUsings();
-        typeAnalyzer.createTypes();
-        typeAnalyzer.linkBaseTypes();
-        typeAnalyzer.linkInterfaces();
+        typeAnalyzer.createUsings(fileModelList);
+        typeAnalyzer.createTypes(fileModelList);
+        typeAnalyzer.linkBaseTypes(fileModelList);
+        typeAnalyzer.linkInterfaces(fileModelList);
         partialityAnalyzer.linkPartialClasses();
-        typeAnalyzer.createEnumMembers();
-        typeAnalyzer.createConstructors();
-        memberAnalyzer.createFields();
-        memberAnalyzer.createProperties();
-        methodAnalyzer.analyze();
+        typeAnalyzer.createEnumMembers(fileModelList);
+        typeAnalyzer.createConstructors(fileModelList);
+        methodAnalyzer.createMethods(fileModelList);
+        partialityAnalyzer.linkPartialMethods();
+        invocationAnalyzer.analyzeInvocations(fileModelList);
+        memberAnalyzer.createFields(fileModelList);
+        propertyAnalyzer.createProperties(fileModelList);
     }
 
     private void readJsonFilesRecursively(File currentDirectory, CSharpClassesDirectoryDescriptor parentDirectoryDescriptor) {
@@ -139,7 +146,4 @@ public class JsonToNeo4JConverter {
         readJsonFilesRecursively(file, cSharpClassesDirectoryDescriptor);
     }
 
-    public List<FileModel> getFileModelList() {
-        return fileModelList;
-    }
 }
