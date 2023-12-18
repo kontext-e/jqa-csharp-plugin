@@ -27,6 +27,7 @@ public class JsonToNeo4JConverter {
 
     private final Store store;
     private final File inputDirectory;
+    private final DependencyAnalyzer dependencyAnalyzer;
 
     private TypeCache typeCache;
     private CSharpFileCache cSharpFileCache;
@@ -53,9 +54,10 @@ public class JsonToNeo4JConverter {
         this.partialityAnalyzer = new PartialityAnalyzer(methodCache, typeCache);
         this.invocationAnalyzer = new InvocationAnalyzer(store, methodCache, propertyCache);
         this.methodAnalyzer = new MethodAnalyzer(store, methodCache, typeCache);
+        this.dependencyAnalyzer = new DependencyAnalyzer(cSharpFileCache, namespaceCache, typeCache, store);
         this.propertyAnalyzer = new PropertyAnalyzer(typeCache, propertyCache, methodAnalyzer);
         this.memberAnalyzer = new MemberAnalyzer(store, fieldCache, typeCache);
-        this.typeAnalyzer = new TypeAnalyzer(store, namespaceCache, cSharpFileCache, enumValueCache, typeCache);
+        this.typeAnalyzer = new TypeAnalyzer(namespaceCache, cSharpFileCache, enumValueCache, typeCache);
     }
 
     private void initCaches(Store store) {
@@ -75,13 +77,13 @@ public class JsonToNeo4JConverter {
 
         readJsonFilesRecursively(inputDirectory, null);
 
-        typeAnalyzer.createUsings(fileModelList);
+        dependencyAnalyzer.createUsings(fileModelList);
         typeAnalyzer.createTypes(fileModelList);
-        typeAnalyzer.linkBaseTypes(fileModelList);
-        typeAnalyzer.linkInterfaces(fileModelList);
+        dependencyAnalyzer.linkBaseTypes(fileModelList);
+        dependencyAnalyzer.linkInterfaces(fileModelList);
         partialityAnalyzer.linkPartialClasses();
         typeAnalyzer.createEnumMembers(fileModelList);
-        typeAnalyzer.createConstructors(fileModelList);
+        methodAnalyzer.createConstructors(fileModelList);
         methodAnalyzer.createMethods(fileModelList);
         partialityAnalyzer.linkPartialMethods();
         invocationAnalyzer.analyzeInvocations(fileModelList);
