@@ -13,7 +13,6 @@ import java.util.Optional;
 
 public class InvocationAnalyzer {
 
-
     private final Store store;
     private final MethodCache methodCache;
     private final PropertyCache propertyCache;

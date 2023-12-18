@@ -25,12 +25,8 @@ public class MethodCache {
         return methodDescriptor.orElseGet(() -> methodDescriptors.get(0));
     }
 
-    public List<MethodDescriptor> findAll(String fqn){
-        return cache.get(fqn);
-    }
-
-    public MethodDescriptor create(String fqn) {
-        MethodDescriptor descriptor = store.create(MethodDescriptor.class);
+    public <T extends MethodDescriptor> T create(String fqn, Class<T> descriptorClass) {
+        T descriptor = store.create(descriptorClass);
         descriptor.setFullQualifiedName(fqn);
 
         if (cache.containsKey(fqn)){
@@ -48,7 +44,7 @@ public class MethodCache {
         if (cache.containsKey(fqn)) {
             return findAny(fqn);
         }
-        return create(fqn);
+        return create(fqn, MethodDescriptor.class);
     }
 
     public List<List<MethodDescriptor>> findAllPartialMethods(){
