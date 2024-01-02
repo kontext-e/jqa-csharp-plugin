@@ -10,7 +10,6 @@ import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.EnumModel;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.FileModel;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.InterfaceModel;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.TypeModel;
-import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.UsingModel;
 import org.jqassistant.contrib.plugin.csharp.model.CSharpFileDescriptor;
 import org.jqassistant.contrib.plugin.csharp.model.ClassDescriptor;
 import org.jqassistant.contrib.plugin.csharp.model.EnumTypeDescriptor;
@@ -44,18 +43,17 @@ class TypeAnalyzerTest {
 
     private TypeCache typeCacheMock;
     private NamespaceCache namespaceCacheMock;
-    private CSharpFileCache cSharpFileCacheMock = mock();
+    private final CSharpFileCache cSharpFileCacheMock = mock();
     private final EnumValueCache enumValueCacheMock = mock(EnumValueCache.class);
 
     private List<TypeDescriptor> typeDescriptors;
-    private List<NamespaceDescriptor> namespaceDescriptors;
 
 
     @BeforeEach
     void setUp() {
         typeDescriptors = createTypeDescriptor();
         typeCacheMock = createTypeCacheMock();
-        namespaceDescriptors = createNamespaces(typeDescriptors);
+        List<NamespaceDescriptor> namespaceDescriptors = createNamespaces(typeDescriptors);
         namespaceCacheMock = createNameSpaceCacheMock(namespaceDescriptors);
 
         typeAnalyzer = new TypeAnalyzer(
@@ -64,6 +62,20 @@ class TypeAnalyzerTest {
                 enumValueCacheMock,
                 typeCacheMock
         );
+    }
+
+    private static List<TypeDescriptor> createTypeDescriptor() {
+
+        TypeDescriptor partialClass1 = new TypeDescriptorImpl("Class1");
+        TypeDescriptor partialClass2 = new TypeDescriptorImpl("Class1");
+        TypeDescriptor nonPartialClass = new TypeDescriptorImpl("Class2");
+
+        List<TypeDescriptor> typeDescriptors = new LinkedList<>();
+        typeDescriptors.add(partialClass1);
+        typeDescriptors.add(partialClass2);
+        typeDescriptors.add(nonPartialClass);
+
+        return typeDescriptors;
     }
 
     private TypeCache createTypeCacheMock() {
@@ -84,6 +96,23 @@ class TypeAnalyzerTest {
     }
 
 
+    private static List<NamespaceDescriptor> createNamespaces(List<TypeDescriptor> typeDescriptors) {
+        NamespaceDescriptor namespaceDescriptor = new NamespaceDescriptorImpl();
+        namespaceDescriptor.getContains().addAll(typeDescriptors);
+        List<NamespaceDescriptor> namespaces = new LinkedList<>();
+        namespaces.add(namespaceDescriptor);
+
+        return namespaces;
+    }
+
+    private static NamespaceCache createNameSpaceCacheMock(List<NamespaceDescriptor> namespaceDescriptorMocks) {
+        NamespaceCache mockNamespaceCache = mock(NamespaceCache.class);
+        when(mockNamespaceCache.getAllNamespaces()).thenReturn(namespaceDescriptorMocks);
+        when(mockNamespaceCache.findOrCreate(any())).thenReturn(namespaceDescriptorMocks.get(0));
+
+        return mockNamespaceCache;
+    }
+
     private static FileModel createFileModel(int amountOfClasses, int amountOfInterfaces, int amountOfEnums) {
         FileModel fileModel = mock();
 
@@ -95,22 +124,6 @@ class TypeAnalyzerTest {
         when(fileModel.getInterfaces()).thenReturn(interfaceModels);
         when(fileModel.getEnums()).thenReturn(enumModels);
         return fileModel;
-    }
-
-    private void addUsingsToFileModel(FileModel fileModel) {
-        UsingModel usingModel1 = mock();
-        UsingModel usingModel2 = mock();
-
-        when(usingModel1.getKey()).thenReturn("Class1");
-        when(usingModel1.getAlias()).thenReturn("Alias1");
-        when(usingModel2.getKey()).thenReturn("Class2");
-        when(usingModel2.getAlias()).thenReturn("Alias2");
-
-        LinkedList<UsingModel> usingModels = new LinkedList<>();
-        usingModels.add(usingModel1);
-        usingModels.add(usingModel2);
-
-        when(fileModel.getUsings()).thenReturn(usingModels);
     }
 
     private static <T extends TypeModel> List<T> createTypeModelList(int amount, Class<T> tClass){
@@ -146,37 +159,6 @@ class TypeAnalyzerTest {
             when(classModel.isSealed()).thenReturn(false);
             when(classModel.isStaticKeyword()).thenReturn(false);
         }
-    }
-
-    private static NamespaceCache createNameSpaceCacheMock(List<NamespaceDescriptor> namespaceDescriptorMocks) {
-        NamespaceCache mockNamespaceCache = mock(NamespaceCache.class);
-        when(mockNamespaceCache.getAllNamespaces()).thenReturn(namespaceDescriptorMocks);
-        when(mockNamespaceCache.findOrCreate(any())).thenReturn(namespaceDescriptorMocks.get(0));
-
-        return mockNamespaceCache;
-    }
-
-    private static List<NamespaceDescriptor> createNamespaces(List<TypeDescriptor> typeDescriptors) {
-        NamespaceDescriptor namespaceDescriptor = new NamespaceDescriptorImpl();
-        namespaceDescriptor.getContains().addAll(typeDescriptors);
-        List<NamespaceDescriptor> namespaces = new LinkedList<>();
-        namespaces.add(namespaceDescriptor);
-
-        return namespaces;
-    }
-
-    private static List<TypeDescriptor> createTypeDescriptor() {
-
-        TypeDescriptor partialClass1 = new TypeDescriptorImpl("Class1");
-        TypeDescriptor partialClass2 = new TypeDescriptorImpl("Class1");
-        TypeDescriptor nonPartialClass = new TypeDescriptorImpl("Class2");
-
-        List<TypeDescriptor> typeDescriptors = new LinkedList<>();
-        typeDescriptors.add(partialClass1);
-        typeDescriptors.add(partialClass2);
-        typeDescriptors.add(nonPartialClass);
-
-        return typeDescriptors;
     }
 
     @Test
