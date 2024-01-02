@@ -42,15 +42,15 @@ public class TypeCache {
         } else if (typeModel instanceof EnumModel) {
             return create(typeModel.getFqn(), EnumTypeDescriptor.class);
 
-        } else if (typeModel instanceof  InterfaceModel) {
+        } else if (typeModel instanceof InterfaceModel) {
             return create(typeModel.getFqn(), InterfaceTypeDescriptor.class);
 
         } else {
-            return null;
+            return create(typeModel.getFqn(), TypeDescriptor.class);
         }
     }
 
-    protected <D extends TypeDescriptor> D create(String fqn, Class<D> descriptorClass) {
+    private <D extends TypeDescriptor> D create(String fqn, Class<D> descriptorClass) {
         D descriptor = store.create(descriptorClass);
         descriptor.setFullQualifiedName(fqn);
 
