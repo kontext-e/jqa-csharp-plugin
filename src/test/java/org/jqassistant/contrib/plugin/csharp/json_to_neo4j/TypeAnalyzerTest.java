@@ -6,6 +6,7 @@ import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.caches.EnumValueCache
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.caches.NamespaceCache;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.caches.TypeCache;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.ClassModel;
+import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.EnumMemberModel;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.EnumModel;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.FileModel;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.InterfaceModel;
@@ -13,6 +14,8 @@ import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.TypeModel;
 import org.jqassistant.contrib.plugin.csharp.model.CSharpFileDescriptor;
 import org.jqassistant.contrib.plugin.csharp.model.ClassDescriptor;
 import org.jqassistant.contrib.plugin.csharp.model.EnumTypeDescriptor;
+import org.jqassistant.contrib.plugin.csharp.model.EnumValueDescriptor;
+import org.jqassistant.contrib.plugin.csharp.model.FieldDescriptor;
 import org.jqassistant.contrib.plugin.csharp.model.InterfaceTypeDescriptor;
 import org.jqassistant.contrib.plugin.csharp.model.MemberDescriptor;
 import org.jqassistant.contrib.plugin.csharp.model.NamespaceDescriptor;
@@ -33,6 +36,7 @@ import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -159,6 +163,18 @@ class TypeAnalyzerTest {
             when(classModel.isSealed()).thenReturn(false);
             when(classModel.isStaticKeyword()).thenReturn(false);
         }
+
+        if (tClass == EnumModel.class){
+            EnumModel enumModel = (EnumModel) type;
+            when(enumModel.getKey()).thenReturn(tClass.toString() + i);
+
+            EnumMemberModel enumMemberModel = mock();
+            when(enumMemberModel.getKey()).thenReturn(Integer.toString(i));
+            List<EnumMemberModel> memberModels = new LinkedList<>();
+            memberModels.add(enumMemberModel);
+
+            when(enumModel.getMembers()).thenReturn(memberModels);
+        }
     }
 
     @Test
@@ -250,6 +266,20 @@ class TypeAnalyzerTest {
         verify(typeCacheMock).create(any(ClassModel.class));
         verify(namespaceCacheMock, never()).findOrCreate(any());
         assertThat(cSharpFileDescriptor.getTypes().size()).isEqualTo(1);
+    }
+
+    @Test
+    void testCreateEnumMembers(){
+        FileModel fileModel = createFileModel(0,0,2);
+        List<FileModel> fileModelList = new LinkedList<>();
+        fileModelList.add(fileModel);
+        when(typeCacheMock.findAny(any())).thenReturn(new EnumDescriptorImpl("EnumName"));
+        when(enumValueCacheMock.create(any())).thenReturn(new EnumValueDescriptorIml());
+
+        typeAnalyzer.createEnumMembers(fileModelList);
+
+        verify(typeCacheMock, times(2)).findAny(any());
+        verify(enumValueCacheMock, times(2)).create(any());
     }
 
     private static class TypeDescriptorImpl implements TypeDescriptor {
@@ -610,6 +640,56 @@ class TypeAnalyzerTest {
     private static class EnumDescriptorImpl extends ClassDescriptorImpl implements EnumTypeDescriptor{
         private EnumDescriptorImpl(String name) {
             super(name);
+        }
+    }
+
+    private static class EnumValueDescriptorIml implements EnumValueDescriptor {
+
+        private String name;
+        private TypeDescriptor type;
+        private FieldDescriptor value;
+
+        @Override
+        public String getName() {
+            return name;
+        }
+
+        @Override
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        @Override
+        public TypeDescriptor getType() {
+            return type;
+        }
+
+        @Override
+        public void setType(TypeDescriptor type) {
+            this.type = type;
+        }
+
+        public FieldDescriptor getValue() {
+            return value;
+        }
+
+        public void setValue(FieldDescriptor value) {
+            this.value = value;
+        }
+
+        @Override
+        public <I> I getId() {
+            return null;
+        }
+
+        @Override
+        public <T> T as(Class<T> aClass) {
+            return null;
+        }
+
+        @Override
+        public <D> D getDelegate() {
+            return null;
         }
     }
 
