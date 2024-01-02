@@ -46,8 +46,8 @@ public class MethodAnalyzer {
 
             ClassDescriptor classDescriptor = (ClassDescriptor) typeDescriptor.get();
             for (MethodModel methodModel : classModel.getMethods()) {
-                    MethodDescriptor methodDescriptor = createMethodDescriptor(methodModel);
-                    classDescriptor.getDeclaredMembers().add(methodDescriptor);
+                MethodDescriptor methodDescriptor = createMethodDescriptor(methodModel);
+                classDescriptor.getDeclaredMembers().add(methodDescriptor);
             }
         }
     }
