@@ -72,6 +72,19 @@ public class MemberAnalyzerTest {
     }
 
     @Test
+    void testCreateFieldsForNonexistentType(){
+        ClassModel classModel = createClassModel("Class", createFields(0));
+        ClassDescriptorImpl containingClass = new ClassDescriptorImpl("ContainingClass");
+        when(typeCache.findTypeByRelativePath(any(), any())).thenReturn(Optional.empty());
+
+        memberAnalyzer.createFields(classModel, "Relative.Path");
+
+        verify(store, never()).create(any());
+        verify(fieldCache, never()).create(any());
+        assertThat(containingClass.getDeclaredMembers().isEmpty()).isTrue();
+    }
+
+    @Test
     void testCreateFieldWithDefaultValue(){
         List<FieldModel> fields = createFields(1);
         fields.get(0).setConstantValue("ConstantValue");

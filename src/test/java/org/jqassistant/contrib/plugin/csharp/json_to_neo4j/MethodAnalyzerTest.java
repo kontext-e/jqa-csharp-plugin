@@ -62,6 +62,22 @@ public class MethodAnalyzerTest {
     }
 
     @Test
+    void createMethodForClassNonExistentType(){
+        List<MethodModel> methodModels = createMethodModels(1);
+        ClassModel classModel = createClassModel(methodModels);
+        FileModel fileModel = createFileModel(classModel, "Relative.Path");
+
+        ClassDescriptorImpl classDescriptor = new ClassDescriptorImpl("Type");
+        when(typeCache.findTypeByRelativePath(any(), any())).thenReturn(Optional.empty());
+
+        methodAnalyzer.createMethods(toList(fileModel));
+
+        verify(methodCache, never()).create(any(), eq(MethodDescriptor.class));
+        assertThat(classDescriptor.getDeclaredMembers().size()).isEqualTo(0);
+    }
+
+
+    @Test
     void createMethodForInterface(){
         List<MethodModel> methodModels = createMethodModels(1);
         InterfaceModel interfaceModel = createInterfaceModel(methodModels);
@@ -77,6 +93,21 @@ public class MethodAnalyzerTest {
         assertThat(interfaceDescriptor.getDeclaredMembers().size()).isEqualTo(1);
         MemberDescriptor descriptor = interfaceDescriptor.getDeclaredMembers().get(0);
         assertMemberDescriptorHasBeenFilled(descriptor);
+    }
+
+    @Test
+    void createMethodForInterfaceNonexistentType(){
+        List<MethodModel> methodModels = createMethodModels(1);
+        InterfaceModel interfaceModel = createInterfaceModel(methodModels);
+        FileModel fileModel = createFileModel(interfaceModel, "Relative.Path");
+
+        InterfaceTypeDescriptor interfaceDescriptor = new InterfaceDescriptorImpl("Interface");
+        when(typeCache.findTypeByRelativePath(any(), any())).thenReturn(Optional.empty());
+
+        methodAnalyzer.createMethods(toList(fileModel));
+
+        verify(methodCache, never()).create(any(), eq(MethodDescriptor.class));
+        assertThat(interfaceDescriptor.getDeclaredMembers().size()).isEqualTo(0);
     }
 
     @Test
