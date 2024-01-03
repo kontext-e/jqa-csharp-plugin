@@ -78,21 +78,21 @@ public class JsonToNeo4JConverter {
 
         readJsonFilesRecursively(inputDirectory, null);
 
-        dependencyAnalyzer.createUsings(fileModelList);
         typeAnalyzer.createTypes(fileModelList);
-        dependencyAnalyzer.linkBaseTypes(fileModelList);
-        dependencyAnalyzer.linkInterfaces(fileModelList);
+        for (FileModel fileModel : fileModelList){
+            dependencyAnalyzer.createUsings(fileModel);
+            dependencyAnalyzer.linkInterfaces(fileModel);
+            for (ClassModel classModel : fileModel.getClasses()){
+                dependencyAnalyzer.linkBaseTypes(classModel);
+                memberAnalyzer.createFields(classModel, fileModel.getRelativePath());
+            }
+        }
         partialityAnalyzer.linkPartialClasses();
         typeAnalyzer.createEnumMembers(fileModelList);
         methodAnalyzer.createConstructors(fileModelList);
         methodAnalyzer.createMethods(fileModelList);
         partialityAnalyzer.linkPartialMethods();
         invocationAnalyzer.analyzeInvocations(fileModelList);
-        for (FileModel fileModel : fileModelList){
-            for (ClassModel classModel : fileModel.getClasses()){
-                memberAnalyzer.createFields(classModel, fileModel.getRelativePath());
-            }
-        }
         propertyAnalyzer.createProperties(fileModelList);
     }
 

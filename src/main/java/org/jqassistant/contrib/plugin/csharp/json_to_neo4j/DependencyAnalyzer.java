@@ -17,8 +17,6 @@ import org.jqassistant.contrib.plugin.csharp.model.NamespaceDescriptor;
 import org.jqassistant.contrib.plugin.csharp.model.TypeDescriptor;
 import org.jqassistant.contrib.plugin.csharp.model.UsesNamespaceDescriptor;
 
-import java.util.List;
-
 public class DependencyAnalyzer {
     private final CSharpFileCache fileCache;
     private final NamespaceCache namespaceCache;
@@ -32,56 +30,45 @@ public class DependencyAnalyzer {
         this.store = store;
     }
 
-    protected void createUsings(List<FileModel> fileModelList) {
+    protected void createUsings(FileModel fileModel) {
+        CSharpFileDescriptor cSharpFileDescriptor = fileCache.get(fileModel.getAbsolutePath());
 
-        for (FileModel fileModel : fileModelList) {
-            CSharpFileDescriptor cSharpFileDescriptor = fileCache.get(fileModel.getAbsolutePath());
+        for (UsingModel usingModel : fileModel.getUsings()) {
+            NamespaceDescriptor namespaceDescriptor = namespaceCache.findOrCreate(usingModel.getKey());
 
-            for (UsingModel usingModel : fileModel.getUsings()) {
-                NamespaceDescriptor namespaceDescriptor = namespaceCache.findOrCreate(usingModel.getKey());
-
-                UsesNamespaceDescriptor usesNamespaceDescriptor = store.create(cSharpFileDescriptor, UsesNamespaceDescriptor.class, namespaceDescriptor);
-                usesNamespaceDescriptor.setAlias(usingModel.getAlias());
-            }
+            UsesNamespaceDescriptor usesNamespaceDescriptor = store.create(cSharpFileDescriptor, UsesNamespaceDescriptor.class, namespaceDescriptor);
+            usesNamespaceDescriptor.setAlias(usingModel.getAlias());
         }
     }
 
-    protected void linkBaseTypes(List<FileModel> fileModelList) {
+    protected void linkBaseTypes(ClassModel classModel) {
+        ClassDescriptor classDescriptor = (ClassDescriptor) typeCache.findAny(classModel.getKey());
 
-        for (FileModel fileModel : fileModelList) {
-            for (ClassModel classModel : fileModel.getClasses()) {
-                ClassDescriptor classDescriptor = (ClassDescriptor) typeCache.findAny(classModel.getKey());
-
-                if (StringUtils.isNotBlank(classModel.getBaseType())) {
-                    TypeDescriptor typeDescriptor = typeCache.findOrCreate(classModel.getBaseType());
-                    classDescriptor.setSuperClass(typeDescriptor);
-                }
-            }
+        if (StringUtils.isNotBlank(classModel.getBaseType())) {
+            TypeDescriptor typeDescriptor = typeCache.findOrCreate(classModel.getBaseType());
+            classDescriptor.setSuperClass(typeDescriptor);
         }
     }
 
-    protected void linkInterfaces(List<FileModel> fileModelList) {
+    protected void linkInterfaces(FileModel fileModel) {
+        for (ClassModel classModel : fileModel.getClasses()) {
+            ClassDescriptor classDescriptor = (ClassDescriptor) typeCache.findAny(classModel.getKey());
 
-        for (FileModel fileModel : fileModelList) {
-            for (ClassModel classModel : fileModel.getClasses()) {
-                ClassDescriptor classDescriptor = (ClassDescriptor) typeCache.findAny(classModel.getKey());
-
-                if (CollectionUtils.isNotEmpty(classModel.getImplementedInterfaces())) {
-                    for (String interfaceFqn : classModel.getImplementedInterfaces()) {
-                        TypeDescriptor typeDescriptor = typeCache.findOrCreate(interfaceFqn);
-                        classDescriptor.getInterfaces().add(typeDescriptor);
-                    }
+            if (CollectionUtils.isNotEmpty(classModel.getImplementedInterfaces())) {
+                for (String interfaceFqn : classModel.getImplementedInterfaces()) {
+                    TypeDescriptor typeDescriptor = typeCache.findOrCreate(interfaceFqn);
+                    classDescriptor.getInterfaces().add(typeDescriptor);
                 }
             }
+        }
 
-            for (InterfaceModel interfaceModel : fileModel.getInterfaces()) {
-                InterfaceTypeDescriptor interfaceTypeDescriptor = (InterfaceTypeDescriptor) typeCache.findAny(interfaceModel.getKey());
+        for (InterfaceModel interfaceModel : fileModel.getInterfaces()) {
+            InterfaceTypeDescriptor interfaceTypeDescriptor = (InterfaceTypeDescriptor) typeCache.findAny(interfaceModel.getKey());
 
-                if (CollectionUtils.isNotEmpty(interfaceModel.getImplementedInterfaces())) {
-                    for (String interfaceFqn : interfaceModel.getImplementedInterfaces()) {
-                        TypeDescriptor typeDescriptor = typeCache.findOrCreate(interfaceFqn);
-                        interfaceTypeDescriptor.getInterfaces().add(typeDescriptor);
-                    }
+            if (CollectionUtils.isNotEmpty(interfaceModel.getImplementedInterfaces())) {
+                for (String interfaceFqn : interfaceModel.getImplementedInterfaces()) {
+                    TypeDescriptor typeDescriptor = typeCache.findOrCreate(interfaceFqn);
+                    interfaceTypeDescriptor.getInterfaces().add(typeDescriptor);
                 }
             }
         }
