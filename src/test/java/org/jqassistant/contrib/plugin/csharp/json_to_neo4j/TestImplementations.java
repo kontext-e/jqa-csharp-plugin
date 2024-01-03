@@ -3,6 +3,7 @@ package org.jqassistant.contrib.plugin.csharp.json_to_neo4j;
 import com.buschmais.jqassistant.plugin.common.api.model.FileDescriptor;
 import org.jqassistant.contrib.plugin.csharp.model.CSharpFileDescriptor;
 import org.jqassistant.contrib.plugin.csharp.model.ClassDescriptor;
+import org.jqassistant.contrib.plugin.csharp.model.ConstructorDescriptor;
 import org.jqassistant.contrib.plugin.csharp.model.EnumTypeDescriptor;
 import org.jqassistant.contrib.plugin.csharp.model.EnumValueDescriptor;
 import org.jqassistant.contrib.plugin.csharp.model.FieldDescriptor;
@@ -566,7 +567,7 @@ class MethodDescriptorImpl implements MethodDescriptor {
     private Integer firstLineNumber;
     private Integer effectiveLineCount;
     private TypeDescriptor returns;
-    private List<ParameterDescriptor> parameters;
+    private List<ParameterDescriptor> parameters = new ArrayList<>();
     private List<TypeDescriptor> declaredThrowables;
     private List<MemberAccessDescriptor> accessedMember;
     private List<MethodDescriptor> methodFragments = new ArrayList<>();
@@ -822,3 +823,5 @@ class MethodDescriptorImpl implements MethodDescriptor {
 
     }
 }
+
+class ConstructorDescriptorImpl extends MethodDescriptorImpl implements ConstructorDescriptor {}
