@@ -42,8 +42,8 @@ public class TypeCacheTest {
 
     @Test
     void testCreateClass() {
-        ClassModel classModel = mock();
-        when(classModel.getFqn()).thenReturn("Class1");
+        ClassModel classModel = new ClassModel();
+        classModel.setFqn("Class1");
 
         TypeDescriptor typeDescriptor = typeCache.create(classModel);
 
@@ -55,8 +55,8 @@ public class TypeCacheTest {
 
     @Test
     void testCreateInterfaces() {
-        InterfaceModel interfaceModel = mock();
-        when(interfaceModel.getFqn()).thenReturn("Interface1");
+        InterfaceModel interfaceModel = new InterfaceModel();
+        interfaceModel.setFqn("Interface1");
 
         TypeDescriptor typeDescriptor = typeCache.create(interfaceModel);
 
@@ -68,8 +68,8 @@ public class TypeCacheTest {
 
     @Test
     void testCreateEnums() {
-        EnumModel enumModel = mock();
-        when(enumModel.getFqn()).thenReturn("Enum1");
+        EnumModel enumModel = new EnumModel();
+        enumModel.setFqn("Enum1");
 
         TypeDescriptor typeDescriptor = typeCache.create(enumModel);
 
@@ -81,8 +81,8 @@ public class TypeCacheTest {
 
     @Test
     void testCreateType() {
-        TypeModel typeModel = mock();
-        when(typeModel.getFqn()).thenReturn("Type1");
+        TypeModel typeModel = new TypeModel();
+        typeModel.setFqn("Type1");
 
         TypeDescriptor typeDescriptor = typeCache.create(typeModel);
 
@@ -94,10 +94,10 @@ public class TypeCacheTest {
 
     @Test
     void testCreateMultipleClasses() {
-        ClassModel classModel1 = mock();
-        when(classModel1.getFqn()).thenReturn("PartialClass");
-        ClassModel classModel2 = mock();
-        when(classModel2.getFqn()).thenReturn("PartialClass");
+        ClassModel classModel1 = new ClassModel();
+        classModel1.setFqn("PartialClass");
+        ClassModel classModel2 = new ClassModel();
+        classModel2.setFqn("PartialClass");
 
         typeCache.create(classModel1);
         typeCache.create(classModel2);
@@ -115,8 +115,8 @@ public class TypeCacheTest {
 
     @Test
     void testFindOrCreate() {
-        ClassModel classModel = mock();
-        when(classModel.getFqn()).thenReturn("Class1");
+        ClassModel classModel = new ClassModel();
+        classModel.setFqn("Class1");
         TypeDescriptor typeDescriptor = typeCache.create(classModel);
 
         TypeDescriptor result = typeCache.findOrCreate("Class1");
@@ -126,16 +126,16 @@ public class TypeCacheTest {
 
     @Test
     void testFindAllPartialClasses(){
-        ClassModel classModel11 = mock();
-        when(classModel11.getFqn()).thenReturn("PartialClass1");
-        ClassModel classModel12 = mock();
-        when(classModel12.getFqn()).thenReturn("PartialClass1");
-        ClassModel classModel21 = mock();
-        when(classModel21.getFqn()).thenReturn("PartialClass2");
-        ClassModel classModel22 = mock();
-        when(classModel22.getFqn()).thenReturn("PartialClass2");
-        ClassModel nonPartialClassModel = mock();
-        when(nonPartialClassModel.getFqn()).thenReturn("nonPartialClass");
+        ClassModel classModel11 = new ClassModel();
+        classModel11.setFqn("PartialClass1");
+        ClassModel classModel12 = new ClassModel();
+        classModel12.setFqn("PartialClass1");
+        ClassModel classModel21 = new ClassModel();
+        classModel21.setFqn("PartialClass2");
+        ClassModel classModel22 = new ClassModel();
+        classModel22.setFqn("PartialClass2");
+        ClassModel nonPartialClassModel = new ClassModel();
+        nonPartialClassModel.setFqn("nonPartialClass");
 
         TypeDescriptor typeDescriptor11 = typeCache.create(classModel11);
         TypeDescriptor typeDescriptor12 = typeCache.create(classModel12);

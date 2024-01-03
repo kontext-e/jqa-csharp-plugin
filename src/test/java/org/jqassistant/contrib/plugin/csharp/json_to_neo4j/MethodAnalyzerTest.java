@@ -88,7 +88,7 @@ public class MethodAnalyzerTest {
         ClassDescriptorImpl classDescriptor = new ClassDescriptorImpl("Class1");
         when(typeCache.findTypeByRelativePath(any(), eq("Relative.Path"))).thenReturn(Optional.of(classDescriptor));
 
-        methodAnalyzer.createConstructors(toList(fileModel));
+        methodAnalyzer.createMethods(toList(fileModel));
 
         verify(methodCache, never()).create(any(), eq(ConstructorDescriptor.class));
         assertThat(classDescriptor.getDeclaredMembers().size()).isEqualTo(0);
@@ -143,7 +143,7 @@ public class MethodAnalyzerTest {
         fillMethodModel(constructorModel, 2);
         List<ConstructorModel> constructorModels = new ArrayList<>();
         constructorModels.add(constructorModel);
-        when(classModel.getConstructors()).thenReturn(constructorModels);
+        classModel.setConstructors(constructorModels);
     }
 
     private List<MethodModel> createMethodModels(int amount) {
@@ -157,37 +157,39 @@ public class MethodAnalyzerTest {
     }
 
     private InterfaceModel createInterfaceModel(List<MethodModel> methodModels) {
-        InterfaceModel interfaceModel = mock();
+        InterfaceModel interfaceModel = new InterfaceModel();
         List<MethodModel> methods = new ArrayList<>(methodModels);
-        when(interfaceModel.getMethods()).thenReturn(methods);
-        when(interfaceModel.getKey()).thenReturn("Interface");
+        interfaceModel.setMethods(methods);
+        interfaceModel.setFqn("Interface");
 
         return interfaceModel;
     }
 
     private ClassModel createClassModel(List<MethodModel> methodModels){
-        ClassModel classModel = mock();
+        ClassModel classModel = new ClassModel();
         List<MethodModel> methods = new ArrayList<>(methodModels);
-        when(classModel.getMethods()).thenReturn(methods);
-        when(classModel.getKey()).thenReturn("Class");
+        classModel.setMethods(methods);
+        classModel.setFqn("Class");
 
         return classModel;
     }
 
     private FileModel createFileModel(InterfaceModel interfaceModel, String relativePath){
-        FileModel fileModel = mock();
+        FileModel fileModel = new FileModel();
         List<InterfaceModel> interfaceModels = toList(interfaceModel);
-        when(fileModel.getInterfaces()).thenReturn(interfaceModels);
-        when(fileModel.getRelativePath()).thenReturn(relativePath);
+        fileModel.setClasses(new ArrayList<>());
+        fileModel.setInterfaces(interfaceModels);
+        fileModel.setRelativePath(relativePath);
 
         return fileModel;
     }
 
     private FileModel createFileModel(ClassModel classModel, String relativePath) {
-        FileModel fileModel = mock();
+        FileModel fileModel = new FileModel();
         List<ClassModel> classModels = toList(classModel);
-        when(fileModel.getClasses()).thenReturn(classModels);
-        when(fileModel.getRelativePath()).thenReturn(relativePath);
+        fileModel.setClasses(classModels);
+        fileModel.setInterfaces(new ArrayList<>());
+        fileModel.setRelativePath(relativePath);
 
         return fileModel;
     }
