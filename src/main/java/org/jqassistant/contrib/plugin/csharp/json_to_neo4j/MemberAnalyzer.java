@@ -6,13 +6,11 @@ import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.caches.FieldCache;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.caches.TypeCache;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.ClassModel;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.FieldModel;
-import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.FileModel;
 import org.jqassistant.contrib.plugin.csharp.model.ClassDescriptor;
 import org.jqassistant.contrib.plugin.csharp.model.FieldDescriptor;
 import org.jqassistant.contrib.plugin.csharp.model.PrimitiveValueDescriptor;
 import org.jqassistant.contrib.plugin.csharp.model.TypeDescriptor;
 
-import java.util.List;
 import java.util.Optional;
 
 public class MemberAnalyzer {
@@ -27,38 +25,44 @@ public class MemberAnalyzer {
         this.typeCache = typeCache;
     }
 
-    protected void createFields(List<FileModel> fileModelList) {
+    protected void createFields(ClassModel classModel, String relativeFilePath) {
 
-        for (FileModel fileModel : fileModelList) {
-            for (ClassModel classModel : fileModel.getClasses()) {
+        Optional<TypeDescriptor> descriptor = typeCache.findTypeByRelativePath(classModel.getKey(), relativeFilePath);
+        if (!descriptor.isPresent()) return;
 
-                Optional<TypeDescriptor> descriptor = typeCache.findTypeByRelativePath(classModel.getKey(), fileModel.getRelativePath());
-                if (!descriptor.isPresent()) continue;
+        ClassDescriptor classDescriptor = (ClassDescriptor) descriptor.get();
+        for (FieldModel fieldModel : classModel.getFields()) {
+            FieldDescriptor fieldDescriptor = fieldCache.create(fieldModel.getKey());
+            fillFieldDescriptor(fieldModel, fieldDescriptor);
+            classDescriptor.getDeclaredMembers().add(fieldDescriptor);
+        }
+    }
 
-                ClassDescriptor classDescriptor = (ClassDescriptor) descriptor.get();
-                for (FieldModel fieldModel : classModel.getFields()) {
+    private void fillFieldDescriptor(FieldModel fieldModel, FieldDescriptor fieldDescriptor) {
+        analyzeFieldProperties(fieldModel, fieldDescriptor);
+        analyzeFieldType(fieldModel, fieldDescriptor);
+        analyzeConstantValues(fieldModel, fieldDescriptor);
+    }
 
-                    FieldDescriptor fieldDescriptor = fieldCache.create(fieldModel.getKey());
-                    fieldDescriptor.setFullQualifiedName(fieldModel.getFqn());
-                    fieldDescriptor.setName(fieldModel.getName());
-                    fieldDescriptor.setVisibility(fieldModel.getAccessibility());
+    private void analyzeFieldProperties(FieldModel fieldModel, FieldDescriptor fieldDescriptor) {
+        fieldDescriptor.setFullQualifiedName(fieldModel.getFqn());
+        fieldDescriptor.setName(fieldModel.getName());
+        fieldDescriptor.setVisibility(fieldModel.getAccessibility());
+        fieldDescriptor.setVolatile(fieldModel.isVolatileKeyword());
+        fieldDescriptor.setSealed(fieldModel.isSealed());
+        fieldDescriptor.setStatic(fieldModel.isStaticKeyword());
+    }
 
-                    TypeDescriptor typeDescriptor = typeCache.findOrCreate(fieldModel.getType());
-                    fieldDescriptor.setType(typeDescriptor);
+    private void analyzeFieldType(FieldModel fieldModel, FieldDescriptor fieldDescriptor) {
+        TypeDescriptor typeDescriptor = typeCache.findOrCreate(fieldModel.getType());
+        fieldDescriptor.setType(typeDescriptor);
+    }
 
-                    fieldDescriptor.setVolatile(fieldModel.isVolatileKeyword());
-                    fieldDescriptor.setSealed(fieldModel.isSealed());
-                    fieldDescriptor.setStatic(fieldModel.isStaticKeyword());
-
-                    if (StringUtils.isNotBlank(fieldModel.getConstantValue())) {
-                        PrimitiveValueDescriptor primitiveValueDescriptor = store.create(PrimitiveValueDescriptor.class);
-                        primitiveValueDescriptor.setValue(fieldModel.getConstantValue());
-                        fieldDescriptor.setValue(primitiveValueDescriptor);
-                    }
-
-                    classDescriptor.getDeclaredMembers().add(fieldDescriptor);
-                }
-            }
+    private void analyzeConstantValues(FieldModel fieldModel, FieldDescriptor fieldDescriptor) {
+        if (StringUtils.isNotBlank(fieldModel.getConstantValue())) {
+            PrimitiveValueDescriptor primitiveValueDescriptor = store.create(PrimitiveValueDescriptor.class);
+            primitiveValueDescriptor.setValue(fieldModel.getConstantValue());
+            fieldDescriptor.setValue(primitiveValueDescriptor);
         }
     }
 }

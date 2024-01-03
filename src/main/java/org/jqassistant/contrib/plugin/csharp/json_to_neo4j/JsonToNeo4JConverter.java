@@ -10,6 +10,7 @@ import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.caches.MethodCache;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.caches.NamespaceCache;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.caches.PropertyCache;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.caches.TypeCache;
+import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.ClassModel;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.FileModel;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.InvocationAnalyzer;
 import org.jqassistant.contrib.plugin.csharp.model.CSharpClassesDirectoryDescriptor;
@@ -87,7 +88,11 @@ public class JsonToNeo4JConverter {
         methodAnalyzer.createMethods(fileModelList);
         partialityAnalyzer.linkPartialMethods();
         invocationAnalyzer.analyzeInvocations(fileModelList);
-        memberAnalyzer.createFields(fileModelList);
+        for (FileModel fileModel : fileModelList){
+            for (ClassModel classModel : fileModel.getClasses()){
+                memberAnalyzer.createFields(classModel, fileModel.getRelativePath());
+            }
+        }
         propertyAnalyzer.createProperties(fileModelList);
     }
 

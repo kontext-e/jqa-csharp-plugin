@@ -74,6 +74,7 @@ public class TypeCache {
         return cache.get(key);
     }
 
+    //Used to separate Classes with the same name in different Packages (relative Path indicates different Package)
     public Optional<TypeDescriptor> findTypeByRelativePath(String key, String path){
         List<TypeDescriptor> typeDescriptors = findAll(key);
         return typeDescriptors.stream().filter(item -> item.getRelativePath().equals(path)).findAny();
