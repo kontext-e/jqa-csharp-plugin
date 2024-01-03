@@ -110,15 +110,15 @@ class TypeAnalyzerTest {
     }
 
     private static FileModel createFileModel(int amountOfClasses, int amountOfInterfaces, int amountOfEnums) {
-        FileModel fileModel = mock();
+        FileModel fileModel = new FileModel();
 
         List<ClassModel> classModels = createTypeModelList(amountOfClasses, ClassModel.class);
         List<InterfaceModel> interfaceModels = createTypeModelList(amountOfInterfaces, InterfaceModel.class);
         List<EnumModel> enumModels = createTypeModelList(amountOfEnums, EnumModel.class);
 
-        when(fileModel.getClasses()).thenReturn(classModels);
-        when(fileModel.getInterfaces()).thenReturn(interfaceModels);
-        when(fileModel.getEnums()).thenReturn(enumModels);
+        fileModel.setClasses(classModels);
+        fileModel.setInterfaces(interfaceModels);
+        fileModel.setEnums(enumModels);
         return fileModel;
     }
 
