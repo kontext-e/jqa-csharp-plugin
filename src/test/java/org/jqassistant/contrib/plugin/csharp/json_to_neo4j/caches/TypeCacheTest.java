@@ -1,11 +1,14 @@
-package org.jqassistant.contrib.plugin.csharp.json_to_neo4j;
+package org.jqassistant.contrib.plugin.csharp.json_to_neo4j.caches;
 
 import com.buschmais.jqassistant.core.store.api.Store;
-import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.caches.TypeCache;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.ClassModel;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.EnumModel;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.InterfaceModel;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.TypeModel;
+import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.testImplementations.ClassDescriptorImpl;
+import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.testImplementations.EnumDescriptorImpl;
+import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.testImplementations.InterfaceDescriptorImpl;
+import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.testImplementations.TypeDescriptorImpl;
 import org.jqassistant.contrib.plugin.csharp.model.ClassDescriptor;
 import org.jqassistant.contrib.plugin.csharp.model.EnumTypeDescriptor;
 import org.jqassistant.contrib.plugin.csharp.model.InterfaceTypeDescriptor;
