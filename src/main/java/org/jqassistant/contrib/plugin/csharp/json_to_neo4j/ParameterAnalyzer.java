@@ -51,6 +51,4 @@ public class ParameterAnalyzer {
         parameterDescriptor.setType(parameterTypeDescriptor);
         parameterDescriptor.setName(parameterModel.getName());
     }
-
-
 }
