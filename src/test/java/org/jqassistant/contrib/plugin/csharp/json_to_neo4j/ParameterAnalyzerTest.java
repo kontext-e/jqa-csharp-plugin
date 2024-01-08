@@ -18,6 +18,8 @@ import java.util.List;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -39,10 +41,10 @@ public class ParameterAnalyzerTest {
     void TestAddOneParameter(){
         MethodModel methodModel = new MethodModel();
         MethodDescriptor methodDescriptor = new MethodDescriptorImpl();
-        ParameterModel parameterModel = new ParameterModel();
-        parameterModel.setName("Param1");
-        parameterModel.setType("int");
-        methodModel.setParameters(toList(parameterModel));
+        ParameterModel parameterModel = createParameterModel("Param1", "int");
+        List<ParameterModel> parameterModels = new ArrayList<>();
+        parameterModels.add(parameterModel);
+        methodModel.setParameters(parameterModels);
 
         ParameterDescriptorImpl parameterDescriptor = new ParameterDescriptorImpl();
         when(store.create(ParameterDescriptor.class)).thenReturn(parameterDescriptor);
@@ -59,10 +61,50 @@ public class ParameterAnalyzerTest {
         assertThat(result.getName()).isEqualTo("Param1");
     }
 
-    private <T> List<T> toList(T item){
-        List<T> list = new ArrayList<>();
-        list.add(item);
-        return list;
+    @Test
+    void TestAddMultipleParameters(){
+        MethodModel methodModel = new MethodModel();
+        MethodDescriptor methodDescriptor = new MethodDescriptorImpl();
+        ParameterModel parameterModel1 = createParameterModel("Param1", "int");
+        ParameterModel parameterModel2 = createParameterModel("Param2", "string");
+        List<ParameterModel> parameterModels = new ArrayList<>();
+        parameterModels.add(parameterModel1);
+        parameterModels.add(parameterModel2);
+        methodModel.setParameters(parameterModels);
+
+        ParameterDescriptorImpl parameterDescriptor1 = new ParameterDescriptorImpl();
+        ParameterDescriptorImpl parameterDescriptor2 = new ParameterDescriptorImpl();
+        when(store.create(ParameterDescriptor.class)).thenReturn(parameterDescriptor1, parameterDescriptor2);
+        TypeDescriptorImpl typeInt = new TypeDescriptorImpl("TypeInt");
+        when(typeCache.findOrCreate(eq("int"))).thenReturn(typeInt);
+        TypeDescriptorImpl typeString = new TypeDescriptorImpl("TypeString");
+        when(typeCache.findOrCreate(eq("string"))).thenReturn(typeString);
+
+        parameterAnalyzer.addParameters(methodModel, methodDescriptor);
+
+        verify(store, times(2)).create(ParameterDescriptor.class);
+        assertThat(methodDescriptor.getParameters().size()).isEqualTo(2);
+        assertThat(methodDescriptor.getParameters().get(0).getName()).isEqualTo("Param1");
+        assertThat(methodDescriptor.getParameters().get(1).getName()).isEqualTo("Param2");
+    }
+
+    @Test
+    void TestAddZeroParameters(){
+        MethodModel methodModel = new MethodModel();
+        methodModel.setParameters(new ArrayList<>());
+        MethodDescriptor methodDescriptor = new MethodDescriptorImpl();
+
+        parameterAnalyzer.addParameters(methodModel, methodDescriptor);
+
+        verify(store, never()).create(ParameterDescriptor.class);
+        assertThat(methodDescriptor.getParameters().size()).isEqualTo(0);
+    }
+
+    private static ParameterModel createParameterModel(String name, String type) {
+        ParameterModel parameterModel = new ParameterModel();
+        parameterModel.setName(name);
+        parameterModel.setType(type);
+        return parameterModel;
     }
 
 

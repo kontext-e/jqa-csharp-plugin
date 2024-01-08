@@ -8,6 +8,10 @@ import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.Constructo
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.FileModel;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.InterfaceModel;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.MethodModel;
+import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.testImplementations.ClassDescriptorImpl;
+import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.testImplementations.ConstructorDescriptorImpl;
+import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.testImplementations.InterfaceDescriptorImpl;
+import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.testImplementations.MethodDescriptorImpl;
 import org.jqassistant.contrib.plugin.csharp.model.ConstructorDescriptor;
 import org.jqassistant.contrib.plugin.csharp.model.InterfaceTypeDescriptor;
 import org.jqassistant.contrib.plugin.csharp.model.MemberDescriptor;
