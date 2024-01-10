@@ -84,7 +84,7 @@ public class MethodAnalyzer {
         methodDescriptor.setFirstLineNumber(methodModel.getFirstLineNumber());
         methodDescriptor.setName(methodModel.getName());
         methodDescriptor.setFullQualifiedName(methodModel.getFqn());
-        methodDescriptor.setVisibility(methodModel.getAccessibility());
+        methodDescriptor.setAccessibility(methodModel.getAccessibility());
         methodDescriptor.setCyclomaticComplexity(methodModel.getCyclomaticComplexity());
         methodDescriptor.setIsImplementation(methodModel.isImplementation());
     }
