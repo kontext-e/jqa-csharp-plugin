@@ -117,7 +117,7 @@ public class MemberAnalyzerTest {
     private static void assertFieldDescriptorHasBeenFilled(FieldDescriptor fieldDescriptor) {
         assertThat(fieldDescriptor.getFullQualifiedName()).isNotNull();
         assertThat(fieldDescriptor.getName()).isNotNull();
-        assertThat(fieldDescriptor.getVisibility()).isNotNull();
+        assertThat(fieldDescriptor.getAccessibility()).isNotNull();
         assertThat(fieldDescriptor.isVolatile()).isTrue();
         assertThat(fieldDescriptor.isSealed()).isTrue();
         assertThat(fieldDescriptor.isStatic()).isTrue();

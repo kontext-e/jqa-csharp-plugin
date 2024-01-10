@@ -3,6 +3,7 @@ package org.jqassistant.contrib.plugin.csharp.json_to_neo4j.testImplementations;
 import org.jqassistant.contrib.plugin.csharp.model.InterfaceTypeDescriptor;
 import org.jqassistant.contrib.plugin.csharp.model.TypeDescriptor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class InterfaceDescriptorImpl extends TypeDescriptorImpl implements InterfaceTypeDescriptor {
@@ -15,21 +16,12 @@ public class InterfaceDescriptorImpl extends TypeDescriptorImpl implements Inter
     private boolean isExtern;
     private boolean isOverride;
     private boolean isVirtual;
-    private List<TypeDescriptor> interfaces;
+    private List<TypeDescriptor> interfaces = new ArrayList<>();
 
     public InterfaceDescriptorImpl(String name) {
         super(name);
     }
 
-    @Override
-    public String getVisibility() {
-        return visibility;
-    }
-
-    @Override
-    public void setVisibility(String visibility) {
-        this.visibility = visibility;
-    }
 
     @Override
     public Boolean isStatic() {

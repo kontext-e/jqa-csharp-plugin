@@ -10,23 +10,18 @@ import java.util.List;
 
 
 @Label(value = "Type", usingIndexedPropertyOf = FullQualifiedNameDescriptor.class)
-public interface TypeDescriptor extends CSharpDescriptor, NamedDescriptor, FullQualifiedNameDescriptor, MD5Descriptor, PartialDescriptor {
+public interface TypeDescriptor extends
+        CSharpDescriptor,
+        NamedDescriptor,
+        FullQualifiedNameDescriptor,
+        MD5Descriptor,
+        PartialDescriptor,
+        AccessibilityDescriptor,
+        LineCountDescriptor {
 
     @Relation.Outgoing
     @Declares
     List<MemberDescriptor> getDeclaredMembers();
-
-    Integer getFirstLineNumber();
-
-    void setFirstLineNumber(Integer firstLineNumber);
-
-    Integer getLastLineNumber();
-
-    void setLastLineNumber(Integer lastLineNumber);
-
-    Integer getEffectiveLineCount();
-
-    void setEffectiveLineCount(Integer effectiveLineCount);
 
     @Relation("PARTIAL_WITH")
     List<TypeDescriptor> getClassFragments();

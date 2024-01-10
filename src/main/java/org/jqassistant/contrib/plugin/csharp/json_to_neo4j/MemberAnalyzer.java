@@ -27,6 +27,7 @@ public class MemberAnalyzer {
 
     protected void createFields(ClassModel classModel, String relativeFilePath) {
 
+        //Todo Why would the type cache be empty? -> shouldn't this be an exception?
         Optional<TypeDescriptor> descriptor = typeCache.findTypeByRelativePath(classModel.getKey(), relativeFilePath);
         if (!descriptor.isPresent()) return;
 
@@ -47,7 +48,7 @@ public class MemberAnalyzer {
     private void analyzeFieldProperties(FieldModel fieldModel, FieldDescriptor fieldDescriptor) {
         fieldDescriptor.setFullQualifiedName(fieldModel.getFqn());
         fieldDescriptor.setName(fieldModel.getName());
-        fieldDescriptor.setVisibility(fieldModel.getAccessibility());
+        fieldDescriptor.setAccessibility(fieldModel.getAccessibility());
         fieldDescriptor.setVolatile(fieldModel.isVolatileKeyword());
         fieldDescriptor.setSealed(fieldModel.isSealed());
         fieldDescriptor.setStatic(fieldModel.isStaticKeyword());

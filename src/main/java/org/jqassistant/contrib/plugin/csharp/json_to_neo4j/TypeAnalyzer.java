@@ -79,7 +79,7 @@ public class TypeAnalyzer {
         if (typeModel instanceof InterfaceModel){
             InterfaceModel interfaceModel = (InterfaceModel) typeModel;
             InterfaceTypeDescriptor interfaceDescriptor = (InterfaceTypeDescriptor) descriptor;
-            interfaceDescriptor.setVisibility(interfaceModel.getAccessibility());
+            interfaceDescriptor.setAccessibility(interfaceModel.getAccessibility());
             interfaceDescriptor.setPartial(interfaceModel.isPartial());
         }
 

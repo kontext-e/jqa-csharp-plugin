@@ -169,7 +169,7 @@ public class MethodAnalyzerTest {
         assertThat(methodDescriptor.getFirstLineNumber()).isNotNull();
         assertThat(methodDescriptor.getName()).isNotNull();
         assertThat(methodDescriptor.getFullQualifiedName()).isNotNull();
-        assertThat(methodDescriptor.getVisibility()).isNotNull();
+        assertThat(methodDescriptor.getAccessibility()).isNotNull();
         assertThat(methodDescriptor.getCyclomaticComplexity()).isNotNull();
     }
 

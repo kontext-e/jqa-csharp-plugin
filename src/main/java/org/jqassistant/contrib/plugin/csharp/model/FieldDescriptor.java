@@ -6,7 +6,7 @@ import com.buschmais.xo.neo4j.api.annotation.Relation;
 
 
 @Label(value = "Field")
-public interface FieldDescriptor extends MemberDescriptor, TypedDescriptor, AccessModifierDescriptor {
+public interface FieldDescriptor extends MemberDescriptor, TypedDescriptor, MethodModifierDescriptor {
 
     @Property("transient")
     Boolean isTransient();

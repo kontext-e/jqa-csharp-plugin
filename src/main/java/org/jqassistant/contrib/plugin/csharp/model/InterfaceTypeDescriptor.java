@@ -6,7 +6,7 @@ import com.buschmais.xo.neo4j.api.annotation.Relation;
 import java.util.List;
 
 @Label("Interface")
-public interface InterfaceTypeDescriptor extends TypeDescriptor, AccessModifierDescriptor {
+public interface InterfaceTypeDescriptor extends TypeDescriptor, MethodModifierDescriptor {
 
     @Relation("IMPLEMENTS")
     List<TypeDescriptor> getInterfaces();
