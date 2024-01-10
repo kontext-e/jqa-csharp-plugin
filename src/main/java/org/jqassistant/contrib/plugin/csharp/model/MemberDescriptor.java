@@ -11,7 +11,16 @@ import static com.buschmais.xo.neo4j.api.annotation.Relation.Incoming;
 
 @Label("Member")
 @Abstract
-public interface MemberDescriptor extends CSharpDescriptor, NamedDescriptor, SignatureDescriptor, AccessModifierDescriptor, Descriptor, FullQualifiedNameDescriptor {
+public interface MemberDescriptor extends
+        CSharpDescriptor,
+        NamedDescriptor,
+        SignatureDescriptor,
+        MethodModifierDescriptor,
+        Descriptor,
+        FullQualifiedNameDescriptor,
+        AccessibilityDescriptor,
+        MemberModifierDescriptor{
+
 
     @Incoming
     @Declares

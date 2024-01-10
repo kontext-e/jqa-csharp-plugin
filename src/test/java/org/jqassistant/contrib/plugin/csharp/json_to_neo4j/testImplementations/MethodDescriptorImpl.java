@@ -26,7 +26,6 @@ public class MethodDescriptorImpl implements MethodDescriptor {
     private int cyclomaticComplexity;
     private List<InvokesDescriptor> invokes;
     private List<InvokesDescriptor> invokedBy;
-    private String visibility;
     private String name;
     private String fullQualifiedName;
     private Integer lastLineNumber;
@@ -39,6 +38,17 @@ public class MethodDescriptorImpl implements MethodDescriptor {
     private List<MethodDescriptor> methodFragments = new ArrayList<>();
     private List<FieldDescriptor> fields;
     private TypeDescriptor declaringType;
+    private String accessibility;
+
+    @Override
+    public String getAccessibility() {
+        return accessibility;
+    }
+
+    @Override
+    public void setAccessibility(String accessibility) {
+        this.accessibility = accessibility;
+    }
 
     @Override
     public List<ParameterDescriptor> getParameters() {
@@ -172,16 +182,6 @@ public class MethodDescriptorImpl implements MethodDescriptor {
     @Override
     public void setFullQualifiedName(String fullQualifiedName) {
         this.fullQualifiedName = fullQualifiedName;
-    }
-
-    @Override
-    public String getVisibility() {
-        return visibility;
-    }
-
-    @Override
-    public void setVisibility(String visibility) {
-        this.visibility = visibility;
     }
 
     @Override

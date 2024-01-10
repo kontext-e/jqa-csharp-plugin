@@ -22,6 +22,17 @@ public class TypeDescriptorImpl implements TypeDescriptor {
     private String Md5;
     private String relativePath;
     private boolean partial;
+    private String accessibility;
+
+    @Override
+    public String getAccessibility() {
+        return accessibility;
+    }
+
+    @Override
+    public void setAccessibility(String accessibility) {
+        this.accessibility = accessibility;
+    }
 
     public List<MemberDescriptor> getDeclaredMembers() {
         return declaredMembers;

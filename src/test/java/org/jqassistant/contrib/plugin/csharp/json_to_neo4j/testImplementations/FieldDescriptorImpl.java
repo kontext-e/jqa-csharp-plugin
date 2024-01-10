@@ -25,6 +25,17 @@ public class FieldDescriptorImpl implements FieldDescriptor {
     private TypeDescriptor type;
     private PrimitiveValueDescriptor value;
     private TypeDescriptor declaringType;
+    private String accessibility;
+
+    @Override
+    public String getAccessibility() {
+        return accessibility;
+    }
+
+    @Override
+    public void setAccessibility(String accessibility) {
+        this.accessibility = accessibility;
+    }
 
     public TypeDescriptor getDeclaringType() {
         return declaringType;
@@ -94,16 +105,6 @@ public class FieldDescriptorImpl implements FieldDescriptor {
     @Override
     public void setType(TypeDescriptor type) {
         this.type = type;
-    }
-
-    @Override
-    public String getVisibility() {
-        return visibility;
-    }
-
-    @Override
-    public void setVisibility(String visibility) {
-        this.visibility = visibility;
     }
 
     @Override

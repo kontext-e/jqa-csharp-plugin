@@ -2,7 +2,12 @@ package org.jqassistant.contrib.plugin.csharp.scanner;
 
 import com.buschmais.jqassistant.core.scanner.api.DefaultScope;
 import com.buschmais.jqassistant.plugin.common.test.AbstractPluginIT;
-import org.jqassistant.contrib.plugin.csharp.model.*;
+import org.jqassistant.contrib.plugin.csharp.model.ClassDescriptor;
+import org.jqassistant.contrib.plugin.csharp.model.InterfaceTypeDescriptor;
+import org.jqassistant.contrib.plugin.csharp.model.MethodDescriptor;
+import org.jqassistant.contrib.plugin.csharp.model.NamespaceDescriptor;
+import org.jqassistant.contrib.plugin.csharp.model.PropertyDescriptor;
+import org.jqassistant.contrib.plugin.csharp.model.UsesNamespaceDescriptor;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
@@ -140,7 +145,7 @@ public class ScannerTestIT extends AbstractPluginIT {
     private void testPropertyPrivate() {
         List<Map<String, Object>> property7 = query("Match (p:Property {name: \"Property7\"}) Return p").getRows();
         assertThat(property7.size()).isEqualTo(1);
-        assertThat(((PropertyDescriptor)property7.get(0).get("p")).getVisibility()).isEqualTo("Private");
+        assertThat(((PropertyDescriptor)property7.get(0).get("p")).getAccessibility()).isEqualTo("Private");
     }
 
     private void testPropertyInlineGetSetDefinition() {
@@ -149,8 +154,8 @@ public class ScannerTestIT extends AbstractPluginIT {
 
         List<Object> accessors = query("Match r=((p:Property {name: \"Property1\"})-[:DECLARES]->(m)) Return m").getColumn("m");
         assertThat(accessors.size()).isEqualTo(2);
-        assertThat(((MethodDescriptor) accessors.get(0)).getVisibility()).isEqualTo("Public");
-        assertThat(((MethodDescriptor) accessors.get(1)).getVisibility()).isEqualTo("Public");
+        assertThat(((MethodDescriptor) accessors.get(0)).getAccessibility()).isEqualTo("Public");
+        assertThat(((MethodDescriptor) accessors.get(1)).getAccessibility()).isEqualTo("Public");
     }
 
     private void testPropertyInlineGetSetWithVisibility() {
@@ -161,9 +166,9 @@ public class ScannerTestIT extends AbstractPluginIT {
         assertThat(accessors.size()).isEqualTo(2);
         for (Object accessor : accessors){
             if (((MethodDescriptor) accessor).getFullQualifiedName().endsWith("set")){
-                assertThat(((MethodDescriptor) accessor).getVisibility()).isEqualTo("Private");
+                assertThat(((MethodDescriptor) accessor).getAccessibility()).isEqualTo("Private");
             } else {
-                assertThat(((MethodDescriptor) accessor).getVisibility()).isEqualTo("Public");
+                assertThat(((MethodDescriptor) accessor).getAccessibility()).isEqualTo("Public");
             }
         }
     }
@@ -174,7 +179,7 @@ public class ScannerTestIT extends AbstractPluginIT {
 
         List<Object> accessors = query("Match r=((p:Property {name: \"Property3\"})-[:DECLARES]->(m)) Return m").getColumn("m");
         assertThat(accessors.size()).isEqualTo(1);
-        assertThat(((MethodDescriptor) accessors.get(0)).getVisibility()).isEqualTo("Public");
+        assertThat(((MethodDescriptor) accessors.get(0)).getAccessibility()).isEqualTo("Public");
     }
 
     private void testPropertyInit() {
@@ -193,7 +198,7 @@ public class ScannerTestIT extends AbstractPluginIT {
     private void testImplicitAccessModifier(){
         List<Map<String, Object>> property10 = query("Match (p:Property {name: \"Property10\"}) Return p").getRows();
         assertThat(property10.size()).isEqualTo(1);
-        assertThat(((PropertyDescriptor)property10.get(0).get("p")).getVisibility()).isEqualTo("Private");
+        assertThat(((PropertyDescriptor)property10.get(0).get("p")).getAccessibility()).isEqualTo("Private");
     }
 
 }

@@ -3,6 +3,7 @@ package org.jqassistant.contrib.plugin.csharp.json_to_neo4j.testImplementations;
 import org.jqassistant.contrib.plugin.csharp.model.ClassDescriptor;
 import org.jqassistant.contrib.plugin.csharp.model.TypeDescriptor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ClassDescriptorImpl extends TypeDescriptorImpl implements ClassDescriptor {
@@ -15,7 +16,7 @@ public class ClassDescriptorImpl extends TypeDescriptorImpl implements ClassDesc
     private boolean partial;
 
     private TypeDescriptor superClass;
-    private List<TypeDescriptor> interfaces;
+    private List<TypeDescriptor> interfaces = new ArrayList<>();
 
     private String visibility;
     private boolean isStatic;
@@ -26,6 +27,17 @@ public class ClassDescriptorImpl extends TypeDescriptorImpl implements ClassDesc
     private boolean isExtern;
     private boolean isOverride;
     private boolean isVirtual;
+    private String accessibility;
+
+    @Override
+    public String getAccessibility() {
+        return accessibility;
+    }
+
+    @Override
+    public void setAccessibility(String accessibility) {
+        this.accessibility = accessibility;
+    }
 
 
     @Override

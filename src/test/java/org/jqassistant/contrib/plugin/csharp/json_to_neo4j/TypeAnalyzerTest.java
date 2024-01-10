@@ -245,7 +245,7 @@ class TypeAnalyzerTest {
 
         TypeDescriptor typeDescriptor = cSharpFileDescriptor.getTypes().get(0);
         InterfaceTypeDescriptor interfaceDescriptor = (InterfaceTypeDescriptor) typeDescriptor;
-        assertThat(interfaceDescriptor.getVisibility()).isNotNull();
+        assertThat(interfaceDescriptor.getAccessibility()).isNotNull();
         assertThat(interfaceDescriptor.getPartial()).isNotNull();
     }
 
