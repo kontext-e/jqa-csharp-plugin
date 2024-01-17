@@ -7,10 +7,14 @@ import lombok.Setter;
 @Setter
 @Getter
 @NoArgsConstructor
-public class PropertyAccessorModel {
+public class PropertyAccessorModel implements JsonModel{
 
     private String kind;
 
     private String accessibility;
 
+    @Override
+    public String getKey() {
+        return "";
+    }
 }
