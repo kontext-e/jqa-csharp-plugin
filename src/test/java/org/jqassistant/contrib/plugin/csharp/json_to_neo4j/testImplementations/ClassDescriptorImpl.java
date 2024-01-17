@@ -58,11 +58,11 @@ public class ClassDescriptorImpl extends TypeDescriptorImpl implements ClassDesc
         this.visibility = visibility;
     }
 
-    public Boolean isStatic() {
+    public boolean isStatic() {
         return isStatic;
     }
 
-    public void setStatic(Boolean aStatic) {
+    public void setStatic(boolean aStatic) {
         isStatic = aStatic;
     }
 
@@ -82,11 +82,11 @@ public class ClassDescriptorImpl extends TypeDescriptorImpl implements ClassDesc
         isConst = aConst;
     }
 
-    public Boolean isSealed() {
+    public boolean isSealed() {
         return isSealed;
     }
 
-    public void setSealed(Boolean sealed) {
+    public void setSealed(boolean sealed) {
         this.isSealed = sealed;
     }
 

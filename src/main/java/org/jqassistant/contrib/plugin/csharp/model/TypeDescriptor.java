@@ -19,9 +19,7 @@ public interface TypeDescriptor extends
         AccessibilityDescriptor,
         LineCountDescriptor {
 
-    @Relation.Outgoing
-    @Declares
-    List<MemberDescriptor> getDeclaredMembers();
+
 
     @Relation("PARTIAL_WITH")
     List<TypeDescriptor> getClassFragments();

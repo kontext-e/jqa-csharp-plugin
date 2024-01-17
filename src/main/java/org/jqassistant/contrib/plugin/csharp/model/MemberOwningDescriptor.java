@@ -5,10 +5,11 @@ import com.buschmais.xo.neo4j.api.annotation.Relation;
 
 import java.util.List;
 
-@Label("Struct")
-public interface StructDescriptor  extends MemberOwningDescriptor {
+@Label("MemberOwning")
+public interface MemberOwningDescriptor extends TypeDescriptor{
 
-    @Relation("IMPLEMENTS")
-    List<TypeDescriptor> getInterfaces();
+    @Relation.Outgoing
+    @Declares
+    List<MemberDescriptor> getDeclaredMembers();
 
 }
