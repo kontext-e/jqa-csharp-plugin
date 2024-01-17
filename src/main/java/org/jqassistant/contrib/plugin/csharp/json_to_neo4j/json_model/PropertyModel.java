@@ -20,7 +20,7 @@ public class PropertyModel implements JsonModel {
 
     private String accessibility;
 
-    private List<String> accessors;
+    private List<PropertyAccessorModel> accessors;
 
     @JsonProperty("static")
     private boolean staticKeyword;
