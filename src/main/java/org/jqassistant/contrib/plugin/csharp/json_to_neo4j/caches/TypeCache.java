@@ -4,10 +4,12 @@ import com.buschmais.jqassistant.core.store.api.Store;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.ClassModel;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.EnumModel;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.InterfaceModel;
+import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.StructModel;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.TypeModel;
 import org.jqassistant.contrib.plugin.csharp.model.ClassDescriptor;
 import org.jqassistant.contrib.plugin.csharp.model.EnumTypeDescriptor;
 import org.jqassistant.contrib.plugin.csharp.model.InterfaceTypeDescriptor;
+import org.jqassistant.contrib.plugin.csharp.model.StructDescriptor;
 import org.jqassistant.contrib.plugin.csharp.model.TypeDescriptor;
 
 import java.util.ArrayList;
@@ -44,7 +46,8 @@ public class TypeCache {
 
         } else if (typeModel instanceof InterfaceModel) {
             return create(typeModel.getFqn(), InterfaceTypeDescriptor.class);
-
+        } else if (typeModel instanceof StructModel){
+            return create(typeModel.getFqn(), StructDescriptor.class);
         } else {
             return create(typeModel.getFqn(), TypeDescriptor.class);
         }

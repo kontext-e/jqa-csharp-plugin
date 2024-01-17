@@ -22,6 +22,7 @@
         <class>org.jqassistant.contrib.plugin.csharp.model.UsesNamespaceDescriptor</class>
         <class>org.jqassistant.contrib.plugin.csharp.model.PropertyDescriptor</class>
         <class>org.jqassistant.contrib.plugin.csharp.model.MemberAccessDescriptor</class>
+        <class>org.jqassistant.contrib.plugin.csharp.model.StructDescriptor</class>
     </model>
     <scanner>
         <class>org.jqassistant.contrib.plugin.csharp.scanner.CSharpDirectoryScannerPlugin</class>

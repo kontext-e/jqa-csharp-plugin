@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Setter
@@ -24,4 +25,6 @@ public class FileModel {
     private List<EnumModel> enums;
 
     private List<InterfaceModel> interfaces;
+
+    private List<StructModel> structs = new ArrayList<>();
 }

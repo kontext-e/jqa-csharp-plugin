@@ -9,6 +9,7 @@ import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.EnumMember
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.EnumModel;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.FileModel;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.InterfaceModel;
+import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.StructModel;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.TypeModel;
 import org.jqassistant.contrib.plugin.csharp.model.CSharpFileDescriptor;
 import org.jqassistant.contrib.plugin.csharp.model.ClassDescriptor;
@@ -16,6 +17,7 @@ import org.jqassistant.contrib.plugin.csharp.model.EnumTypeDescriptor;
 import org.jqassistant.contrib.plugin.csharp.model.EnumValueDescriptor;
 import org.jqassistant.contrib.plugin.csharp.model.InterfaceTypeDescriptor;
 import org.jqassistant.contrib.plugin.csharp.model.NamespaceDescriptor;
+import org.jqassistant.contrib.plugin.csharp.model.StructDescriptor;
 import org.jqassistant.contrib.plugin.csharp.model.TypeDescriptor;
 
 import java.util.List;
@@ -49,6 +51,10 @@ public class TypeAnalyzer {
 
             for (InterfaceModel interfaceModel : fileModel.getInterfaces()) {
                 createType(cSharpFileDescriptor, interfaceModel);
+            }
+
+            for (StructModel structModel : fileModel.getStructs()){
+                createType(cSharpFileDescriptor, structModel);
             }
         }
     }
@@ -90,6 +96,12 @@ public class TypeAnalyzer {
             classDescriptor.setAbstract(classModel.isAbstractKeyword());
             classDescriptor.setSealed(classModel.isSealed());
             classDescriptor.setStatic(classModel.isStaticKeyword());
+        }
+
+        if (typeModel instanceof StructModel){
+            StructModel structModel = (StructModel) typeModel;
+            StructDescriptor structDescriptor = (StructDescriptor) descriptor;
+            structDescriptor.setPartial(structModel.isPartial());
         }
     }
 
