@@ -1,11 +1,11 @@
 package org.jqassistant.contrib.plugin.csharp.json_to_neo4j;
 
-import org.apache.commons.lang.StringUtils;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.caches.PropertyCache;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.caches.TypeCache;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.ClassModel;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.FileModel;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.MethodModel;
+import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.PropertyAccessorModel;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.PropertyModel;
 import org.jqassistant.contrib.plugin.csharp.model.ClassDescriptor;
 import org.jqassistant.contrib.plugin.csharp.model.MethodDescriptor;
@@ -58,33 +58,25 @@ public class PropertyAnalyzer {
     private List<MethodDescriptor> findAndCreateAccessors(PropertyModel propertyModel) {
         List<MethodDescriptor> accessors = new ArrayList<>();
 
-        Optional<String> getter = propertyModel.getAccessors().stream().filter(t -> t.contains("get")).findAny();
-        getter.ifPresent(s -> accessors.add(createAccessors(propertyModel, s.trim())));
+        Optional<PropertyAccessorModel> getter = propertyModel.getAccessors().stream().filter(t -> t.getKind().contains("get")).findAny();
+        getter.ifPresent(accessor -> accessors.add(createAccessors(propertyModel, accessor)));
 
-        Optional<String> setter = propertyModel.getAccessors().stream().filter(t -> t.contains("set")).findAny();
-        setter.ifPresent(s -> accessors.add(createAccessors(propertyModel, s.trim())));
+        Optional<PropertyAccessorModel> setter = propertyModel.getAccessors().stream().filter(t -> t.getKind().contains("set")).findAny();
+        setter.ifPresent(accessor -> accessors.add(createAccessors(propertyModel, accessor)));
 
-        Optional<String> init = propertyModel.getAccessors().stream().filter(t -> t.contains("init")).findAny();
-        init.ifPresent(s -> accessors.add(createAccessors(propertyModel, s.trim())));
+        Optional<PropertyAccessorModel> init = propertyModel.getAccessors().stream().filter(t -> t.getKind().contains("init")).findAny();
+        init.ifPresent(accessor -> accessors.add(createAccessors(propertyModel, accessor)));
 
         return accessors;
     }
 
-    //TODO Rework
-    private MethodDescriptor createAccessors(PropertyModel propertyModel, String accessor) {
-        String kindOfAccessor = accessor.contains(" ") ?
-                accessor.substring(accessor.lastIndexOf(" ")).trim() : accessor;
-
+    private MethodDescriptor createAccessors(PropertyModel propertyModel, PropertyAccessorModel accessor) {
         MethodModel methodModel = new MethodModel();
-        methodModel.setName(kindOfAccessor + propertyModel.getName());
-        methodModel.setFqn(propertyModel.getFqn() + "." + kindOfAccessor);
+        methodModel.setName(accessor.getKind() + propertyModel.getName());
+        methodModel.setFqn(propertyModel.getFqn() + "." + accessor.getKind());
         methodModel.setParameters(new ArrayList<>());
+        methodModel.setAccessibility(accessor.getAccessibility());
 
-        if (accessor.contains(" ")) {
-            methodModel.setAccessibility(StringUtils.capitalize(StringUtils.substringBeforeLast(accessor, " ").trim()));
-        } else {
-            methodModel.setAccessibility(propertyModel.getAccessibility());
-        }
         return methodAnalyzer.createMethodDescriptor(methodModel);
     }
 
