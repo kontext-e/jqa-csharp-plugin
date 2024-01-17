@@ -3,6 +3,7 @@ package org.jqassistant.contrib.plugin.csharp.json_to_neo4j.testImplementations;
 import org.jqassistant.contrib.plugin.csharp.model.FieldDescriptor;
 import org.jqassistant.contrib.plugin.csharp.model.InvokesDescriptor;
 import org.jqassistant.contrib.plugin.csharp.model.MemberAccessDescriptor;
+import org.jqassistant.contrib.plugin.csharp.model.MemberOwningDescriptor;
 import org.jqassistant.contrib.plugin.csharp.model.MethodDescriptor;
 import org.jqassistant.contrib.plugin.csharp.model.ParameterDescriptor;
 import org.jqassistant.contrib.plugin.csharp.model.TypeDescriptor;
@@ -37,7 +38,7 @@ public class MethodDescriptorImpl implements MethodDescriptor {
     private List<MemberAccessDescriptor> accessedMember;
     private List<MethodDescriptor> methodFragments = new ArrayList<>();
     private List<FieldDescriptor> fields;
-    private TypeDescriptor declaringType;
+    private MemberOwningDescriptor declaringType;
     private String accessibility;
 
     @Override
@@ -75,7 +76,7 @@ public class MethodDescriptorImpl implements MethodDescriptor {
     }
 
     @Override
-    public TypeDescriptor getDeclaringType() {
+    public MemberOwningDescriptor getDeclaringType() {
         return declaringType;
     }
 

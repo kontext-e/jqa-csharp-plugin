@@ -1,4 +1,4 @@
 package org.jqassistant.contrib.plugin.csharp.model;
 
-public interface EnumTypeDescriptor extends ClassDescriptor, EnumDescriptor, MethodModifierDescriptor {
+public interface EnumTypeDescriptor extends AccessibilityDescriptor, EnumDescriptor, TypeDescriptor {
 }

@@ -5,12 +5,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.List;
-
 @Setter
 @Getter
 @NoArgsConstructor
-public class ClassModel extends TypeModel implements JsonModel {
+public class ClassModel extends MemberOwningModel implements JsonModel {
 
 
     @JsonProperty("abstract")
@@ -27,15 +25,6 @@ public class ClassModel extends TypeModel implements JsonModel {
 
     private String baseType;
 
-    private List<String> implementedInterfaces;
-
-    private List<MethodModel> methods;
-
-    private List<ConstructorModel> constructors;
-
-    private List<FieldModel> fields;
-
-    private List<PropertyModel> properties;
 
     public String getKey() {
         return super.getFqn();
