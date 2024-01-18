@@ -27,4 +27,9 @@ public class FileModel {
     private List<InterfaceModel> interfaces;
 
     private List<StructModel> structs = new ArrayList<>();
+
+    private List<RecordClassModel> recordClasses = new ArrayList<>();
+
+    private List<RecordStructModel> recordStructs = new ArrayList<>();
+
 }

@@ -9,6 +9,8 @@ import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.EnumMember
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.EnumModel;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.FileModel;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.InterfaceModel;
+import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.RecordClassModel;
+import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.RecordStructModel;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.StructModel;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.TypeModel;
 import org.jqassistant.contrib.plugin.csharp.model.CSharpFileDescriptor;
@@ -55,6 +57,14 @@ public class TypeAnalyzer {
 
             for (StructModel structModel : fileModel.getStructs()){
                 createType(cSharpFileDescriptor, structModel);
+            }
+
+            for (RecordClassModel recordClassModel : fileModel.getRecordClasses()){
+                createType(cSharpFileDescriptor, recordClassModel);
+            }
+
+            for (RecordStructModel recordStructModel : fileModel.getRecordStructs()){
+                createType(cSharpFileDescriptor, recordStructModel);
             }
         }
     }

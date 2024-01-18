@@ -7,7 +7,6 @@ import org.jqassistant.contrib.plugin.csharp.model.TypeDescriptor;
 
 public class FieldDescriptorImpl implements FieldDescriptor {
 
-    private String visibility;
     private boolean isStatic;
     private boolean readonly;
     private boolean isConst;

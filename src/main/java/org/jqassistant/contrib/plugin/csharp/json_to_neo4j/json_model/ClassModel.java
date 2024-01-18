@@ -25,8 +25,4 @@ public class ClassModel extends MemberOwningTypeModel implements JsonModel {
 
     private String baseType;
 
-
-    public String getKey() {
-        return super.getFqn();
-    }
 }

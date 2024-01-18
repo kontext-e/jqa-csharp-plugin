@@ -13,7 +13,7 @@ public class TypeAnalyzerIT extends CSharpIntegrationTest{
     void testStruct(){
         List<StructDescriptor> structs = query("Match (s:Struct) return s").getColumn("s");
 
-        assertThat(structs.size()).isEqualTo(1);
+        assertThat(structs.size()).isEqualTo(2);
     }
 
 }

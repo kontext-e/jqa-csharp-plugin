@@ -36,7 +36,7 @@ namespace Project_1.Base_Types
         }
     }
 
-    public record Person(string Firstname, string Lastname, int Age)
+    record Person(string Firstname, string Lastname, int Age)
     {
         private List<string> _favouriteFood = new();
         private int BodyCount { get; set; }
@@ -56,6 +56,11 @@ namespace Project_1.Base_Types
     
     public enum Accessor{
         Private, Public
+    }
+
+    public record struct Animal()
+    {
+
     }
     
 }
