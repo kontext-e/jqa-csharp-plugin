@@ -8,7 +8,7 @@ import lombok.Setter;
 @Setter
 @Getter
 @NoArgsConstructor
-public class ClassModel extends MemberOwningModel implements JsonModel {
+public class ClassModel extends MemberOwningTypeModel implements JsonModel {
 
 
     @JsonProperty("abstract")

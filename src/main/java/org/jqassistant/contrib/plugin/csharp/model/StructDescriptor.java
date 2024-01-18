@@ -6,7 +6,7 @@ import com.buschmais.xo.neo4j.api.annotation.Relation;
 import java.util.List;
 
 @Label("Struct")
-public interface StructDescriptor  extends MemberOwningDescriptor {
+public interface StructDescriptor  extends MemberOwningTypeDescriptor {
 
     @Relation("IMPLEMENTS")
     List<TypeDescriptor> getInterfaces();

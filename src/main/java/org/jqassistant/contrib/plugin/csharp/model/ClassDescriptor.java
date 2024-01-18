@@ -6,7 +6,7 @@ import com.buschmais.xo.neo4j.api.annotation.Relation;
 import java.util.List;
 
 @Label("Class")
-public interface ClassDescriptor extends MemberOwningDescriptor, AbstractDescriptor {
+public interface ClassDescriptor extends MemberOwningTypeDescriptor, AbstractDescriptor {
 
     @Relation("EXTENDS")
     TypeDescriptor getSuperClass();
