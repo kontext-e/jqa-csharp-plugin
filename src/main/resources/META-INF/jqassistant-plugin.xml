@@ -23,6 +23,8 @@
         <class>org.jqassistant.contrib.plugin.csharp.model.PropertyDescriptor</class>
         <class>org.jqassistant.contrib.plugin.csharp.model.MemberAccessDescriptor</class>
         <class>org.jqassistant.contrib.plugin.csharp.model.StructDescriptor</class>
+        <class>org.jqassistant.contrib.plugin.csharp.model.RecordStructDescriptor</class>
+        <class>org.jqassistant.contrib.plugin.csharp.model.RecordClassDescriptor</class>
     </model>
     <scanner>
         <class>org.jqassistant.contrib.plugin.csharp.scanner.CSharpDirectoryScannerPlugin</class>

@@ -11,9 +11,4 @@ public class StructModel extends MemberOwningTypeModel implements JsonModel{
 
     private boolean partial;
 
-
-    @Override
-    public String getKey() {
-        return super.getFqn();
-    }
 }

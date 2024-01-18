@@ -1,6 +1,5 @@
 package org.jqassistant.contrib.plugin.csharp.json_to_neo4j.testImplementations;
 
-import org.jqassistant.contrib.plugin.csharp.model.MemberDescriptor;
 import org.jqassistant.contrib.plugin.csharp.model.TypeDescriptor;
 
 import java.util.LinkedList;
@@ -14,7 +13,6 @@ public class TypeDescriptorImpl implements TypeDescriptor {
 
     private List<TypeDescriptor> classFragments = new LinkedList<>();
     private String name;
-    private List<MemberDescriptor> declaredMembers = new LinkedList<>();
     private Integer lastLineNumber;
     private Integer firstLineNumber;
     private Integer effectiveLineCount;
@@ -34,14 +32,12 @@ public class TypeDescriptorImpl implements TypeDescriptor {
         this.accessibility = accessibility;
     }
 
-    public List<MemberDescriptor> getDeclaredMembers() {
-        return declaredMembers;
-    }
-
+    @Override
     public Integer getFirstLineNumber() {
         return firstLineNumber;
     }
 
+    @Override
     public void setFirstLineNumber(Integer firstLineNumber) {
         this.firstLineNumber = firstLineNumber;
     }

@@ -13,8 +13,4 @@ public class InterfaceModel extends MemberOwningTypeModel implements JsonModel {
 
     private String md5;
 
-    @Override
-    public String getKey() {
-        return super.getFqn();
-    }
 }

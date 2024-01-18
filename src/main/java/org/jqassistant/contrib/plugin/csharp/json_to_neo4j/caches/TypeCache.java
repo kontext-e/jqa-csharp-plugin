@@ -4,11 +4,15 @@ import com.buschmais.jqassistant.core.store.api.Store;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.ClassModel;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.EnumModel;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.InterfaceModel;
+import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.RecordClassModel;
+import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.RecordStructModel;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.StructModel;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.TypeModel;
 import org.jqassistant.contrib.plugin.csharp.model.ClassDescriptor;
 import org.jqassistant.contrib.plugin.csharp.model.EnumTypeDescriptor;
 import org.jqassistant.contrib.plugin.csharp.model.InterfaceTypeDescriptor;
+import org.jqassistant.contrib.plugin.csharp.model.RecordClassDescriptor;
+import org.jqassistant.contrib.plugin.csharp.model.RecordStructDescriptor;
 import org.jqassistant.contrib.plugin.csharp.model.StructDescriptor;
 import org.jqassistant.contrib.plugin.csharp.model.TypeDescriptor;
 
@@ -38,16 +42,18 @@ public class TypeCache {
     }
 
     public TypeDescriptor create(TypeModel typeModel){
-        if (typeModel instanceof  ClassModel){
+        if (typeModel.getClass().equals(ClassModel.class)){
             return create (typeModel.getFqn(), ClassDescriptor.class);
-
-        } else if (typeModel instanceof EnumModel) {
+        } else if (typeModel.getClass().equals(EnumModel.class)) {
             return create(typeModel.getFqn(), EnumTypeDescriptor.class);
-
-        } else if (typeModel instanceof InterfaceModel) {
+        } else if (typeModel.getClass().equals(InterfaceModel.class)) {
             return create(typeModel.getFqn(), InterfaceTypeDescriptor.class);
-        } else if (typeModel instanceof StructModel){
+        } else if (typeModel.getClass().equals(StructModel.class)) {
             return create(typeModel.getFqn(), StructDescriptor.class);
+        } else if (typeModel.getClass().equals(RecordClassModel.class)) {
+            return create(typeModel.getFqn(), RecordClassDescriptor.class);
+        } else if (typeModel.getClass().equals(RecordStructModel.class)) {
+            return create(typeModel.getFqn(), RecordStructDescriptor.class);
         } else {
             return create(typeModel.getFqn(), TypeDescriptor.class);
         }

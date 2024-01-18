@@ -6,8 +6,8 @@ import org.jqassistant.contrib.plugin.csharp.model.TypeDescriptor;
 import java.util.ArrayList;
 import java.util.List;
 
-public class InterfaceDescriptorImpl extends TypeDescriptorImpl implements InterfaceTypeDescriptor {
-    private String visibility;
+public class InterfaceDescriptorImpl extends MemberOwningTypeDescriptorImpl implements InterfaceTypeDescriptor {
+
     private List<TypeDescriptor> interfaces = new ArrayList<>();
 
     public InterfaceDescriptorImpl(String name) {
