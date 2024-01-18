@@ -7,10 +7,12 @@ import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.ClassModel
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.ConstructorModel;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.FileModel;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.InterfaceModel;
+import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.MemberOwningTypeModel;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.MethodModel;
+import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.StructModel;
 import org.jqassistant.contrib.plugin.csharp.model.ClassDescriptor;
 import org.jqassistant.contrib.plugin.csharp.model.ConstructorDescriptor;
-import org.jqassistant.contrib.plugin.csharp.model.InterfaceTypeDescriptor;
+import org.jqassistant.contrib.plugin.csharp.model.MemberOwningTypeDescriptor;
 import org.jqassistant.contrib.plugin.csharp.model.MethodDescriptor;
 import org.jqassistant.contrib.plugin.csharp.model.TypeDescriptor;
 
@@ -33,41 +35,30 @@ public class MethodAnalyzer {
 
     public void createMethods(List<FileModel> fileModelList) {
         for (FileModel fileModel : fileModelList) {
-            createMethodsForClasses(fileModel);
-            createMethodsForInterfaces(fileModel);
-        }
-    }
-
-    private void createMethodsForClasses(FileModel fileModel) {
-
-        for (ClassModel classModel : fileModel.getClasses()) {
-            Optional<TypeDescriptor> typeDescriptor = typeCache.findTypeByRelativePath(classModel.getKey(), fileModel.getRelativePath());
-            if (!typeDescriptor.isPresent()) continue;
-
-            ClassDescriptor classDescriptor = (ClassDescriptor) typeDescriptor.get();
-            for (MethodModel methodModel : classModel.getMethods()) {
-                MethodDescriptor methodDescriptor = createMethodDescriptor(methodModel);
-                classDescriptor.getDeclaredMembers().add(methodDescriptor);
+            for (ClassModel classModel : fileModel.getClasses()){
+                createMethods(classModel, fileModel.getRelativePath());
+            }
+            for (InterfaceModel interfaceModel : fileModel.getInterfaces()){
+                createMethods(interfaceModel, fileModel.getRelativePath());
+            }
+            for (StructModel structModel : fileModel.getStructs()){
+                createMethods(structModel, fileModel.getRelativePath());
             }
         }
     }
 
-    private void createMethodsForInterfaces(FileModel fileModel) {
+    private void createMethods(MemberOwningTypeModel memberOwningModel, String filePath){
+        Optional<TypeDescriptor> typeDescriptor = typeCache.findTypeByRelativePath(memberOwningModel.getKey(), filePath);
+        if (!typeDescriptor.isPresent()) return;
 
-        for (InterfaceModel interfaceModel : fileModel.getInterfaces()) {
-            Optional<TypeDescriptor> typeDescriptor = typeCache.findTypeByRelativePath(interfaceModel.getKey(), fileModel.getRelativePath());
-            if (!typeDescriptor.isPresent()) continue;
-
-            InterfaceTypeDescriptor interfaceTypeDescriptor = (InterfaceTypeDescriptor) typeDescriptor.get();
-            for (MethodModel methodModel : interfaceModel.getMethods()) {
-                MethodDescriptor methodDescriptor = createMethodDescriptor(methodModel);
-                interfaceTypeDescriptor.getDeclaredMembers().add(methodDescriptor);
-            }
+        MemberOwningTypeDescriptor memberOwningTypeDescriptor = (MemberOwningTypeDescriptor) typeDescriptor.get();
+        for (MethodModel methodModel : memberOwningModel.getMethods()) {
+            MethodDescriptor methodDescriptor = createMethodDescriptor(methodModel);
+            memberOwningTypeDescriptor.getDeclaredMembers().add(methodDescriptor);
         }
     }
 
     protected MethodDescriptor createMethodDescriptor(MethodModel methodModel) {
-
         MethodDescriptor methodDescriptor = methodCache.create(methodModel.getKey(), MethodDescriptor.class);
 
         fillMethodDescriptor(methodModel, methodDescriptor);

@@ -1,7 +1,7 @@
 package org.jqassistant.contrib.plugin.csharp.json_to_neo4j.testImplementations;
 
 import org.jqassistant.contrib.plugin.csharp.model.FieldDescriptor;
-import org.jqassistant.contrib.plugin.csharp.model.MemberOwningDescriptor;
+import org.jqassistant.contrib.plugin.csharp.model.MemberOwningTypeDescriptor;
 import org.jqassistant.contrib.plugin.csharp.model.PrimitiveValueDescriptor;
 import org.jqassistant.contrib.plugin.csharp.model.TypeDescriptor;
 
@@ -25,7 +25,7 @@ public class FieldDescriptorImpl implements FieldDescriptor {
     private String name;
     private TypeDescriptor type;
     private PrimitiveValueDescriptor value;
-    private MemberOwningDescriptor declaringType;
+    private MemberOwningTypeDescriptor declaringType;
     private String accessibility;
 
     @Override
@@ -39,7 +39,7 @@ public class FieldDescriptorImpl implements FieldDescriptor {
     }
 
     @Override
-    public MemberOwningDescriptor getDeclaringType() {
+    public MemberOwningTypeDescriptor getDeclaringType() {
         return declaringType;
     }
 

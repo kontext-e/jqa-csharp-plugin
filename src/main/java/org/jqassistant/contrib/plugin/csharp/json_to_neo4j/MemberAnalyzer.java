@@ -4,10 +4,10 @@ import com.buschmais.jqassistant.core.store.api.Store;
 import org.apache.commons.lang.StringUtils;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.caches.FieldCache;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.caches.TypeCache;
-import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.ClassModel;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.FieldModel;
-import org.jqassistant.contrib.plugin.csharp.model.ClassDescriptor;
+import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.MemberOwningTypeModel;
 import org.jqassistant.contrib.plugin.csharp.model.FieldDescriptor;
+import org.jqassistant.contrib.plugin.csharp.model.MemberOwningTypeDescriptor;
 import org.jqassistant.contrib.plugin.csharp.model.PrimitiveValueDescriptor;
 import org.jqassistant.contrib.plugin.csharp.model.TypeDescriptor;
 
@@ -25,17 +25,16 @@ public class MemberAnalyzer {
         this.typeCache = typeCache;
     }
 
-    protected void createFields(ClassModel classModel, String relativeFilePath) {
+    protected void createFields(MemberOwningTypeModel memberOwningModel, String relativeFilePath) {
 
-        //Todo Why would the type cache be empty? -> shouldn't this be an exception?
-        Optional<TypeDescriptor> descriptor = typeCache.findTypeByRelativePath(classModel.getKey(), relativeFilePath);
+        Optional<TypeDescriptor> descriptor = typeCache.findTypeByRelativePath(memberOwningModel.getKey(), relativeFilePath);
         if (!descriptor.isPresent()) return;
 
-        ClassDescriptor classDescriptor = (ClassDescriptor) descriptor.get();
-        for (FieldModel fieldModel : classModel.getFields()) {
+        MemberOwningTypeDescriptor memberOwningTypeDescriptor = (MemberOwningTypeDescriptor) descriptor.get();
+        for (FieldModel fieldModel : memberOwningModel.getFields()) {
             FieldDescriptor fieldDescriptor = fieldCache.create(fieldModel.getKey());
             fillFieldDescriptor(fieldModel, fieldDescriptor);
-            classDescriptor.getDeclaredMembers().add(fieldDescriptor);
+            memberOwningTypeDescriptor.getDeclaredMembers().add(fieldDescriptor);
         }
     }
 

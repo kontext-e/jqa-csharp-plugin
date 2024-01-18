@@ -24,7 +24,7 @@ public interface MemberDescriptor extends
 
     @Incoming
     @Declares
-    MemberOwningDescriptor getDeclaringType();
+    MemberOwningTypeDescriptor getDeclaringType();
 
 
 }

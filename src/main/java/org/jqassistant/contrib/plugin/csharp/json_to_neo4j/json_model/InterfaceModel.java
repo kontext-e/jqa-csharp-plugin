@@ -5,7 +5,7 @@ import lombok.Setter;
 
 @Setter
 @Getter
-public class InterfaceModel extends MemberOwningModel implements JsonModel {
+public class InterfaceModel extends MemberOwningTypeModel implements JsonModel {
 
     private String accessibility;
 

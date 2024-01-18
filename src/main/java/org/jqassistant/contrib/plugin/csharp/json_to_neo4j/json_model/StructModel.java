@@ -7,13 +7,13 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class StructModel extends MemberOwningModel implements JsonModel{
+public class StructModel extends MemberOwningTypeModel implements JsonModel{
 
     private boolean partial;
 
 
     @Override
     public String getKey() {
-        return null;
+        return super.getFqn();
     }
 }

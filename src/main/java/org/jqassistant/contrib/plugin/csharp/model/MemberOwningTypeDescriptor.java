@@ -6,7 +6,7 @@ import com.buschmais.xo.neo4j.api.annotation.Relation;
 import java.util.List;
 
 @Label("MemberOwning")
-public interface MemberOwningDescriptor extends TypeDescriptor{
+public interface MemberOwningTypeDescriptor extends TypeDescriptor{
 
     @Relation.Outgoing
     @Declares

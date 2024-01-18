@@ -7,7 +7,7 @@ import java.util.List;
 
 @Getter
 @Setter
-public class MemberOwningModel extends TypeModel {
+public class MemberOwningTypeModel extends TypeModel {
 
     private String accessibility;
 
@@ -21,4 +21,7 @@ public class MemberOwningModel extends TypeModel {
 
     private List<PropertyModel> properties;
 
+    public String getKey() {
+        return super.getFqn();
+    }
 }
