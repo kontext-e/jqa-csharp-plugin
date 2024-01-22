@@ -36,7 +36,12 @@ public class TypeCacheTest {
 
     private Store createMockStore() {
         Store store = mock();
-        when(store.create(ClassDescriptor.class)).thenReturn(new ClassDescriptorImpl("Class"));
+        when(store.create(ClassDescriptor.class)).thenReturn(
+                new ClassDescriptorImpl("Class1"),
+                new ClassDescriptorImpl("Class2"),
+                new ClassDescriptorImpl("Class3"),
+                new ClassDescriptorImpl("Class4"),
+                new ClassDescriptorImpl("Class5"));
         when(store.create(InterfaceTypeDescriptor.class)).thenReturn(new InterfaceDescriptorImpl("Interface"));
         when(store.create(EnumTypeDescriptor.class)).thenReturn(new EnumDescriptorImpl("Enum"));
         when(store.create(TypeDescriptor.class)).thenReturn(new TypeDescriptorImpl("Type"));
@@ -151,11 +156,12 @@ public class TypeCacheTest {
         assertThat(allPartialClasses.size()).isEqualTo(2);
         assertThat(allPartialClasses.get(0).size()).isEqualTo(2);
         assertThat(allPartialClasses.get(1).size()).isEqualTo(2);
-        assertThat(allPartialClasses.get(0)).contains(typeDescriptor11);
-        assertThat(allPartialClasses.get(0)).contains(typeDescriptor12);
-        assertThat(allPartialClasses.get(1)).contains(typeDescriptor21);
-        assertThat(allPartialClasses.get(1)).contains(typeDescriptor22);
-
+        assertThat(allPartialClasses.get(1)).contains(typeDescriptor11);
+        assertThat(allPartialClasses.get(1)).contains(typeDescriptor12);
+        assertThat(allPartialClasses.get(0)).contains(typeDescriptor21);
+        assertThat(allPartialClasses.get(0)).contains(typeDescriptor22);
+        assertThat(allPartialClasses.get(0).contains(nonPartialTypeDescriptor)).isFalse();
+        assertThat(allPartialClasses.get(1).contains(nonPartialTypeDescriptor)).isFalse();
     }
 
 
