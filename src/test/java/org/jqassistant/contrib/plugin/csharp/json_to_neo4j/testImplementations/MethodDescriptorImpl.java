@@ -33,6 +33,7 @@ public class MethodDescriptorImpl implements MethodDescriptor {
     private Integer firstLineNumber;
     private Integer effectiveLineCount;
     private TypeDescriptor returns;
+    private TypeDescriptor extendedType;
     private List<ParameterDescriptor> parameters = new ArrayList<>();
     private List<TypeDescriptor> declaredThrowables;
     private List<MemberAccessDescriptor> accessedMember;
@@ -40,6 +41,16 @@ public class MethodDescriptorImpl implements MethodDescriptor {
     private List<FieldDescriptor> fields;
     private MemberOwningTypeDescriptor declaringType;
     private String accessibility;
+
+    @Override
+    public TypeDescriptor getExtendedType() {
+        return extendedType;
+    }
+
+    @Override
+    public void setExtendedType(TypeDescriptor extendedType) {
+        this.extendedType = extendedType;
+    }
 
     @Override
     public String getAccessibility() {

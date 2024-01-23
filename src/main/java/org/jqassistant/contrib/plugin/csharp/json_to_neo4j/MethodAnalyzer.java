@@ -63,9 +63,17 @@ public class MethodAnalyzer {
 
         fillMethodDescriptor(methodModel, methodDescriptor);
         addReturnType(methodModel, methodDescriptor);
+        if (methodModel.isExtensionMethod()){
+            addExtensionRelation(methodModel, methodDescriptor);
+        }
         parameterAnalyzer.addParameters(methodModel, methodDescriptor);
 
         return methodDescriptor;
+    }
+
+    private void addExtensionRelation(MethodModel methodModel, MethodDescriptor methodDescriptor) {
+        TypeDescriptor extendedType = typeCache.findAny(methodModel.getExtendsType());
+        methodDescriptor.setExtendedType(extendedType);
     }
 
     private static void fillMethodDescriptor(MethodModel methodModel, MethodDescriptor methodDescriptor) {

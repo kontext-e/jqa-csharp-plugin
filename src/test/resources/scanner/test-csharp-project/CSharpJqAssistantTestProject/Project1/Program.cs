@@ -3,6 +3,7 @@
 using System;
 using System.Runtime.CompilerServices;
 using Project_1.Base_Types;
+using Project_1.ExtensionMethods;
 using static System.Math;
 using MyAlias = System.Collections.Generic;
 
@@ -31,6 +32,7 @@ namespace Project_1
             CallDep2();
 
             var coordinates = new Coordinates(3, 6);
+            coordinates.RotateBy(2);
         }
 
         private static void CallDep1()
