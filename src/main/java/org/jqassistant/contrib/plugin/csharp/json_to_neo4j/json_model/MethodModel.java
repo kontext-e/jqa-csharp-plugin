@@ -43,6 +43,11 @@ public class MethodModel implements JsonModel {
     @JsonProperty("isImplementation")
     protected boolean isImplementation;
 
+    @JsonProperty("isExtensionMethod")
+    protected boolean isExtensionMethod;
+
+    protected String extendsType;
+
     protected List<InvokesModel> invocations;
 
     protected List<MemberAccessModel> memberAccesses;

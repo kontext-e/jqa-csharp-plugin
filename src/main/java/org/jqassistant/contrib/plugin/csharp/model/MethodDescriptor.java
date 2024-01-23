@@ -16,7 +16,6 @@ public interface MethodDescriptor extends MemberDescriptor, AbstractDescriptor {
 
     @Relation("RETURNS")
     TypeDescriptor getReturns();
-
     void setReturns(TypeDescriptor returns);
 
     @Relation("THROWS")
@@ -34,26 +33,25 @@ public interface MethodDescriptor extends MemberDescriptor, AbstractDescriptor {
     @Relation("PARTIAL_WITH")
     List<MethodDescriptor> getMethodFragments();
 
-    boolean getIsImplementation();
-
-    void setIsImplementation(boolean isImplementation);
-
-    int getCyclomaticComplexity();
-
-    void setCyclomaticComplexity(int cyclomaticComplexity);
-
     @Declares
     List<FieldDescriptor> getFields();
 
-    Integer getFirstLineNumber();
+    @Relation("EXTENDS")
+    TypeDescriptor getExtendedType();
+    void setExtendedType(TypeDescriptor typeDescriptor);
 
+    boolean getIsImplementation();
+    void setIsImplementation(boolean isImplementation);
+
+    int getCyclomaticComplexity();
+    void setCyclomaticComplexity(int cyclomaticComplexity);
+
+    Integer getFirstLineNumber();
     void setFirstLineNumber(Integer firstLineNumber);
 
     Integer getLastLineNumber();
-
     void setLastLineNumber(Integer lastLineNumber);
 
     Integer getEffectiveLineCount();
-
     void setEffectiveLineCount(Integer effectiveLineCount);
 }

@@ -36,7 +36,7 @@ namespace Project_1.Base_Types
         }
     }
 
-    record Person(string Firstname, string Lastname, int Age)
+    public record Person(string Firstname, string Lastname, int Age)
     {
         private List<string> _favouriteFood = new();
         private int BodyCount { get; set; }
