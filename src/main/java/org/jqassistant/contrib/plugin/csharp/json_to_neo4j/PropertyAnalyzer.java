@@ -47,6 +47,7 @@ public class PropertyAnalyzer {
         propertyDescriptor.setName(propertyModel.getName());
         propertyDescriptor.setAccessibility(propertyModel.getAccessibility());
         propertyDescriptor.setStatic(propertyModel.isStaticKeyword());
+        propertyDescriptor.setRequired(propertyModel.isRequired());
 
         TypeDescriptor typeDescriptor = typeCache.findOrCreate(propertyModel.getType());
         propertyDescriptor.setType(typeDescriptor);

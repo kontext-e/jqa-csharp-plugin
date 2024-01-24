@@ -14,4 +14,6 @@ public interface PropertyDescriptor extends MemberDescriptor, TypedDescriptor{
     @Relation.Incoming
     List<MemberAccessDescriptor> getAccessingMethods();
 
+    boolean isRequired();
+    void setRequired(boolean required);
 }

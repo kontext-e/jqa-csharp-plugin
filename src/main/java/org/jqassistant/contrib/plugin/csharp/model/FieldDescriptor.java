@@ -10,16 +10,16 @@ public interface FieldDescriptor extends MemberDescriptor, TypedDescriptor, Meth
 
     @Property("transient")
     Boolean isTransient();
-
     void setTransient(Boolean transientField);
 
     @Property("volatile")
     Boolean isVolatile();
-
     void setVolatile(Boolean volatileField);
 
     @Relation("HAS")
     PrimitiveValueDescriptor getValue();
-
     void setValue(PrimitiveValueDescriptor valueDescriptor);
+
+    boolean isRequired();
+    void setRequired(boolean required);
 }

@@ -25,6 +25,8 @@ public class PropertyModel implements JsonModel {
     @JsonProperty("static")
     private boolean staticKeyword;
 
+    private boolean required;
+
     @Override
     public String getKey() {
         return fqn;
