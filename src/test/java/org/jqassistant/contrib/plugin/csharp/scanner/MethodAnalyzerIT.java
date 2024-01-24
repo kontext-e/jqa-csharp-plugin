@@ -13,11 +13,10 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 public class MethodAnalyzerIT extends CSharpIntegrationTest {
 
-
     @Test
     @TestStore(reset = false, type = TestStore.Type.FILE)
     void testMethodParameters(){
-        List<MethodDescriptor> methods = query("Match (c:Class)-[]->(m:Method) Where c.name=\"Methods\" And m.name=\"MethodWithDefaultArguments\" Return m").getColumn("m");
+        List<MethodDescriptor> methods = queryForMethods("MethodWithMultipleArguments");
 
         assertThat(methods.size()).isEqualTo(1);
         MethodDescriptor method = methods.get(0);
@@ -34,12 +33,30 @@ public class MethodAnalyzerIT extends CSharpIntegrationTest {
 
     @Test
     @TestStore(reset = false, type = TestStore.Type.FILE)
-    void testUsings() {
-        List<MethodDescriptor> methods = query("Match (c:Class)-[]->(m:Method) Where c.name=\"Methods\" And m.name=\"ProtectedInternalMethod\" Return m").getColumn("m");
-
-        assertThat(methods.size()).isEqualTo(1);
-        MethodDescriptor method = methods.get(0);
+    void testProtectedInternalMethod() {
+        MethodDescriptor method = queryForMethods("ProtectedInternalMethod").get(0);
         assertThat(method.getAccessibility()).isEqualTo("ProtectedOrInternal");
+    }
+
+    @Test
+    @TestStore(reset = false, type = TestStore.Type.FILE)
+    void testMethodReturnType(){
+        MethodDescriptor method = queryForMethods("MethodWithReturnType").get(0);
+        assertThat(method.getReturns().getFullQualifiedName()).isEqualTo("int");
+    }
+
+    @Test
+    @TestStore(reset = false, type = TestStore.Type.FILE)
+    void testImplicitlyPrivateMethods(){
+        MethodDescriptor method = queryForMethods("ImplicitlyPrivateMethod").get(0);
+        assertThat(method.getAccessibility()).isEqualTo("Private");
+    }
+
+    private List<MethodDescriptor> queryForMethods(String nameOfMethod){
+        return query(
+                String.format("Match (c:Class)-[]->(m:Method) Where c.name=\"Methods\" And m.name=\"%s\" Return m",
+                        nameOfMethod))
+                .getColumn("m");
     }
 
 
