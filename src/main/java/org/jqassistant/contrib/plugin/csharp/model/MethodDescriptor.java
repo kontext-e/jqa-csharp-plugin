@@ -41,42 +41,39 @@ public interface MethodDescriptor extends MemberDescriptor, AbstractDescriptor {
     TypeDescriptor getExtendedType();
     void setExtendedType(TypeDescriptor typeDescriptor);
 
-    boolean getIsImplementation();
-    void setIsImplementation(boolean isImplementation);
+    boolean isImplementation();
+    void setImplementation(boolean isImplementation);
 
     int getCyclomaticComplexity();
     void setCyclomaticComplexity(int cyclomaticComplexity);
 
-    Integer getFirstLineNumber();
-    void setFirstLineNumber(Integer firstLineNumber);
+    int getFirstLineNumber();
+    void setFirstLineNumber(int firstLineNumber);
 
-    Integer getLastLineNumber();
-    void setLastLineNumber(Integer lastLineNumber);
+    int getLastLineNumber();
+    void setLastLineNumber(int lastLineNumber);
 
-    Integer getEffectiveLineCount();
-    void setEffectiveLineCount(Integer effectiveLineCount);
+    int getEffectiveLineCount();
+    void setEffectiveLineCount(int effectiveLineCount);
 
-    Boolean isStatic();
-    void setStatic(Boolean s);
+    boolean isStatic();
+    void setStatic(boolean s);
 
-    Boolean isReadonly();
-    void setReadonly(Boolean r);
+    boolean isReadonly();
+    void setReadonly(boolean r);
 
-    Boolean isConst();
-    void setConst(Boolean c);
+    boolean isSealed();
+    void setSealed(boolean s);
 
-    Boolean isSealed();
-    void setSealed(Boolean s);
+    boolean isNew();
+    void setNew(boolean n);
 
-    Boolean isNew();
-    void setNew(Boolean n);
+    boolean isExtern();
+    void setExtern(boolean e);
 
-    Boolean isExtern();
-    void setExtern(Boolean e);
+    boolean isOverride();
+    void setOverride(boolean o);
 
-    Boolean isOverride();
-    void setOverride(Boolean o);
-
-    Boolean isVirtual();
-    void setVirtual(Boolean v);
+    boolean isVirtual();
+    void setVirtual(boolean v);
 }
