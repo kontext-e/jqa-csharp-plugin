@@ -16,6 +16,7 @@ import org.jqassistant.contrib.plugin.csharp.model.ConstructorDescriptor;
 import org.jqassistant.contrib.plugin.csharp.model.InterfaceTypeDescriptor;
 import org.jqassistant.contrib.plugin.csharp.model.MemberDescriptor;
 import org.jqassistant.contrib.plugin.csharp.model.MethodDescriptor;
+import org.jqassistant.contrib.plugin.csharp.model.TypeDescriptor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -158,6 +159,27 @@ public class MethodAnalyzerTest {
         methodAnalyzer.createConstructors(toList(fileModel));
 
         verify(methodCache, never()).create(any(), eq(ConstructorDescriptor.class));
+    }
+
+    @Test
+    void testExtensionMethods(){
+        List<MethodModel> methodModels = createMethodModels(1);
+        MethodModel methodModel = methodModels.get(0);
+        methodModel.setExtensionMethod(true);
+        methodModel.setExtendsType("NewClass");
+        ClassModel classModel = createClassModel(methodModels);
+        FileModel fileModel = createFileModel(classModel, "Relative.Path");
+
+        TypeDescriptor typeDescriptor = new ClassDescriptorImpl("TypeName");
+        when(typeCache.findAny("NewClass")).thenReturn(typeDescriptor);
+        TypeDescriptor owningDescriptor = new ClassDescriptorImpl("OwningDescriptor");
+        when(typeCache.findTypeByRelativePath(any(), any())).thenReturn(Optional.of(owningDescriptor));
+        MethodDescriptor methodDescriptor = new MethodDescriptorImpl();
+        when(methodCache.create(any(), eq(MethodDescriptor.class))).thenReturn(methodDescriptor);
+
+        methodAnalyzer.createMethods(toList(fileModel));
+
+        assertThat(methodDescriptor.getExtendedType()).isEqualTo(typeDescriptor);
     }
 
     private static void assertMemberDescriptorHasBeenFilled(MemberDescriptor descriptor) {
