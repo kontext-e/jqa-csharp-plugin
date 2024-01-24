@@ -49,7 +49,6 @@ public class MemberAnalyzer {
         fieldDescriptor.setName(fieldModel.getName());
         fieldDescriptor.setAccessibility(fieldModel.getAccessibility());
         fieldDescriptor.setVolatile(fieldModel.isVolatileKeyword());
-        fieldDescriptor.setSealed(fieldModel.isSealed());
         fieldDescriptor.setStatic(fieldModel.isStaticKeyword());
         fieldDescriptor.setRequired(fieldModel.isRequired());
     }

@@ -15,12 +15,9 @@ public interface MemberDescriptor extends
         CSharpDescriptor,
         NamedDescriptor,
         SignatureDescriptor,
-        MethodModifierDescriptor,
         Descriptor,
         FullQualifiedNameDescriptor,
-        AccessibilityDescriptor,
-        MemberModifierDescriptor{
-
+        AccessibilityDescriptor {
 
     @Incoming
     @Declares
