@@ -51,6 +51,7 @@ public class MemberAnalyzer {
         fieldDescriptor.setVolatile(fieldModel.isVolatileKeyword());
         fieldDescriptor.setSealed(fieldModel.isSealed());
         fieldDescriptor.setStatic(fieldModel.isStaticKeyword());
+        fieldDescriptor.setRequired(fieldModel.isRequired());
     }
 
     private void analyzeFieldType(FieldModel fieldModel, FieldDescriptor fieldDescriptor) {

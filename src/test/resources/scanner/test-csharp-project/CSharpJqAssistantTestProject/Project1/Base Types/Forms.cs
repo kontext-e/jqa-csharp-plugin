@@ -12,6 +12,8 @@ namespace Project_1.Base_Types
     public class Circle: Form
     {
         private Person _person = new("William", "Thimm", 23);
+        public required string Address { get; set; }
+        public required string PhoneNumber;
 
         private void Method()
         {

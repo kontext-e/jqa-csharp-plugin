@@ -11,6 +11,17 @@ public class PropertyDescriptorImpl extends FieldDescriptorImpl implements Prope
 
     private List<MethodDescriptor> accessors = new ArrayList<>();
     private List<MemberAccessDescriptor> accessingMethods = new ArrayList<>();
+    private boolean isRequired;
+
+    @Override
+    public boolean isRequired() {
+        return isRequired;
+    }
+
+    @Override
+    public void setRequired(boolean required) {
+        isRequired = required;
+    }
 
     @Override
     public List<MethodDescriptor> getAccessors() {

@@ -36,6 +36,8 @@ public class FieldModel implements JsonModel {
 
     private String ConstantValue;
 
+    private boolean required;
+
     @Override
     public String getKey() {
         return fqn;

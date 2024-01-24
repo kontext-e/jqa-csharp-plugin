@@ -15,6 +15,7 @@ public class FieldDescriptorImpl implements FieldDescriptor {
     private boolean isExtern;
     private boolean isOverride;
     private boolean isVirtual;
+    private boolean isRequired;
 
 
     private String signature;
@@ -26,6 +27,16 @@ public class FieldDescriptorImpl implements FieldDescriptor {
     private PrimitiveValueDescriptor value;
     private MemberOwningTypeDescriptor declaringType;
     private String accessibility;
+
+    @Override
+    public boolean isRequired() {
+        return isRequired;
+    }
+
+    @Override
+    public void setRequired(boolean required) {
+        isRequired = required;
+    }
 
     @Override
     public String getAccessibility() {
