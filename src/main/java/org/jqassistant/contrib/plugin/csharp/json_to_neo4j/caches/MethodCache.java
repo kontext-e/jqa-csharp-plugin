@@ -21,7 +21,7 @@ public class MethodCache {
 
     public MethodDescriptor findAny(String fqn) {
         List<MethodDescriptor> methodDescriptors = cache.get(fqn);
-        Optional<MethodDescriptor> methodDescriptor = methodDescriptors.stream().filter(MethodDescriptor::getIsImplementation).findAny();
+        Optional<MethodDescriptor> methodDescriptor = methodDescriptors.stream().filter(MethodDescriptor::isImplementation).findAny();
         return methodDescriptor.orElseGet(() -> methodDescriptors.get(0));
     }
 

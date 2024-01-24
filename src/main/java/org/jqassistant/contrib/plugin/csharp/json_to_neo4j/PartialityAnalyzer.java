@@ -22,7 +22,7 @@ public class PartialityAnalyzer {
         List<List<MethodDescriptor>> methodDescriptors = methodCache.findAllPartialMethods();
         for (List<MethodDescriptor> methodFragments : methodDescriptors){
             for (MethodDescriptor methodDescriptor : methodFragments){
-                if (!methodDescriptor.getIsImplementation()) continue;
+                if (!methodDescriptor.isImplementation()) continue;
                 addSiblings(methodFragments, methodDescriptor);
             }
         }

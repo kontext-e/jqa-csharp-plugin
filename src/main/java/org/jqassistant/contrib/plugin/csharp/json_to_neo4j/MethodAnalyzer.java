@@ -85,7 +85,7 @@ public class MethodAnalyzer {
         methodDescriptor.setFullQualifiedName(methodModel.getFqn());
         methodDescriptor.setAccessibility(methodModel.getAccessibility());
         methodDescriptor.setCyclomaticComplexity(methodModel.getCyclomaticComplexity());
-        methodDescriptor.setIsImplementation(methodModel.isImplementation());
+        methodDescriptor.setImplementation(methodModel.isImplementation());
     }
 
     private void addReturnType(MethodModel methodModel, MethodDescriptor methodDescriptor) {

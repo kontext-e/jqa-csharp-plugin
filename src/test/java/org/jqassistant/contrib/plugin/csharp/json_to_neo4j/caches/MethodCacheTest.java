@@ -48,7 +48,7 @@ public class MethodCacheTest {
 
         MethodDescriptor result = methodCache.create("Fqn.Method", MethodDescriptor.class);
         MethodDescriptor newResult = methodCache.create("Fqn.Method", MethodDescriptor.class);
-        result.setIsImplementation(true);
+        result.setImplementation(true);
 
         assertThat(newResult.equals(result)).isFalse();
         assertThat(methodCache.findAny("Fqn.Method")).isEqualTo(result);

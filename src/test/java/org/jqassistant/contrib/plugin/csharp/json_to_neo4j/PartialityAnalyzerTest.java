@@ -47,8 +47,8 @@ class PartialityAnalyzerTest {
         MethodDescriptor partialMethodImplementation = new MethodDescriptorImpl();
         MethodDescriptor partialMethodDeclaration = new MethodDescriptorImpl();
         MethodDescriptor nonPartialMethod = new MethodDescriptorImpl();
-        partialMethodImplementation.setIsImplementation(true);
-        partialMethodDeclaration.setIsImplementation(false);
+        partialMethodImplementation.setImplementation(true);
+        partialMethodDeclaration.setImplementation(false);
 
         List<MethodDescriptor> partialMethodList = new ArrayList<>();
         partialMethodList.add(partialMethodImplementation);
