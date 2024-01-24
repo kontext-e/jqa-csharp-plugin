@@ -7,6 +7,7 @@ import com.buschmais.xo.neo4j.api.annotation.Relation.Outgoing;
 import java.util.List;
 
 
+@SuppressWarnings("unused")
 @Label(value = "Method")
 public interface MethodDescriptor extends MemberDescriptor, AbstractDescriptor {
 
@@ -54,4 +55,28 @@ public interface MethodDescriptor extends MemberDescriptor, AbstractDescriptor {
 
     Integer getEffectiveLineCount();
     void setEffectiveLineCount(Integer effectiveLineCount);
+
+    Boolean isStatic();
+    void setStatic(Boolean s);
+
+    Boolean isReadonly();
+    void setReadonly(Boolean r);
+
+    Boolean isConst();
+    void setConst(Boolean c);
+
+    Boolean isSealed();
+    void setSealed(Boolean s);
+
+    Boolean isNew();
+    void setNew(Boolean n);
+
+    Boolean isExtern();
+    void setExtern(Boolean e);
+
+    Boolean isOverride();
+    void setOverride(Boolean o);
+
+    Boolean isVirtual();
+    void setVirtual(Boolean v);
 }
