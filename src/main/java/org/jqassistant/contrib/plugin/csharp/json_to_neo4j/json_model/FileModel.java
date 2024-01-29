@@ -32,4 +32,20 @@ public class FileModel {
 
     private List<RecordStructModel> recordStructs = new ArrayList<>();
 
+    public List<MemberOwningTypeModel> getMemberOwningTypes(){
+        ArrayList<MemberOwningTypeModel> memberOwningTypeModels = new ArrayList<>();
+        memberOwningTypeModels.addAll(classes);
+        memberOwningTypeModels.addAll(interfaces);
+        memberOwningTypeModels.addAll(structs);
+        memberOwningTypeModels.addAll(recordClasses);
+        memberOwningTypeModels.addAll(recordStructs);
+        return memberOwningTypeModels;
+    }
+
+    public List<TypeModel> getTypeModels(){
+        List<TypeModel> typeModels = new ArrayList<>(getMemberOwningTypes());
+        typeModels.addAll(enums);
+        return typeModels;
+    }
+
 }

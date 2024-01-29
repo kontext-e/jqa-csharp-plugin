@@ -84,6 +84,11 @@ public class TypeAnalyzer {
 
 
     private void fillDescriptor(TypeDescriptor descriptor, TypeModel typeModel) {
+        addGeneralInformation(descriptor, typeModel);
+        addTypeSpecificInformation(descriptor, typeModel);
+    }
+
+    private static void addGeneralInformation(TypeDescriptor descriptor, TypeModel typeModel) {
         descriptor.setName(typeModel.getName());
         descriptor.setFullQualifiedName(typeModel.getFqn());
         descriptor.setMd5(typeModel.getMd5());
@@ -91,28 +96,35 @@ public class TypeAnalyzer {
         descriptor.setFirstLineNumber(typeModel.getFirstLineNumber());
         descriptor.setLastLineNumber(typeModel.getLastLineNumber());
         descriptor.setEffectiveLineCount(typeModel.getEffectiveLineCount());
+    }
 
+    private static void addTypeSpecificInformation(TypeDescriptor descriptor, TypeModel typeModel) {
         if (typeModel instanceof InterfaceModel){
-            InterfaceModel interfaceModel = (InterfaceModel) typeModel;
-            InterfaceTypeDescriptor interfaceDescriptor = (InterfaceTypeDescriptor) descriptor;
-            interfaceDescriptor.setAccessibility(interfaceModel.getAccessibility());
-            interfaceDescriptor.setPartial(interfaceModel.isPartial());
+            addInterfaceInformation((InterfaceTypeDescriptor) descriptor, (InterfaceModel) typeModel);
         }
-
         if (typeModel instanceof ClassModel) {
-            ClassModel classModel = (ClassModel) typeModel;
-            ClassDescriptor classDescriptor = (ClassDescriptor) descriptor;
-            classDescriptor.setPartial(classModel.isPartial());
-            classDescriptor.setAbstract(classModel.isAbstractKeyword());
-            classDescriptor.setSealed(classModel.isSealed());
-            classDescriptor.setStatic(classModel.isStaticKeyword());
+            addClassInformation((ClassDescriptor) descriptor, (ClassModel) typeModel);
         }
-
         if (typeModel instanceof StructModel){
-            StructModel structModel = (StructModel) typeModel;
-            StructDescriptor structDescriptor = (StructDescriptor) descriptor;
-            structDescriptor.setPartial(structModel.isPartial());
+            addStructInformation((StructDescriptor) descriptor, (StructModel) typeModel);
         }
+    }
+
+    private static void addInterfaceInformation(InterfaceTypeDescriptor descriptor, InterfaceModel typeModel) {
+        descriptor.setAccessibility(typeModel.getAccessibility());
+        descriptor.setPartial(typeModel.isPartial());
+    }
+
+    private static void addClassInformation(ClassDescriptor descriptor, ClassModel typeModel) {
+        descriptor.setPartial(typeModel.isPartial());
+        descriptor.setAbstract(typeModel.isAbstractKeyword());
+        descriptor.setSealed(typeModel.isSealed());
+        descriptor.setStatic(typeModel.isStaticKeyword());
+        descriptor.setAccessibility(typeModel.getAccessibility());
+    }
+
+    private static void addStructInformation(StructDescriptor descriptor, StructModel typeModel) {
+        descriptor.setPartial(typeModel.isPartial());
     }
 
     public void createEnumMembers(List<FileModel> fileModelList) {
