@@ -2,12 +2,12 @@ package org.jqassistant.contrib.plugin.csharp.json_to_neo4j;
 
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.caches.PropertyCache;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.caches.TypeCache;
-import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.ClassModel;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.FileModel;
+import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.MemberOwningTypeModel;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.MethodModel;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.PropertyAccessorModel;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.PropertyModel;
-import org.jqassistant.contrib.plugin.csharp.model.ClassDescriptor;
+import org.jqassistant.contrib.plugin.csharp.model.MemberOwningTypeDescriptor;
 import org.jqassistant.contrib.plugin.csharp.model.MethodDescriptor;
 import org.jqassistant.contrib.plugin.csharp.model.PropertyDescriptor;
 import org.jqassistant.contrib.plugin.csharp.model.TypeDescriptor;

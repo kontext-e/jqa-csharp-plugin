@@ -125,6 +125,8 @@ public class TypeAnalyzer {
 
     private static void addStructInformation(StructDescriptor descriptor, StructModel typeModel) {
         descriptor.setPartial(typeModel.isPartial());
+        descriptor.setAccessibility(typeModel.getAccessibility());
+        descriptor.setReadOnly(typeModel.isReadOnly());
     }
 
     public void createEnumMembers(List<FileModel> fileModelList) {

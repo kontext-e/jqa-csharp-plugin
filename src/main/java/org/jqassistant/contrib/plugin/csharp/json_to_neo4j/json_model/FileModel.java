@@ -18,13 +18,13 @@ public class FileModel {
 
     private String relativePath;
 
-    private List<ClassModel> classes;
+    private List<ClassModel> classes = new ArrayList<>();
 
-    private List<UsingModel> usings;
+    private List<UsingModel> usings = new ArrayList<>();
 
-    private List<EnumModel> enums;
+    private List<EnumModel> enums = new ArrayList<>();
 
-    private List<InterfaceModel> interfaces;
+    private List<InterfaceModel> interfaces = new ArrayList<>();
 
     private List<StructModel> structs = new ArrayList<>();
 

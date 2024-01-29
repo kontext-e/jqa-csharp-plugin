@@ -10,9 +10,9 @@ import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.caches.MethodCache;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.caches.NamespaceCache;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.caches.PropertyCache;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.caches.TypeCache;
-import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.ClassModel;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.FileModel;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.InvocationAnalyzer;
+import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.MemberOwningTypeModel;
 import org.jqassistant.contrib.plugin.csharp.model.CSharpClassesDirectoryDescriptor;
 import org.jqassistant.contrib.plugin.csharp.model.CSharpFileDescriptor;
 import org.slf4j.LoggerFactory;
@@ -79,12 +79,13 @@ public class JsonToNeo4JConverter {
         readJsonFilesRecursively(inputDirectory, null);
 
         typeAnalyzer.createTypes(fileModelList);
-        for (FileModel fileModel : fileModelList){
+        for (FileModel fileModel : fileModelList) {
             dependencyAnalyzer.createUsings(fileModel);
             dependencyAnalyzer.linkInterfaces(fileModel);
-            for (ClassModel classModel : fileModel.getClasses()){
-                dependencyAnalyzer.linkBaseTypes(classModel);
-                memberAnalyzer.createFields(classModel, fileModel.getRelativePath());
+            fileModel.getClasses().forEach(dependencyAnalyzer::linkBaseTypes);
+            fileModel.getRecordClasses().forEach(dependencyAnalyzer::linkBaseTypes);
+            for (MemberOwningTypeModel memberOwningTypeModel : fileModel.getMemberOwningTypes()) {
+                memberAnalyzer.createFields(memberOwningTypeModel, fileModel.getRelativePath());
             }
         }
         partialityAnalyzer.linkPartialClasses();
