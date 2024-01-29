@@ -111,6 +111,7 @@ public class MethodAnalyzer {
     private void createConstructor(ClassDescriptor classDescriptor, ConstructorModel constructorModel) {
         ConstructorDescriptor constructorDescriptor = methodCache.create(constructorModel.getFqn(), ConstructorDescriptor.class);
         fillMethodDescriptor(constructorModel, constructorDescriptor);
+        addReturnType(constructorModel, constructorDescriptor);
         classDescriptor.getDeclaredMembers().add(constructorDescriptor);
     }
 }
