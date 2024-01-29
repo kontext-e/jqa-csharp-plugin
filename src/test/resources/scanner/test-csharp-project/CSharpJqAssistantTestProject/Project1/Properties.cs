@@ -6,30 +6,23 @@ using System.Threading.Tasks;
 
 namespace Project_1
 {
-    internal class Properties
+    class Properties
     {
+        private string _backingField;
 
-        public string Property1 { get; set; }
+        private int ImplicitlyPrivateProperty { get; init; }
+        public string ExplicitlyPublicProperty { get; }
+        private protected int PrivateProtectedProperty { get; }
+        public string PropertyWithDifferingAccessorAccessibility { get; private set; }
 
-        private protected int Property9 {get; set;}
-
-        public string Property2 { get; private set; }
-
-        public string Property3 => Property1 + Property2;
-        private string Property4 => Property1 + Property2;
-
-        public string Property5
+        public static string StaticProperty { get; }
+    
+        public string ExpressionBodiedProperty => "Empty String";
+        public string PropertyWithExplicitAccessors
         {
-            get { return Property1; }
-            set => Property2 = value;
+            get { return "Another String"; }
+            set => _backingField = value;
         }
-
-        int Property6 { get; init; }
-
-        private string Property7 {  get; set; }
-        public static string Property8 { get; set; }
-
-        int Property10 { get; set; }
 
     }
 }

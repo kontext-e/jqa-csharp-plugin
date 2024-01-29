@@ -77,6 +77,7 @@ public class PropertyAnalyzer {
         methodModel.setFqn(propertyModel.getFqn() + "." + accessor.getKind());
         methodModel.setParameters(new ArrayList<>());
         methodModel.setAccessibility(accessor.getAccessibility());
+        methodModel.setReturnType(accessor.getKind().contains("get") ? propertyModel.getType() : "void");
 
         return methodAnalyzer.createMethodDescriptor(methodModel);
     }
