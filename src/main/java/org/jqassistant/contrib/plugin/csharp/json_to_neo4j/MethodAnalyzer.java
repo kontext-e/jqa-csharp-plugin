@@ -3,14 +3,10 @@ package org.jqassistant.contrib.plugin.csharp.json_to_neo4j;
 import com.buschmais.jqassistant.core.store.api.Store;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.caches.MethodCache;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.caches.TypeCache;
-import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.ClassModel;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.ConstructorModel;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.FileModel;
-import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.InterfaceModel;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.MemberOwningTypeModel;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.MethodModel;
-import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.StructModel;
-import org.jqassistant.contrib.plugin.csharp.model.ClassDescriptor;
 import org.jqassistant.contrib.plugin.csharp.model.ConstructorDescriptor;
 import org.jqassistant.contrib.plugin.csharp.model.MemberOwningTypeDescriptor;
 import org.jqassistant.contrib.plugin.csharp.model.MethodDescriptor;
@@ -35,14 +31,8 @@ public class MethodAnalyzer {
 
     public void createMethods(List<FileModel> fileModelList) {
         for (FileModel fileModel : fileModelList) {
-            for (ClassModel classModel : fileModel.getClasses()){
-                createMethods(classModel, fileModel.getRelativePath());
-            }
-            for (InterfaceModel interfaceModel : fileModel.getInterfaces()){
-                createMethods(interfaceModel, fileModel.getRelativePath());
-            }
-            for (StructModel structModel : fileModel.getStructs()){
-                createMethods(structModel, fileModel.getRelativePath());
+            for (MemberOwningTypeModel memberOwningTypeModel : fileModel.getMemberOwningTypes()){
+                createMethods(memberOwningTypeModel, fileModel.getRelativePath());
             }
         }
     }
@@ -95,23 +85,23 @@ public class MethodAnalyzer {
 
     public void createConstructors(List<FileModel> fileModelList) {
         for (FileModel fileModel : fileModelList) {
-            for (ClassModel classModel : fileModel.getClasses()) {
+            for (MemberOwningTypeModel memberOwningTypeModel : fileModel.getMemberOwningTypes()) {
 
-                Optional<TypeDescriptor> descriptor = typeCache.findTypeByRelativePath(classModel.getKey(), fileModel.getRelativePath());
+                Optional<TypeDescriptor> descriptor = typeCache.findTypeByRelativePath(memberOwningTypeModel.getKey(), fileModel.getRelativePath());
                 if (!descriptor.isPresent()) continue;
 
-                ClassDescriptor classDescriptor = (ClassDescriptor) descriptor.get();
-                for (ConstructorModel constructorModel : classModel.getConstructors()) {
-                    createConstructor(classDescriptor, constructorModel);
+                MemberOwningTypeDescriptor memberOwningTypeDescriptor = (MemberOwningTypeDescriptor) descriptor.get();
+                for (ConstructorModel constructorModel : memberOwningTypeModel.getConstructors()) {
+                    createConstructor(memberOwningTypeDescriptor, constructorModel);
                 }
             }
         }
     }
 
-    private void createConstructor(ClassDescriptor classDescriptor, ConstructorModel constructorModel) {
+    private void createConstructor(MemberOwningTypeDescriptor memberOwningTypeDescriptor, ConstructorModel constructorModel) {
         ConstructorDescriptor constructorDescriptor = methodCache.create(constructorModel.getFqn(), ConstructorDescriptor.class);
         fillMethodDescriptor(constructorModel, constructorDescriptor);
         addReturnType(constructorModel, constructorDescriptor);
-        classDescriptor.getDeclaredMembers().add(constructorDescriptor);
+        memberOwningTypeDescriptor.getDeclaredMembers().add(constructorDescriptor);
     }
 }

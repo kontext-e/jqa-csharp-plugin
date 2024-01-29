@@ -10,5 +10,6 @@ import lombok.Setter;
 public class StructModel extends MemberOwningTypeModel implements JsonModel{
 
     private boolean partial;
+    private boolean readOnly;
 
 }
