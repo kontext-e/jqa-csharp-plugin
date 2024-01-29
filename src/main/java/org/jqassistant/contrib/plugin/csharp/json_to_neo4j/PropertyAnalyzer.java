@@ -30,13 +30,13 @@ public class PropertyAnalyzer {
 
     public void createProperties(List<FileModel> fileModelList) {
         for (FileModel fileModel : fileModelList) {
-            for (ClassModel classModel : fileModel.getClasses()) {
-                ClassDescriptor classDescriptor = (ClassDescriptor) typeCache.findAny(classModel.getKey());
+            for (MemberOwningTypeModel memberOwningTypeModel : fileModel.getMemberOwningTypes()) {
+                MemberOwningTypeDescriptor typeDescriptor = (MemberOwningTypeDescriptor) typeCache.findAny(memberOwningTypeModel.getKey());
 
-                for (PropertyModel propertyModel : classModel.getProperties()) {
+                for (PropertyModel propertyModel : memberOwningTypeModel.getProperties()) {
                     PropertyDescriptor propertyDescriptor = propertyCache.create(propertyModel.getKey());
                     fillPropertyDescriptor(propertyModel, propertyDescriptor);
-                    classDescriptor.getDeclaredMembers().add(propertyDescriptor);
+                    typeDescriptor.getDeclaredMembers().add(propertyDescriptor);
                 }
             }
         }

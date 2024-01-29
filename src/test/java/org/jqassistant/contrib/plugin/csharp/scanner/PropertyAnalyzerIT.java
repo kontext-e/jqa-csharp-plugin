@@ -25,7 +25,7 @@ public class PropertyAnalyzerIT extends CSharpIntegrationTest {
     @Test
     @TestStore(reset = false)
     void testImplicitlyPrivateProperty() {
-        PropertyDescriptor property = queryForProperties("Properties", "ImplicitlyPrivateProperty").get(0);
+        PropertyDescriptor property = queryForProperty("ImplicitlyPrivateProperty").get(0);
 
         assertThat(property.getAccessibility()).isEqualTo("Private");
         assertThat(property.getAccessors().get(0).getAccessibility()).isEqualTo("Private");
@@ -38,7 +38,7 @@ public class PropertyAnalyzerIT extends CSharpIntegrationTest {
     @Test
     @TestStore(reset = false)
     void testPrivateProtectedProperty() {
-        PropertyDescriptor property = queryForProperties("Properties", "PrivateProtectedProperty").get(0);
+        PropertyDescriptor property = queryForProperty("PrivateProtectedProperty").get(0);
         assertThat(property.getAccessibility()).isEqualTo("ProtectedAndInternal");
         assertThat(property.getType().getFullQualifiedName()).isEqualTo("int");
     }
@@ -46,7 +46,7 @@ public class PropertyAnalyzerIT extends CSharpIntegrationTest {
     @Test
     @TestStore(reset = false)
     void testPropertyWithDifferingAccessorAccessibility(){
-        PropertyDescriptor property = queryForProperties("Properties", "PropertyWithDifferingAccessorAccessibility").get(0);
+        PropertyDescriptor property = queryForProperty("PropertyWithDifferingAccessorAccessibility").get(0);
 
         assertThat(property.getAccessors().size()).isEqualTo(2);
         List<MethodDescriptor> accessors = new LinkedList<>(property.getAccessors());
@@ -60,14 +60,14 @@ public class PropertyAnalyzerIT extends CSharpIntegrationTest {
     @Test
     @TestStore(reset = false)
     void testStaticProperty() {
-        PropertyDescriptor property = queryForProperties("Properties", "StaticProperty").get(0);
+        PropertyDescriptor property = queryForProperty("StaticProperty").get(0);
         assertThat(property.isStatic()).isTrue();
     }
 
     @Test
     @TestStore(reset = false)
     void testExpressionProperty(){
-        PropertyDescriptor property = queryForProperties("Properties", "ExpressionBodiedProperty").get(0);
+        PropertyDescriptor property = queryForProperty("ExpressionBodiedProperty").get(0);
 
         assertThat(property.getAccessors().size()).isEqualTo(1);
         assertThat(property.getAccessors().get(0).getName()).startsWith("get");
@@ -77,7 +77,7 @@ public class PropertyAnalyzerIT extends CSharpIntegrationTest {
     @Test
     @TestStore(reset = false)
     void testPropertyWithExplicitAccessors(){
-        PropertyDescriptor property = queryForProperties("Properties", "PropertyWithExplicitAccessors").get(0);
+        PropertyDescriptor property = queryForProperty("PropertyWithExplicitAccessors").get(0);
 
         assertThat(property.getAccessors().size()).isEqualTo(2);
         List<MethodDescriptor> accessors = new LinkedList<>(property.getAccessors());
@@ -91,7 +91,7 @@ public class PropertyAnalyzerIT extends CSharpIntegrationTest {
     @Test
     @TestStore(reset = false)
     void testPropertyAccessorReturnType(){
-        PropertyDescriptor property = queryForProperties("Properties", "ImplicitlyPrivateProperty").get(0);
+        PropertyDescriptor property = queryForProperty("ImplicitlyPrivateProperty").get(0);
 
         MethodDescriptor init = property.getAccessors().stream().filter(a -> a.getName().contains("init")).findAny().get();
         assertThat(init.getReturns().getFullQualifiedName()).isEqualTo("void");
@@ -100,10 +100,10 @@ public class PropertyAnalyzerIT extends CSharpIntegrationTest {
     }
 
 
-    private List<PropertyDescriptor> queryForProperties(String nameOfClass, String nameOfProperty){
+    private List<PropertyDescriptor> queryForProperty(String nameOfProperty){
         return query(
                 String.format("Match (c:Class)-[]->(p:Property) Where c.name=\"%s\" And p.name=\"%s\" Return p",
-                        nameOfClass, nameOfProperty))
+                        "Properties", nameOfProperty))
                 .getColumn("p");
     }
 
