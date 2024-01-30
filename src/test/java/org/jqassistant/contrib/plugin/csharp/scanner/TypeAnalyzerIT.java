@@ -149,8 +149,6 @@ public class TypeAnalyzerIT extends CSharpIntegrationTest{
         assertThat(members.get(3)).isInstanceOf(FieldDescriptor.class);
     }
 
-    //TODO Check for Effective Line Count
-
     @Test
     @TestStore(reset = false)
     void TestEnumType(){
