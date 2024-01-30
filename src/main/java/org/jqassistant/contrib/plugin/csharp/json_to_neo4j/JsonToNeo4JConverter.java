@@ -11,7 +11,6 @@ import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.caches.NamespaceCache
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.caches.PropertyCache;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.caches.TypeCache;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.FileModel;
-import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.InvocationAnalyzer;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.MemberOwningTypeModel;
 import org.jqassistant.contrib.plugin.csharp.model.CSharpClassesDirectoryDescriptor;
 import org.jqassistant.contrib.plugin.csharp.model.CSharpFileDescriptor;
