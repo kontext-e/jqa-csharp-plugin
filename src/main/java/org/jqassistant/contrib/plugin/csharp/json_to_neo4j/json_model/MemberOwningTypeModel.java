@@ -9,8 +9,6 @@ import java.util.List;
 @Setter
 public class MemberOwningTypeModel extends TypeModel {
 
-    private String accessibility;
-
     private List<String> implementedInterfaces;
 
     private List<MethodModel> methods;

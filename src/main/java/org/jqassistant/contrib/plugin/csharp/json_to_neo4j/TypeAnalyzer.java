@@ -9,8 +9,6 @@ import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.EnumMember
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.EnumModel;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.FileModel;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.InterfaceModel;
-import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.RecordClassModel;
-import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.RecordStructModel;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.StructModel;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.TypeModel;
 import org.jqassistant.contrib.plugin.csharp.model.CSharpFileDescriptor;
@@ -43,28 +41,8 @@ public class TypeAnalyzer {
         for (FileModel fileModel : fileModelList) {
             CSharpFileDescriptor cSharpFileDescriptor = fileCache.get(fileModel.getAbsolutePath());
 
-            for (ClassModel classModel : fileModel.getClasses()) {
-                createType(cSharpFileDescriptor, classModel);
-            }
-
-            for (EnumModel enumModel : fileModel.getEnums()) {
-                createType(cSharpFileDescriptor, enumModel);
-            }
-
-            for (InterfaceModel interfaceModel : fileModel.getInterfaces()) {
-                createType(cSharpFileDescriptor, interfaceModel);
-            }
-
-            for (StructModel structModel : fileModel.getStructs()){
-                createType(cSharpFileDescriptor, structModel);
-            }
-
-            for (RecordClassModel recordClassModel : fileModel.getRecordClasses()){
-                createType(cSharpFileDescriptor, recordClassModel);
-            }
-
-            for (RecordStructModel recordStructModel : fileModel.getRecordStructs()){
-                createType(cSharpFileDescriptor, recordStructModel);
+            for (TypeModel typeModel : fileModel.getTypeModels()){
+                createType(cSharpFileDescriptor, typeModel);
             }
         }
     }
@@ -96,6 +74,7 @@ public class TypeAnalyzer {
         descriptor.setFirstLineNumber(typeModel.getFirstLineNumber());
         descriptor.setLastLineNumber(typeModel.getLastLineNumber());
         descriptor.setEffectiveLineCount(typeModel.getEffectiveLineCount());
+        descriptor.setAccessibility(typeModel.getAccessibility());
     }
 
     private static void addTypeSpecificInformation(TypeDescriptor descriptor, TypeModel typeModel) {
@@ -129,17 +108,13 @@ public class TypeAnalyzer {
         descriptor.setReadOnly(typeModel.isReadOnly());
     }
 
-    public void createEnumMembers(List<FileModel> fileModelList) {
+    public void createEnumMembers(EnumModel enumModel) {
+        EnumTypeDescriptor enumTypeDescriptor = (EnumTypeDescriptor) typeCache.findAny(enumModel.getKey());
 
-        for (FileModel fileModel : fileModelList) {
-            for (EnumModel enumModel : fileModel.getEnums()) {
-                EnumTypeDescriptor enumTypeDescriptor = (EnumTypeDescriptor) typeCache.findAny(enumModel.getKey());
-
-                for (EnumMemberModel enumMemberModel : enumModel.getMembers()) {
-                    EnumValueDescriptor enumValueDescriptor = enumValueCache.create(enumMemberModel.getKey());
-                    enumValueDescriptor.setType(enumTypeDescriptor);
-                }
-            }
+        for (EnumMemberModel enumMemberModel : enumModel.getMembers()) {
+            EnumValueDescriptor enumValueDescriptor = enumValueCache.create(enumMemberModel.getKey());
+            enumValueDescriptor.setType(enumTypeDescriptor);
+            enumValueDescriptor.setName(enumMemberModel.getName());
         }
     }
 }
