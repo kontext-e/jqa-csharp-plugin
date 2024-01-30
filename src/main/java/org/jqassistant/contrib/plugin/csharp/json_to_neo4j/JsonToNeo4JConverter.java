@@ -84,12 +84,12 @@ public class JsonToNeo4JConverter {
             dependencyAnalyzer.linkInterfaces(fileModel);
             fileModel.getClasses().forEach(dependencyAnalyzer::linkBaseTypes);
             fileModel.getRecordClasses().forEach(dependencyAnalyzer::linkBaseTypes);
+            fileModel.getEnums().forEach(typeAnalyzer::createEnumMembers);
             for (MemberOwningTypeModel memberOwningTypeModel : fileModel.getMemberOwningTypes()) {
                 memberAnalyzer.createFields(memberOwningTypeModel, fileModel.getRelativePath());
             }
         }
         partialityAnalyzer.linkPartialClasses();
-        typeAnalyzer.createEnumMembers(fileModelList);
         methodAnalyzer.createConstructors(fileModelList);
         methodAnalyzer.createMethods(fileModelList);
         partialityAnalyzer.linkPartialMethods();

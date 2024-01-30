@@ -2,5 +2,5 @@
 
 public enum TypeEnum
 {
-    
+    A, B, C, D  
 }

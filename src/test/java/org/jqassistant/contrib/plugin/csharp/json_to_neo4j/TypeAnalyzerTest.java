@@ -269,13 +269,11 @@ class TypeAnalyzerTest {
 
     @Test
     void testCreateEnumMembers(){
-        FileModel fileModel = createFileModel(0,0,2);
-        List<FileModel> fileModelList = new LinkedList<>();
-        fileModelList.add(fileModel);
+        List<EnumModel> enums = createTypeModelList(2, EnumModel.class);
         when(typeCacheMock.findAny(any())).thenReturn(new EnumDescriptorImpl("EnumName"));
         when(enumValueCacheMock.create(any())).thenReturn(new EnumValueDescriptorIml());
 
-        typeAnalyzer.createEnumMembers(fileModelList);
+        enums.forEach(typeAnalyzer::createEnumMembers);
 
         verify(typeCacheMock, times(2)).findAny(any());
         verify(enumValueCacheMock, times(2)).create(any());

@@ -7,6 +7,8 @@ import lombok.Setter;
 @Getter
 public class TypeModel {
 
+    private String accessibility;
+
     private String relativePath;
 
     private String name;
