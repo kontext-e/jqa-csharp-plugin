@@ -1,8 +1,13 @@
-package org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model;
+package org.jqassistant.contrib.plugin.csharp.json_to_neo4j;
 
 import com.buschmais.jqassistant.core.store.api.Store;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.caches.MethodCache;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.caches.PropertyCache;
+import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.ClassModel;
+import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.FileModel;
+import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.InvokesModel;
+import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.MemberAccessModel;
+import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.MethodModel;
 import org.jqassistant.contrib.plugin.csharp.model.InvokesDescriptor;
 import org.jqassistant.contrib.plugin.csharp.model.MemberAccessDescriptor;
 import org.jqassistant.contrib.plugin.csharp.model.MethodDescriptor;
