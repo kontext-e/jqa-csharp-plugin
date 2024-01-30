@@ -76,6 +76,7 @@ public class MethodAnalyzer {
         methodDescriptor.setAccessibility(methodModel.getAccessibility());
         methodDescriptor.setCyclomaticComplexity(methodModel.getCyclomaticComplexity());
         methodDescriptor.setImplementation(methodModel.isImplementation());
+        methodDescriptor.setPartial(methodModel.isPartial());
     }
 
     private void addReturnType(MethodModel methodModel, MethodDescriptor methodDescriptor) {

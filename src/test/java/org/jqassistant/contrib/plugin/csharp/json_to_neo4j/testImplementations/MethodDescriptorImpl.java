@@ -26,6 +26,7 @@ public class MethodDescriptorImpl implements MethodDescriptor {
     private boolean isVirtual;
     private boolean isAbstract;
     private boolean isImplementation;
+    private boolean isPartial;
 
     private int cyclomaticComplexity;
     private int firstLineNumber;
@@ -36,6 +37,7 @@ public class MethodDescriptorImpl implements MethodDescriptor {
     private String fullQualifiedName;
     private String accessibility;
     private String signature;
+    private String relativePath;
 
     private List<InvokesDescriptor> invokes;
     private List<InvokesDescriptor> invokedBy;
@@ -61,5 +63,10 @@ public class MethodDescriptorImpl implements MethodDescriptor {
     @Override
     public <D> D getDelegate() {
         return null;
+    }
+
+    @Override
+    public boolean getPartial() {
+        return isPartial;
     }
 }
