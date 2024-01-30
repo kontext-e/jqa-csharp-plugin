@@ -32,7 +32,7 @@ public class TypeAnalyzerIT extends CSharpIntegrationTest{
         assertThat(clazz.getSuperClass().getFullQualifiedName()).isEqualTo("object");
         assertThat(clazz.isStatic()).isFalse();
         assertThat(clazz.isSealed()).isTrue();
-        assertThat(clazz.getClassFragments().size()).isEqualTo(0);
+        assertThat(clazz.getTypeFragments().size()).isEqualTo(0);
         assertThat(clazz.getAccessibility()).isEqualTo("Public");
         assertThat(clazz.getPartial()).isFalse();
         assertThat(clazz.isAbstract()).isFalse();
@@ -57,7 +57,7 @@ public class TypeAnalyzerIT extends CSharpIntegrationTest{
         InterfaceTypeDescriptor interfaceDescriptor = (InterfaceTypeDescriptor) queryForType("ITypeInterface").get(0);
 
         assertThat(interfaceDescriptor.getInterfaces().size()).isEqualTo(0);
-        assertThat(interfaceDescriptor.getClassFragments().size()).isEqualTo(0);
+        assertThat(interfaceDescriptor.getTypeFragments().size()).isEqualTo(0);
         assertThat(interfaceDescriptor.getAccessibility()).isEqualTo("Public");
         assertThat(interfaceDescriptor.getPartial()).isFalse();
         assertThat(interfaceDescriptor.getName()).isEqualTo("ITypeInterface");
@@ -78,7 +78,7 @@ public class TypeAnalyzerIT extends CSharpIntegrationTest{
     void TestStruct(){
         StructDescriptor struct = (StructDescriptor) queryForType("TypeStruct").get(0);
 
-        assertThat(struct.getClassFragments().size()).isEqualTo(0);
+        assertThat(struct.getTypeFragments().size()).isEqualTo(0);
         assertThat(struct.getAccessibility()).isEqualTo("Public");
         assertThat(struct.getPartial()).isFalse();
         assertThat(struct.getName()).isEqualTo("TypeStruct");
@@ -106,7 +106,7 @@ public class TypeAnalyzerIT extends CSharpIntegrationTest{
         assertThat(record.getSuperClass().getFullQualifiedName()).isEqualTo("object");
         assertThat(record.isStatic()).isFalse();
         assertThat(record.isSealed()).isFalse();
-        assertThat(record.getClassFragments().size()).isEqualTo(0);
+        assertThat(record.getTypeFragments().size()).isEqualTo(0);
         assertThat(record.getAccessibility()).isEqualTo("Public");
         assertThat(record.getPartial()).isFalse();
         assertThat(record.isAbstract()).isFalse();
@@ -130,7 +130,7 @@ public class TypeAnalyzerIT extends CSharpIntegrationTest{
     void TestRecordStruct(){
         RecordStructDescriptor recordStruct = (RecordStructDescriptor) queryForType("TypeRecordStruct").get(0);
 
-        assertThat(recordStruct.getClassFragments().size()).isEqualTo(0);
+        assertThat(recordStruct.getTypeFragments().size()).isEqualTo(0);
         assertThat(recordStruct.getAccessibility()).isEqualTo("Public");
         assertThat(recordStruct.getPartial()).isFalse();
         assertThat(recordStruct.getName()).isEqualTo("TypeRecordStruct");
