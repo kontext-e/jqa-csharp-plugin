@@ -9,7 +9,7 @@ import java.util.List;
 
 @SuppressWarnings("unused")
 @Label(value = "Method")
-public interface MethodDescriptor extends MemberDescriptor, AbstractDescriptor {
+public interface MethodDescriptor extends MemberDescriptor, AbstractDescriptor, PartialDescriptor {
 
 
     @Relation("HAS")

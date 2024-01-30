@@ -89,7 +89,7 @@ public class TypeCache {
         return typeDescriptors.stream().filter(item -> item.getRelativePath().equals(path)).findAny();
     }
 
-    public List<List<TypeDescriptor>> findAllPartialClasses(){
+    public List<List<TypeDescriptor>> findAllPartialTypes(){
         return cache.values()
                     .stream()
                     .filter(list -> list.size() > 1)

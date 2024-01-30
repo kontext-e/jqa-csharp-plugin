@@ -151,7 +151,7 @@ public class TypeCacheTest {
         TypeDescriptor typeDescriptor22 = typeCache.create(classModel22);
         TypeDescriptor nonPartialTypeDescriptor = typeCache.create(nonPartialClassModel);
 
-        List<List<TypeDescriptor>> allPartialClasses = typeCache.findAllPartialClasses();
+        List<List<TypeDescriptor>> allPartialClasses = typeCache.findAllPartialTypes();
 
         assertThat(allPartialClasses.size()).isEqualTo(2);
         assertThat(allPartialClasses.get(0).size()).isEqualTo(2);
