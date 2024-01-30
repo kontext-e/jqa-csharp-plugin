@@ -22,6 +22,6 @@ public interface TypeDescriptor extends
 
 
     @Relation("PARTIAL_WITH")
-    List<TypeDescriptor> getClassFragments();
+    List<TypeDescriptor> getTypeFragments();
 
 }

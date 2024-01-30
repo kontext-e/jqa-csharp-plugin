@@ -53,7 +53,7 @@ public class TypeDescriptorImpl implements TypeDescriptor {
     }
 
     @Override
-    public List<TypeDescriptor> getClassFragments() {
+    public List<TypeDescriptor> getTypeFragments() {
         return classFragments;
     }
 

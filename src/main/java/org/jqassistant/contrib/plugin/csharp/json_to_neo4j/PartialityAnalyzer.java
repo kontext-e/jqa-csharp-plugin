@@ -29,13 +29,13 @@ public class PartialityAnalyzer {
     }
 
     public void linkPartialClasses() {
-        List<List<TypeDescriptor>> partialClasses = typeCache.findAllPartialClasses();
-        for (List<TypeDescriptor> classFragments : partialClasses){
-            for (TypeDescriptor classFragment : classFragments){
+        List<List<TypeDescriptor>> partialTypes = typeCache.findAllPartialTypes();
+        for (List<TypeDescriptor> typeFragments : partialTypes){
+            for (TypeDescriptor typeFragment : typeFragments){
                 //TODO reuse addSiblings(...)
-                List<TypeDescriptor> siblings = new LinkedList<>(classFragments);
-                siblings.remove(classFragment);
-                classFragment.getClassFragments().addAll(siblings);
+                List<TypeDescriptor> siblings = new LinkedList<>(typeFragments);
+                siblings.remove(typeFragment);
+                typeFragment.getTypeFragments().addAll(siblings);
             }
         }
     }

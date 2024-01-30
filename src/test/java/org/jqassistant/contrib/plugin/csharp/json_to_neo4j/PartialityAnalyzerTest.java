@@ -67,16 +67,16 @@ class PartialityAnalyzerTest {
     @Test
     void linkPartialClasses() {
         List<List<TypeDescriptor>> typeDescriptors = createTypeDescriptors();
-        when(typeCacheMock.findAllPartialClasses()).thenReturn(typeDescriptors);
+        when(typeCacheMock.findAllPartialTypes()).thenReturn(typeDescriptors);
 
         partialityAnalyzer.linkPartialClasses();
 
-        assertThat(typeDescriptors.get(0).get(0).getClassFragments().size()).isEqualTo(1);
-        assertThat(typeDescriptors.get(0).get(1).getClassFragments().size()).isEqualTo(1);
-        assertThat(typeDescriptors.get(1).get(0).getClassFragments().size()).isEqualTo(0);
+        assertThat(typeDescriptors.get(0).get(0).getTypeFragments().size()).isEqualTo(1);
+        assertThat(typeDescriptors.get(0).get(1).getTypeFragments().size()).isEqualTo(1);
+        assertThat(typeDescriptors.get(1).get(0).getTypeFragments().size()).isEqualTo(0);
 
-        assertThat(typeDescriptors.get(0).get(0).getClassFragments().get(0)).isEqualTo(typeDescriptors.get(0).get(1));
-        assertThat(typeDescriptors.get(0).get(1).getClassFragments().get(0)).isEqualTo(typeDescriptors.get(0).get(0));
+        assertThat(typeDescriptors.get(0).get(0).getTypeFragments().get(0)).isEqualTo(typeDescriptors.get(0).get(1));
+        assertThat(typeDescriptors.get(0).get(1).getTypeFragments().get(0)).isEqualTo(typeDescriptors.get(0).get(0));
     }
 
     private List<List<TypeDescriptor>> createTypeDescriptors(){
