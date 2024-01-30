@@ -93,7 +93,7 @@ class TypeAnalyzerTest {
         descriptorList.add(typeDescriptors.get(1));
         List<List<TypeDescriptor>> partialityList = new ArrayList<>();
         partialityList.add(descriptorList);
-        when(mockTypeCache.findAllPartialClasses()).thenReturn(partialityList);
+        when(mockTypeCache.findAllPartialTypes()).thenReturn(partialityList);
 
         return mockTypeCache;
     }
