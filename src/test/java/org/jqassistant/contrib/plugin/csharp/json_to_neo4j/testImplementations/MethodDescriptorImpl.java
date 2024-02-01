@@ -45,7 +45,7 @@ public class MethodDescriptorImpl implements MethodDescriptor {
     private TypeDescriptor extendedType;
     private List<ParameterDescriptor> parameters = new ArrayList<>();
     private List<TypeDescriptor> declaredThrowables;
-    private List<MemberAccessDescriptor> accessedMember;
+    private List<MemberAccessDescriptor> accessedMember = new ArrayList<>();
     private List<MethodDescriptor> methodFragments = new ArrayList<>();
     private List<FieldDescriptor> fields;
     private MemberOwningTypeDescriptor declaringType;
