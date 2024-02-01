@@ -52,15 +52,15 @@ public class PartialityAnalyzerIT extends CSharpIntegrationTest{
 
         assertThat(implementedMethods.size()).isEqualTo(2);
         assertThat(implementation.isPresent()).isTrue();
-        assertThat(implementation.get().getPartial()).isTrue();
+        assertThat(implementation.get().isPartial()).isTrue();
 
         assertThat(reference.isPresent()).isTrue();
-        assertThat(reference.get().getPartial()).isTrue();
+        assertThat(reference.get().isPartial()).isTrue();
         assertThat(implementation.get().getMethodFragments().contains(reference.get())).isTrue();
 
         Optional<MethodDescriptor> unimplementedMethod = partialMethods.stream().filter(m -> m.getName().equals("UnimplementedMethod")).findAny();
         assertThat(unimplementedMethod.isPresent()).isTrue();
-        assertThat(unimplementedMethod.get().getPartial()).isTrue();
+        assertThat(unimplementedMethod.get().isPartial()).isTrue();
         assertThat(unimplementedMethod.get().isImplementation()).isFalse();
         assertThat(unimplementedMethod.get().getMethodFragments().isEmpty()).isTrue();
     }
@@ -70,8 +70,8 @@ public class PartialityAnalyzerIT extends CSharpIntegrationTest{
         assertThat(partialType.get(0).getTypeFragments().contains(partialType.get(1))).isTrue();
         assertThat(partialType.get(1).getTypeFragments().contains(partialType.get(0))).isTrue();
 
-        assertThat(partialType.get(0).getPartial()).isTrue();
-        assertThat(partialType.get(1).getPartial()).isTrue();
+        assertThat(partialType.get(0).isPartial()).isTrue();
+        assertThat(partialType.get(1).isPartial()).isTrue();
     }
 
     private <T extends TypeDescriptor> List<T> queryForType(String typeName){

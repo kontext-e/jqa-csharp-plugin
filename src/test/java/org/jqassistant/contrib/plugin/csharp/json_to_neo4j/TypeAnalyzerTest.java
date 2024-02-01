@@ -220,7 +220,7 @@ class TypeAnalyzerTest {
 
         TypeDescriptor typeDescriptor = cSharpFileDescriptor.getTypes().get(0);
         ClassDescriptor classDescriptor = (ClassDescriptor) typeDescriptor;
-        assertThat(classDescriptor.getPartial()).isNotNull();
+        assertThat(classDescriptor.isPartial()).isNotNull();
         assertThat(classDescriptor.isAbstract()).isNotNull();
         assertThat(classDescriptor.isSealed()).isNotNull();
         assertThat(classDescriptor.isStatic()).isNotNull();
@@ -246,7 +246,7 @@ class TypeAnalyzerTest {
         TypeDescriptor typeDescriptor = cSharpFileDescriptor.getTypes().get(0);
         InterfaceTypeDescriptor interfaceDescriptor = (InterfaceTypeDescriptor) typeDescriptor;
         assertThat(interfaceDescriptor.getAccessibility()).isNotNull();
-        assertThat(interfaceDescriptor.getPartial()).isNotNull();
+        assertThat(interfaceDescriptor.isPartial()).isNotNull();
     }
 
     @Test

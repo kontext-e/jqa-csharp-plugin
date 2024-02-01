@@ -1,17 +1,21 @@
 package org.jqassistant.contrib.plugin.csharp.json_to_neo4j.testImplementations;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.jqassistant.contrib.plugin.csharp.model.TypeDescriptor;
 
 import java.util.LinkedList;
 import java.util.List;
 
+@Getter
+@Setter
 public class TypeDescriptorImpl implements TypeDescriptor {
 
     public TypeDescriptorImpl(String name){
         this.name = name;
     }
 
-    private List<TypeDescriptor> classFragments = new LinkedList<>();
+    private List<TypeDescriptor> typeFragments = new LinkedList<>();
     private String name;
     private Integer lastLineNumber;
     private Integer firstLineNumber;
@@ -21,101 +25,6 @@ public class TypeDescriptorImpl implements TypeDescriptor {
     private String relativePath;
     private boolean partial;
     private String accessibility;
-
-    @Override
-    public String getAccessibility() {
-        return accessibility;
-    }
-
-    @Override
-    public void setAccessibility(String accessibility) {
-        this.accessibility = accessibility;
-    }
-
-    @Override
-    public Integer getFirstLineNumber() {
-        return firstLineNumber;
-    }
-
-    @Override
-    public void setFirstLineNumber(Integer firstLineNumber) {
-        this.firstLineNumber = firstLineNumber;
-    }
-
-    @Override
-    public Integer getLastLineNumber() {
-        return lastLineNumber;
-    }
-
-    @Override
-    public void setLastLineNumber(Integer lastLineNumber) {
-        this.lastLineNumber = lastLineNumber;
-    }
-
-    @Override
-    public List<TypeDescriptor> getTypeFragments() {
-        return classFragments;
-    }
-
-    @Override
-    public String getName() {
-        return name;
-    }
-
-    @Override
-    public void setName(String s) {
-        this.name = s;
-    }
-
-    @Override
-    public Integer getEffectiveLineCount() {
-        return effectiveLineCount;
-    }
-
-    @Override
-    public void setEffectiveLineCount(Integer effectiveLineCount) {
-        this.effectiveLineCount = effectiveLineCount;
-    }
-
-    @Override
-    public String getFullQualifiedName() {
-        return fullQualifiedName;
-    }
-
-    @Override
-    public void setFullQualifiedName(String fullQualifiedName) {
-        this.fullQualifiedName = fullQualifiedName;
-    }
-
-    @Override
-    public String getMd5() {
-        return Md5;
-    }
-
-    @Override
-    public void setMd5(String md5) {
-        Md5 = md5;
-    }
-
-    @Override
-    public String getRelativePath() {
-        return relativePath;
-    }
-
-    @Override
-    public void setRelativePath(String relativePath) {
-        this.relativePath = relativePath;
-    }
-
-    @Override
-    public boolean getPartial() {
-        return partial;
-    }
-
-    @Override
-    public void setPartial(boolean partial) {
-        this.partial = partial;
-    }
 
     @Override
     public <I> I getId() {

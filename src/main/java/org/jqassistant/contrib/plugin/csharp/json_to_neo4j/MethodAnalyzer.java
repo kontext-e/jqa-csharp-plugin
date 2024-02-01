@@ -64,6 +64,7 @@ public class MethodAnalyzer {
     private void addExtensionRelation(MethodModel methodModel, MethodDescriptor methodDescriptor) {
         TypeDescriptor extendedType = typeCache.findAny(methodModel.getExtendsType());
         methodDescriptor.setExtendedType(extendedType);
+        methodDescriptor.setExtensionMethod(true);
     }
 
     private static void fillMethodDescriptor(MethodModel methodModel, MethodDescriptor methodDescriptor) {
@@ -77,6 +78,7 @@ public class MethodAnalyzer {
         methodDescriptor.setCyclomaticComplexity(methodModel.getCyclomaticComplexity());
         methodDescriptor.setImplementation(methodModel.isImplementation());
         methodDescriptor.setPartial(methodModel.isPartial());
+        methodDescriptor.setExtensionMethod(false);
     }
 
     private void addReturnType(MethodModel methodModel, MethodDescriptor methodDescriptor) {

@@ -34,7 +34,7 @@ public class TypeAnalyzerIT extends CSharpIntegrationTest{
         assertThat(clazz.isSealed()).isTrue();
         assertThat(clazz.getTypeFragments().size()).isEqualTo(0);
         assertThat(clazz.getAccessibility()).isEqualTo("Public");
-        assertThat(clazz.getPartial()).isFalse();
+        assertThat(clazz.isPartial()).isFalse();
         assertThat(clazz.isAbstract()).isFalse();
         assertThat(clazz.getName()).isEqualTo("TypeClass");
         assertThat(clazz.getFullQualifiedName()).isEqualTo("Project1.Types.TypeClass");
@@ -59,7 +59,7 @@ public class TypeAnalyzerIT extends CSharpIntegrationTest{
         assertThat(interfaceDescriptor.getInterfaces().size()).isEqualTo(0);
         assertThat(interfaceDescriptor.getTypeFragments().size()).isEqualTo(0);
         assertThat(interfaceDescriptor.getAccessibility()).isEqualTo("Public");
-        assertThat(interfaceDescriptor.getPartial()).isFalse();
+        assertThat(interfaceDescriptor.isPartial()).isFalse();
         assertThat(interfaceDescriptor.getName()).isEqualTo("ITypeInterface");
         assertThat(interfaceDescriptor.getFullQualifiedName()).isEqualTo("Project1.Types.ITypeInterface");
         assertThat(interfaceDescriptor.getFirstLineNumber()).isEqualTo(5);
@@ -80,7 +80,7 @@ public class TypeAnalyzerIT extends CSharpIntegrationTest{
 
         assertThat(struct.getTypeFragments().size()).isEqualTo(0);
         assertThat(struct.getAccessibility()).isEqualTo("Public");
-        assertThat(struct.getPartial()).isFalse();
+        assertThat(struct.isPartial()).isFalse();
         assertThat(struct.getName()).isEqualTo("TypeStruct");
         assertThat(struct.getFullQualifiedName()).isEqualTo("Project1.Types.TypeStruct");
         assertThat(struct.isReadOnly()).isTrue();
@@ -108,7 +108,7 @@ public class TypeAnalyzerIT extends CSharpIntegrationTest{
         assertThat(record.isSealed()).isFalse();
         assertThat(record.getTypeFragments().size()).isEqualTo(0);
         assertThat(record.getAccessibility()).isEqualTo("Public");
-        assertThat(record.getPartial()).isFalse();
+        assertThat(record.isPartial()).isFalse();
         assertThat(record.isAbstract()).isFalse();
         assertThat(record.getName()).isEqualTo("TypeRecord");
         assertThat(record.getFullQualifiedName()).isEqualTo("Project1.Types.TypeRecord");
@@ -132,7 +132,7 @@ public class TypeAnalyzerIT extends CSharpIntegrationTest{
 
         assertThat(recordStruct.getTypeFragments().size()).isEqualTo(0);
         assertThat(recordStruct.getAccessibility()).isEqualTo("Public");
-        assertThat(recordStruct.getPartial()).isFalse();
+        assertThat(recordStruct.isPartial()).isFalse();
         assertThat(recordStruct.getName()).isEqualTo("TypeRecordStruct");
         assertThat(recordStruct.getFullQualifiedName()).isEqualTo("Project1.Types.TypeRecordStruct");
         assertThat(recordStruct.isReadOnly()).isFalse();
@@ -155,7 +155,7 @@ public class TypeAnalyzerIT extends CSharpIntegrationTest{
         EnumTypeDescriptor enumDescriptor = (EnumTypeDescriptor) queryForType("TypeEnum").get(0);
 
         assertThat(enumDescriptor.getAccessibility()).isEqualTo("Public");
-        assertThat(enumDescriptor.getPartial()).isFalse();
+        assertThat(enumDescriptor.isPartial()).isFalse();
         assertThat(enumDescriptor.getFullQualifiedName()).isEqualTo("Project1.Types.TypeEnum");
         assertThat(enumDescriptor.getFirstLineNumber()).isEqualTo(3);
         assertThat(enumDescriptor.getLastLineNumber()).isEqualTo(6);

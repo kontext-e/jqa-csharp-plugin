@@ -76,4 +76,7 @@ public interface MethodDescriptor extends MemberDescriptor, AbstractDescriptor, 
 
     boolean isVirtual();
     void setVirtual(boolean v);
+
+    boolean isExtensionMethod();
+    void setExtensionMethod(boolean e);
 }
