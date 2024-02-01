@@ -8,7 +8,7 @@ public interface PartialDescriptor {
 
     void setRelativePath(String path);
 
-    boolean getPartial();
+    boolean isPartial();
 
     void setPartial(boolean partial);
 

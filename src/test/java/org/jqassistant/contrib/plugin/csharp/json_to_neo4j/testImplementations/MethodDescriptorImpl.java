@@ -27,6 +27,7 @@ public class MethodDescriptorImpl implements MethodDescriptor {
     private boolean isAbstract;
     private boolean isImplementation;
     private boolean isPartial;
+    private boolean isExtensionMethod;
 
     private int cyclomaticComplexity;
     private int firstLineNumber;
@@ -65,8 +66,4 @@ public class MethodDescriptorImpl implements MethodDescriptor {
         return null;
     }
 
-    @Override
-    public boolean getPartial() {
-        return isPartial;
-    }
 }

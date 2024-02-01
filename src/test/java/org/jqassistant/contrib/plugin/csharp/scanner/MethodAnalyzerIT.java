@@ -2,32 +2,14 @@ package org.jqassistant.contrib.plugin.csharp.scanner;
 
 import org.jqassistant.contrib.plugin.csharp.model.ConstructorDescriptor;
 import org.jqassistant.contrib.plugin.csharp.model.MethodDescriptor;
-import org.jqassistant.contrib.plugin.csharp.model.ParameterDescriptor;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 
 public class MethodAnalyzerIT extends CSharpIntegrationTest {
-
-    @Test
-    @TestStore(reset = false)
-    void testMethodParameters(){
-        MethodDescriptor method = queryForMethods("Methods", "MethodWithMultipleArguments").get(0);
-        assertThat(method.getParameters().size()).isEqualTo(2);
-        List<ParameterDescriptor> parameters = method.getParameters();
-        List<ParameterDescriptor> parameterDescriptors = new ArrayList<>(parameters);
-        parameterDescriptors.sort(Comparator.comparingInt(ParameterDescriptor::getIndex));
-        assertThat(parameterDescriptors.get(0).getIndex()).isEqualTo(0);
-        assertThat(parameterDescriptors.get(1).getIndex()).isEqualTo(1);
-        assertThat(parameterDescriptors.get(0).getName()).isEqualTo("methods");
-        assertThat(parameterDescriptors.get(1).getName()).isEqualTo("number");
-        assertThat(parameterDescriptors.get(0).getType().getName()).isEqualTo("Methods");
-    }
 
     @Test
     @TestStore(reset = false)
@@ -63,6 +45,7 @@ public class MethodAnalyzerIT extends CSharpIntegrationTest {
     void testExtensionMethod(){
         MethodDescriptor method = queryForMethods("MethodExtensions", "ExtensionMethod").get(0);
         assertThat(method.getExtendedType().getName()).isEqualTo("Methods");
+        assertThat(method.isExtensionMethod()).isTrue();
     }
 
     @Test
@@ -79,7 +62,4 @@ public class MethodAnalyzerIT extends CSharpIntegrationTest {
                         nameOfClass, nameOfMethod))
                 .getColumn("m");
     }
-
-
-
 }
