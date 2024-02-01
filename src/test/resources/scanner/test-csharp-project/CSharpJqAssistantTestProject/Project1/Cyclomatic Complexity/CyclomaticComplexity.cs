@@ -1,12 +1,11 @@
 
 class CyclomaticComplexityExample {
-
-    void shouldBeOne(int a, int b ) {
+    private int shouldBeOne(int a, int b ) {
 
         return a + b;
     }
 
-    void shouldBeTwo(bool a ) {
+    private void ShouldBeTwo(bool a ) {
 
         int x = 0;
 
@@ -17,7 +16,7 @@ class CyclomaticComplexityExample {
         }
     }
 
-    void shouldBeTwoAsWell() {
+    private void ShouldBeTwoAsWell() {
 
         int x = 0;
 
@@ -26,7 +25,7 @@ class CyclomaticComplexityExample {
         }
     }
 
-    void shouldBeThree(bool a , bool b ) {
+    private void ShouldBeThree(bool a , bool b ) {
 
         int x = 0;
 

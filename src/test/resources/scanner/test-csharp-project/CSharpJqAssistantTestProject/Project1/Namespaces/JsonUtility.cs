@@ -1,14 +1,14 @@
 ﻿
-namespace Json
+namespace NameSpace
 {
-    public class JsonUtility
+    public class Utility
     {
 
     }
 
-    namespace Helper
+    namespace Nested
     {
-        public class AnotherHelperForJson
+        public class NestedUtility
         {
 
         }
