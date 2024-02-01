@@ -77,6 +77,11 @@ public class JsonToNeo4JConverter {
 
         readJsonFilesRecursively(inputDirectory, null);
 
+        createDataStructure();
+        linkDataStructure();
+    }
+
+    private void createDataStructure() {
         typeAnalyzer.createTypes(fileModelList);
         for (FileModel fileModel : fileModelList) {
             dependencyAnalyzer.createUsings(fileModel);
@@ -88,12 +93,20 @@ public class JsonToNeo4JConverter {
                 memberAnalyzer.createFields(memberOwningTypeModel, fileModel.getRelativePath());
             }
         }
-        partialityAnalyzer.linkPartialClasses();
         methodAnalyzer.createConstructors(fileModelList);
         methodAnalyzer.createMethods(fileModelList);
-        partialityAnalyzer.linkPartialMethods();
-        invocationAnalyzer.analyzeInvocations(fileModelList);
         propertyAnalyzer.createProperties(fileModelList);
+    }
+
+    private void linkDataStructure() {
+        for (FileModel fileModel : fileModelList){
+            for (MemberOwningTypeModel memberOwningTypeModel : fileModel.getMemberOwningTypes()){
+                memberOwningTypeModel.getMethods().forEach(invocationAnalyzer::addInvocations);
+                memberOwningTypeModel.getMethods().forEach(invocationAnalyzer::addPropertyAccesses);
+            }
+        }
+        partialityAnalyzer.linkPartialClasses();
+        partialityAnalyzer.linkPartialMethods();
     }
 
     private void readJsonFilesRecursively(File currentDirectory, CSharpClassesDirectoryDescriptor parentDirectoryDescriptor) {
