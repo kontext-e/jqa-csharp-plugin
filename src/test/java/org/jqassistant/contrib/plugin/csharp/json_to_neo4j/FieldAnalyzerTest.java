@@ -26,19 +26,19 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class MemberAnalyzerTest {
+public class FieldAnalyzerTest {
 
     Store store;
     FieldCache fieldCache;
     TypeCache typeCache;
-    private MemberAnalyzer memberAnalyzer;
+    private FieldAnalyzer fieldAnalyzer;
 
     @BeforeEach
     void setup(){
         store = mock();
         fieldCache = mock();
         typeCache = mock();
-        memberAnalyzer = new MemberAnalyzer(store, fieldCache, typeCache);
+        fieldAnalyzer = new FieldAnalyzer(store, fieldCache, typeCache);
     }
 
     @Test
@@ -51,7 +51,7 @@ public class MemberAnalyzerTest {
         when(typeCache.findTypeByRelativePath(any(), any())).thenReturn(Optional.of(containingClass));
         when(store.create(PrimitiveValueDescriptor.class)).thenReturn(new PrimitiveValueDescriptorImpl());
 
-        memberAnalyzer.createFields(classModel, "Relative.Path");
+        fieldAnalyzer.createFields(classModel, "Relative.Path");
 
         verify(store, never()).create(PrimitiveValueDescriptor.class);
         verify(fieldCache).create("fqn.Field0");
@@ -69,7 +69,7 @@ public class MemberAnalyzerTest {
         ClassDescriptorImpl containingClass = new ClassDescriptorImpl("ContainingClass");
         when(typeCache.findTypeByRelativePath(any(), any())).thenReturn(Optional.of(containingClass));
 
-        memberAnalyzer.createFields(classModel, "Relative.Path");
+        fieldAnalyzer.createFields(classModel, "Relative.Path");
 
         verify(store, never()).create(any());
         assertThat(containingClass.getDeclaredMembers().isEmpty()).isTrue();
@@ -81,7 +81,7 @@ public class MemberAnalyzerTest {
         ClassDescriptorImpl containingClass = new ClassDescriptorImpl("ContainingClass");
         when(typeCache.findTypeByRelativePath(any(), any())).thenReturn(Optional.empty());
 
-        memberAnalyzer.createFields(classModel, "Relative.Path");
+        fieldAnalyzer.createFields(classModel, "Relative.Path");
 
         verify(store, never()).create(any());
         verify(fieldCache, never()).create(any());
@@ -100,7 +100,7 @@ public class MemberAnalyzerTest {
         when(typeCache.findTypeByRelativePath(any(), any())).thenReturn(Optional.of(containingClass));
         when(store.create(PrimitiveValueDescriptor.class)).thenReturn(new PrimitiveValueDescriptorImpl());
 
-        memberAnalyzer.createFields(classModel, "Relative.Path");
+        fieldAnalyzer.createFields(classModel, "Relative.Path");
 
         verify(store).create(PrimitiveValueDescriptor.class);
         verify(fieldCache).create("fqn.Field0");

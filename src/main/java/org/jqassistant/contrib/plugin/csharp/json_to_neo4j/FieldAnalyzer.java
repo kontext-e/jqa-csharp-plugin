@@ -13,13 +13,13 @@ import org.jqassistant.contrib.plugin.csharp.model.TypeDescriptor;
 
 import java.util.Optional;
 
-public class MemberAnalyzer {
+public class FieldAnalyzer {
     private final Store store;
 
     private final FieldCache fieldCache;
     private final TypeCache typeCache;
 
-    public MemberAnalyzer(Store store, FieldCache fieldCache, TypeCache typeCache) {
+    public FieldAnalyzer(Store store, FieldCache fieldCache, TypeCache typeCache) {
         this.store = store;
         this.fieldCache = fieldCache;
         this.typeCache = typeCache;
@@ -59,10 +59,10 @@ public class MemberAnalyzer {
     }
 
     private void analyzeConstantValues(FieldModel fieldModel, FieldDescriptor fieldDescriptor) {
-        if (StringUtils.isNotBlank(fieldModel.getConstantValue())) {
-            PrimitiveValueDescriptor primitiveValueDescriptor = store.create(PrimitiveValueDescriptor.class);
-            primitiveValueDescriptor.setValue(fieldModel.getConstantValue());
-            fieldDescriptor.setValue(primitiveValueDescriptor);
-        }
+        if (StringUtils.isBlank(fieldModel.getConstantValue())) { return; }
+
+        PrimitiveValueDescriptor primitiveValueDescriptor = store.create(PrimitiveValueDescriptor.class);
+        primitiveValueDescriptor.setValue(fieldModel.getConstantValue());
+        fieldDescriptor.setValue(primitiveValueDescriptor);
     }
 }
