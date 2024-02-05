@@ -46,10 +46,19 @@ public class MethodAnalyzer {
             MethodDescriptor methodDescriptor = createMethodDescriptor(methodModel);
             memberOwningTypeDescriptor.getDeclaredMembers().add(methodDescriptor);
         }
+        for (ConstructorModel constructorModel : memberOwningModel.getConstructors()){
+            ConstructorDescriptor constructorDescriptor = (ConstructorDescriptor) createMethodDescriptor(constructorModel);
+            memberOwningTypeDescriptor.getDeclaredMembers().add(constructorDescriptor);
+        }
     }
 
     protected MethodDescriptor createMethodDescriptor(MethodModel methodModel) {
-        MethodDescriptor methodDescriptor = methodCache.create(methodModel.getKey(), MethodDescriptor.class);
+        MethodDescriptor methodDescriptor;
+        if (methodModel instanceof ConstructorModel){
+            methodDescriptor = methodCache.create(methodModel.getKey(), ConstructorDescriptor.class);
+        } else {
+            methodDescriptor = methodCache.create(methodModel.getKey(), MethodDescriptor.class);
+        }
 
         fillMethodDescriptor(methodModel, methodDescriptor);
         addReturnType(methodModel, methodDescriptor);
@@ -84,27 +93,5 @@ public class MethodAnalyzer {
     private void addReturnType(MethodModel methodModel, MethodDescriptor methodDescriptor) {
         TypeDescriptor returnTypeDescriptor = typeCache.findOrCreate(methodModel.getReturnType());
         methodDescriptor.setReturns(returnTypeDescriptor);
-    }
-
-    public void createConstructors(List<FileModel> fileModelList) {
-        for (FileModel fileModel : fileModelList) {
-            for (MemberOwningTypeModel memberOwningTypeModel : fileModel.getMemberOwningTypes()) {
-
-                Optional<TypeDescriptor> descriptor = typeCache.findTypeByRelativePath(memberOwningTypeModel.getKey(), fileModel.getRelativePath());
-                if (!descriptor.isPresent()) continue;
-
-                MemberOwningTypeDescriptor memberOwningTypeDescriptor = (MemberOwningTypeDescriptor) descriptor.get();
-                for (ConstructorModel constructorModel : memberOwningTypeModel.getConstructors()) {
-                    createConstructor(memberOwningTypeDescriptor, constructorModel);
-                }
-            }
-        }
-    }
-
-    private void createConstructor(MemberOwningTypeDescriptor memberOwningTypeDescriptor, ConstructorModel constructorModel) {
-        ConstructorDescriptor constructorDescriptor = methodCache.create(constructorModel.getFqn(), ConstructorDescriptor.class);
-        fillMethodDescriptor(constructorModel, constructorDescriptor);
-        addReturnType(constructorModel, constructorDescriptor);
-        memberOwningTypeDescriptor.getDeclaredMembers().add(constructorDescriptor);
     }
 }

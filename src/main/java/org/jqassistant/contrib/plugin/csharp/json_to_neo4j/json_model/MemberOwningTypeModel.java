@@ -3,6 +3,7 @@ package org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -13,7 +14,7 @@ public class MemberOwningTypeModel extends TypeModel {
 
     private List<MethodModel> methods;
 
-    private List<ConstructorModel> constructors;
+    private List<ConstructorModel> constructors = new ArrayList<>();
 
     private List<FieldModel> fields;
 
