@@ -56,6 +56,36 @@ public class MethodAnalyzerIT extends CSharpIntegrationTest {
         assertThat(method instanceof ConstructorDescriptor).isTrue();
     }
 
+    @Test
+    @TestStore(reset = false)
+    void testCyclomaticComplexity(){
+        MethodDescriptor method = queryForMethods("CyclomaticComplexityExample", "shouldBeOne").get(0);
+        assertThat(method.getCyclomaticComplexity()).isEqualTo(1);
+    }
+
+    @Test
+    @TestStore(reset = false)
+    void testCyclomaticComplexityBranch(){
+        MethodDescriptor method = queryForMethods("CyclomaticComplexityExample", "ShouldBeTwo").get(0);
+        assertThat(method.getCyclomaticComplexity()).isEqualTo(2);
+    }
+
+    @Test
+    @TestStore(reset = false)
+    void testCyclomaticComplexityLoop(){
+        MethodDescriptor method = queryForMethods("CyclomaticComplexityExample", "ShouldBeTwoAsWell").get(0);
+        assertThat(method.getCyclomaticComplexity()).isEqualTo(2);
+    }
+
+
+    @Test
+    @TestStore(reset = false)
+    void testCyclomaticComplexityThree(){
+        MethodDescriptor method = queryForMethods("CyclomaticComplexityExample", "ShouldBeThree").get(0);
+        assertThat(method.getCyclomaticComplexity()).isEqualTo(3);
+    }
+
+
     private List<MethodDescriptor> queryForMethods(String nameOfClass, String nameOfMethod){
         return query(
                 String.format("Match (c:Class)-[]->(m:Method) Where c.name=\"%s\" And m.name=\"%s\" Return m",
