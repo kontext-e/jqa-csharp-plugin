@@ -40,7 +40,7 @@ public class JsonToNeo4JConverter {
     private List<FileModel> fileModelList;
 
     private final MethodAnalyzer methodAnalyzer;
-    private final MemberAnalyzer memberAnalyzer;
+    private final FieldAnalyzer fieldAnalyzer;
     private final TypeAnalyzer typeAnalyzer;
     private final PartialityAnalyzer partialityAnalyzer;
     private final PropertyAnalyzer propertyAnalyzer;
@@ -56,7 +56,7 @@ public class JsonToNeo4JConverter {
         this.methodAnalyzer = new MethodAnalyzer(store, methodCache, typeCache);
         this.dependencyAnalyzer = new DependencyAnalyzer(cSharpFileCache, namespaceCache, typeCache, store);
         this.propertyAnalyzer = new PropertyAnalyzer(typeCache, propertyCache, methodAnalyzer);
-        this.memberAnalyzer = new MemberAnalyzer(store, fieldCache, typeCache);
+        this.fieldAnalyzer = new FieldAnalyzer(store, fieldCache, typeCache);
         this.typeAnalyzer = new TypeAnalyzer(namespaceCache, cSharpFileCache, enumValueCache, typeCache);
     }
 
@@ -90,7 +90,7 @@ public class JsonToNeo4JConverter {
             fileModel.getRecordClasses().forEach(dependencyAnalyzer::linkBaseTypes);
             fileModel.getEnums().forEach(typeAnalyzer::createEnumMembers);
             for (MemberOwningTypeModel memberOwningTypeModel : fileModel.getMemberOwningTypes()) {
-                memberAnalyzer.createFields(memberOwningTypeModel, fileModel.getRelativePath());
+                fieldAnalyzer.createFields(memberOwningTypeModel, fileModel.getRelativePath());
             }
         }
         methodAnalyzer.createConstructors(fileModelList);
