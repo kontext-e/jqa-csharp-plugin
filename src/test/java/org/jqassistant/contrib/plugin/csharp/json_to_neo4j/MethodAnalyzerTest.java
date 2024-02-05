@@ -141,7 +141,7 @@ public class MethodAnalyzerTest {
         when(typeCache.findTypeByRelativePath(any(), eq("Relative.Path"))).thenReturn(Optional.of(classDescriptor));
         when(methodCache.create(any(), eq(ConstructorDescriptor.class))).thenReturn(new ConstructorDescriptorImpl());
 
-        methodAnalyzer.createConstructors(toList(fileModel));
+        methodAnalyzer.createMethods(toList(fileModel));
 
         verify(methodCache).create(any(), eq(ConstructorDescriptor.class));
         assertThat(classDescriptor.getDeclaredMembers().size()).isEqualTo(1);
@@ -156,7 +156,7 @@ public class MethodAnalyzerTest {
 
         when(typeCache.findTypeByRelativePath(any(), any())).thenReturn(Optional.empty());
 
-        methodAnalyzer.createConstructors(toList(fileModel));
+        methodAnalyzer.createMethods(toList(fileModel));
 
         verify(methodCache, never()).create(any(), eq(ConstructorDescriptor.class));
     }

@@ -93,7 +93,6 @@ public class JsonToNeo4JConverter {
                 fieldAnalyzer.createFields(memberOwningTypeModel, fileModel.getRelativePath());
             }
         }
-        methodAnalyzer.createConstructors(fileModelList);
         methodAnalyzer.createMethods(fileModelList);
         propertyAnalyzer.createProperties(fileModelList);
     }
@@ -102,7 +101,9 @@ public class JsonToNeo4JConverter {
         for (FileModel fileModel : fileModelList){
             for (MemberOwningTypeModel memberOwningTypeModel : fileModel.getMemberOwningTypes()){
                 memberOwningTypeModel.getMethods().forEach(invocationAnalyzer::addInvocations);
+                memberOwningTypeModel.getConstructors().forEach(invocationAnalyzer::addInvocations);
                 memberOwningTypeModel.getMethods().forEach(invocationAnalyzer::addPropertyAccesses);
+                memberOwningTypeModel.getConstructors().forEach(invocationAnalyzer::addPropertyAccesses);
             }
         }
         partialityAnalyzer.linkPartialClasses();
