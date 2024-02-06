@@ -71,7 +71,7 @@ public class MethodAnalyzer {
     }
 
     private void addExtensionRelation(MethodModel methodModel, MethodDescriptor methodDescriptor) {
-        TypeDescriptor extendedType = typeCache.findAny(methodModel.getExtendsType());
+        TypeDescriptor extendedType = typeCache.findOrCreate(methodModel.getExtendsType());
         methodDescriptor.setExtendedType(extendedType);
         methodDescriptor.setExtensionMethod(true);
     }

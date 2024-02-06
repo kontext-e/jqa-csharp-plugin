@@ -2,6 +2,7 @@ package org.jqassistant.contrib.plugin.csharp.model;
 
 import com.buschmais.xo.neo4j.api.annotation.Label;
 import com.buschmais.xo.neo4j.api.annotation.Relation;
+import com.buschmais.xo.neo4j.api.annotation.Relation.Incoming;
 import com.buschmais.xo.neo4j.api.annotation.Relation.Outgoing;
 
 import java.util.List;
@@ -25,7 +26,7 @@ public interface MethodDescriptor extends MemberDescriptor, AbstractDescriptor, 
     @Outgoing
     List<InvokesDescriptor> getInvokes();
 
-    @Relation.Incoming
+    @Incoming
     List<InvokesDescriptor> getInvokedBy();
 
     @Outgoing

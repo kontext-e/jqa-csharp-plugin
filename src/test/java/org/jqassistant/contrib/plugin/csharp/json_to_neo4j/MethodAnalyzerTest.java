@@ -171,7 +171,7 @@ public class MethodAnalyzerTest {
         FileModel fileModel = createFileModel(classModel, "Relative.Path");
 
         TypeDescriptor typeDescriptor = new ClassDescriptorImpl("TypeName");
-        when(typeCache.findAny("NewClass")).thenReturn(typeDescriptor);
+        when(typeCache.findOrCreate("NewClass")).thenReturn(typeDescriptor);
         TypeDescriptor owningDescriptor = new ClassDescriptorImpl("OwningDescriptor");
         when(typeCache.findTypeByRelativePath(any(), any())).thenReturn(Optional.of(owningDescriptor));
         MethodDescriptor methodDescriptor = new MethodDescriptorImpl();
