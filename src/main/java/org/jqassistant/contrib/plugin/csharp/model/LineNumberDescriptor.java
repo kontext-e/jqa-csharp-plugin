@@ -7,7 +7,6 @@ public interface LineNumberDescriptor {
 
     @Property("lineNumber")
     int getLineNumber();
-
     void setLineNumber(int lineNumber);
 
 }

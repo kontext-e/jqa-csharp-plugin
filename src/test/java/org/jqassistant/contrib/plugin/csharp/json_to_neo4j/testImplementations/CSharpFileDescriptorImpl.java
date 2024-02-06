@@ -1,6 +1,8 @@
 package org.jqassistant.contrib.plugin.csharp.json_to_neo4j.testImplementations;
 
 import com.buschmais.jqassistant.plugin.common.api.model.FileDescriptor;
+import lombok.Getter;
+import lombok.Setter;
 import org.jqassistant.contrib.plugin.csharp.model.CSharpFileDescriptor;
 import org.jqassistant.contrib.plugin.csharp.model.TypeDescriptor;
 import org.jqassistant.contrib.plugin.csharp.model.UsesNamespaceDescriptor;
@@ -10,6 +12,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+@Getter
+@Setter
 public class CSharpFileDescriptorImpl implements CSharpFileDescriptor {
 
     private String name;
@@ -21,42 +25,6 @@ public class CSharpFileDescriptorImpl implements CSharpFileDescriptor {
     public CSharpFileDescriptorImpl(String name, String fileName) {
         this.name = name;
         this.fileName = fileName;
-    }
-
-    @Override
-    public String getName() {
-        return name;
-    }
-
-    @Override
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    @Override
-    public String getFileName() {
-        return fileName;
-    }
-
-    @Override
-    public void setFileName(String fileName) {
-        this.fileName = fileName;
-    }
-
-    @Override
-    public Set<FileDescriptor> getParents() {
-        return parents;
-    }
-
-
-    @Override
-    public List<UsesNamespaceDescriptor> getUses() {
-        return uses;
-    }
-
-    @Override
-    public List<TypeDescriptor> getTypes() {
-        return types;
     }
 
     @Override

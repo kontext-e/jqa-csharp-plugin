@@ -10,13 +10,12 @@ import static com.buschmais.xo.neo4j.api.annotation.Relation.Outgoing;
 @Relation("USES")
 public interface UsesNamespaceDescriptor extends Descriptor {
 
-    String getAlias();
-
-    void setAlias(String alias);
-
     @Outgoing
     CSharpFileDescriptor getUsingCSharpFile();
 
     @Incoming
     NamespaceDescriptor getUsedNamespace();
+
+    String getAlias();
+    void setAlias(String alias);
 }

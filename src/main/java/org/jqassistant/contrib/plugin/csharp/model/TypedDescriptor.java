@@ -7,6 +7,5 @@ public interface TypedDescriptor {
 
     @Relation("OF_TYPE")
     TypeDescriptor getType();
-
     void setType(TypeDescriptor type);
 }
