@@ -1,5 +1,8 @@
 package org.jqassistant.contrib.plugin.csharp.json_to_neo4j.testImplementations;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.jqassistant.contrib.plugin.csharp.model.NamespaceDescriptor;
 import org.jqassistant.contrib.plugin.csharp.model.TypeDescriptor;
 import org.jqassistant.contrib.plugin.csharp.model.UsesNamespaceDescriptor;
@@ -7,34 +10,14 @@ import org.jqassistant.contrib.plugin.csharp.model.UsesNamespaceDescriptor;
 import java.util.LinkedList;
 import java.util.List;
 
+@Getter
+@Setter
+@NoArgsConstructor
 public class NamespaceDescriptorImpl implements NamespaceDescriptor {
 
     private String fullQualifiedName;
     private List<UsesNamespaceDescriptor> usedBy = new LinkedList<>();
     private List<TypeDescriptor> contains = new LinkedList<>();
-
-    public NamespaceDescriptorImpl() {
-    }
-
-    @Override
-    public List<UsesNamespaceDescriptor> getUsedBy() {
-        return usedBy;
-    }
-
-    @Override
-    public List<TypeDescriptor> getContains() {
-        return contains;
-    }
-
-    @Override
-    public String getFullQualifiedName() {
-        return fullQualifiedName;
-    }
-
-    @Override
-    public void setFullQualifiedName(String s) {
-        fullQualifiedName = s;
-    }
 
     @Override
     public <I> I getId() {

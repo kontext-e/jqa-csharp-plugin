@@ -10,6 +10,5 @@ public interface ParameterDescriptor extends CSharpDescriptor, NamedDescriptor, 
 
     @Property("index")
     int getIndex();
-
     void setIndex(int index);
 }

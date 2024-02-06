@@ -6,7 +6,6 @@ public interface AbstractDescriptor {
 
     @Property("abstract")
     boolean isAbstract();
-
     void setAbstract(boolean isAbstract);
 
 }
