@@ -86,19 +86,19 @@ public class JsonToNeo4JConverter {
         for (FileModel fileModel : fileModelList) {
             dependencyAnalyzer.createUsings(fileModel);
             dependencyAnalyzer.linkInterfaces(fileModel);
-            fileModel.getClasses().forEach(dependencyAnalyzer::linkBaseTypes);
-            fileModel.getRecordClasses().forEach(dependencyAnalyzer::linkBaseTypes);
             fileModel.getEnums().forEach(typeAnalyzer::createEnumMembers);
             for (MemberOwningTypeModel memberOwningTypeModel : fileModel.getMemberOwningTypes()) {
                 fieldAnalyzer.createFields(memberOwningTypeModel, fileModel.getRelativePath());
+                methodAnalyzer.createMethods(memberOwningTypeModel, fileModel.getRelativePath());
+                propertyAnalyzer.createProperties(memberOwningTypeModel);
             }
         }
-        methodAnalyzer.createMethods(fileModelList);
-        propertyAnalyzer.createProperties(fileModelList);
     }
 
     private void linkDataStructure() {
         for (FileModel fileModel : fileModelList){
+            fileModel.getClasses().forEach(dependencyAnalyzer::linkBaseTypes);
+            fileModel.getRecordClasses().forEach(dependencyAnalyzer::linkBaseTypes);
             for (MemberOwningTypeModel memberOwningTypeModel : fileModel.getMemberOwningTypes()){
                 memberOwningTypeModel.getMethods().forEach(invocationAnalyzer::addInvocations);
                 memberOwningTypeModel.getConstructors().forEach(invocationAnalyzer::addInvocations);

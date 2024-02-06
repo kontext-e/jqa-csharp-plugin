@@ -5,7 +5,6 @@ import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.caches.MethodCache;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.caches.TypeCache;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.ClassModel;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.ConstructorModel;
-import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.FileModel;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.InterfaceModel;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.MethodModel;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.testImplementations.ClassDescriptorImpl;
@@ -52,13 +51,12 @@ public class MethodAnalyzerTest {
     void createMethodForClass(){
         List<MethodModel> methodModels = createMethodModels(1);
         ClassModel classModel = createClassModel(methodModels);
-        FileModel fileModel = createFileModel(classModel, "Relative.Path");
 
         ClassDescriptorImpl classDescriptor = new ClassDescriptorImpl("Type");
         when(typeCache.findTypeByRelativePath(any(), any())).thenReturn(Optional.of(classDescriptor));
         when(methodCache.create(any(), eq(MethodDescriptor.class))).thenReturn(new MethodDescriptorImpl());
 
-        methodAnalyzer.createMethods(toList(fileModel));
+        methodAnalyzer.createMethods(classModel, "Relative.Path");
 
         verify(methodCache).create(any(), eq(MethodDescriptor.class));
         assertThat(classDescriptor.getDeclaredMembers().size()).isEqualTo(1);
@@ -70,12 +68,11 @@ public class MethodAnalyzerTest {
     void createMethodForClassNonExistentType(){
         List<MethodModel> methodModels = createMethodModels(1);
         ClassModel classModel = createClassModel(methodModels);
-        FileModel fileModel = createFileModel(classModel, "Relative.Path");
 
         ClassDescriptorImpl classDescriptor = new ClassDescriptorImpl("Type");
         when(typeCache.findTypeByRelativePath(any(), any())).thenReturn(Optional.empty());
 
-        methodAnalyzer.createMethods(toList(fileModel));
+        methodAnalyzer.createMethods(classModel, "Relative.Path");
 
         verify(methodCache, never()).create(any(), eq(MethodDescriptor.class));
         assertThat(classDescriptor.getDeclaredMembers().size()).isEqualTo(0);
@@ -86,13 +83,12 @@ public class MethodAnalyzerTest {
     void createMethodForInterface(){
         List<MethodModel> methodModels = createMethodModels(1);
         InterfaceModel interfaceModel = createInterfaceModel(methodModels);
-        FileModel fileModel = createFileModel(interfaceModel, "Relative.Path");
 
         InterfaceTypeDescriptor interfaceDescriptor = new InterfaceDescriptorImpl("Interface");
         when(typeCache.findTypeByRelativePath(any(), any())).thenReturn(Optional.of(interfaceDescriptor));
         when(methodCache.create(any(), eq(MethodDescriptor.class))).thenReturn(new MethodDescriptorImpl());
 
-        methodAnalyzer.createMethods(toList(fileModel));
+        methodAnalyzer.createMethods(interfaceModel, "Relative.Path");
 
         verify(methodCache).create(any(), eq(MethodDescriptor.class));
         assertThat(interfaceDescriptor.getDeclaredMembers().size()).isEqualTo(1);
@@ -104,12 +100,11 @@ public class MethodAnalyzerTest {
     void createMethodForInterfaceNonexistentType(){
         List<MethodModel> methodModels = createMethodModels(1);
         InterfaceModel interfaceModel = createInterfaceModel(methodModels);
-        FileModel fileModel = createFileModel(interfaceModel, "Relative.Path");
 
         InterfaceTypeDescriptor interfaceDescriptor = new InterfaceDescriptorImpl("Interface");
         when(typeCache.findTypeByRelativePath(any(), any())).thenReturn(Optional.empty());
 
-        methodAnalyzer.createMethods(toList(fileModel));
+        methodAnalyzer.createMethods(interfaceModel, "Relative.Path");
 
         verify(methodCache, never()).create(any(), eq(MethodDescriptor.class));
         assertThat(interfaceDescriptor.getDeclaredMembers().size()).isEqualTo(0);
@@ -119,12 +114,11 @@ public class MethodAnalyzerTest {
     void createNoMethods(){
         List<MethodModel> methodModels = createMethodModels(0);
         ClassModel classModel = createClassModel(methodModels);
-        FileModel fileModel = createFileModel(classModel, "Relative.Path");
 
         ClassDescriptorImpl classDescriptor = new ClassDescriptorImpl("Class1");
         when(typeCache.findTypeByRelativePath(any(), eq("Relative.Path"))).thenReturn(Optional.of(classDescriptor));
 
-        methodAnalyzer.createMethods(toList(fileModel));
+        methodAnalyzer.createMethods(classModel, "Relative.Path");
 
         verify(methodCache, never()).create(any(), eq(ConstructorDescriptor.class));
         assertThat(classDescriptor.getDeclaredMembers().size()).isEqualTo(0);
@@ -135,13 +129,12 @@ public class MethodAnalyzerTest {
         List<MethodModel> methodModels = createMethodModels(0);
         ClassModel classModel = createClassModel(methodModels);
         addConstructor(classModel);
-        FileModel fileModel = createFileModel(classModel, "Relative.Path");
 
         ClassDescriptorImpl classDescriptor = new ClassDescriptorImpl("Class1");
         when(typeCache.findTypeByRelativePath(any(), eq("Relative.Path"))).thenReturn(Optional.of(classDescriptor));
         when(methodCache.create(any(), eq(ConstructorDescriptor.class))).thenReturn(new ConstructorDescriptorImpl());
 
-        methodAnalyzer.createMethods(toList(fileModel));
+        methodAnalyzer.createMethods(classModel, "Relative.Path");
 
         verify(methodCache).create(any(), eq(ConstructorDescriptor.class));
         assertThat(classDescriptor.getDeclaredMembers().size()).isEqualTo(1);
@@ -152,11 +145,10 @@ public class MethodAnalyzerTest {
     void createConstructorsOfNonexistentType(){
         List<MethodModel> methodModels = createMethodModels(0);
         ClassModel classModel = createClassModel(methodModels);
-        FileModel fileModel = createFileModel(classModel, "Relative.Path");
 
         when(typeCache.findTypeByRelativePath(any(), any())).thenReturn(Optional.empty());
 
-        methodAnalyzer.createMethods(toList(fileModel));
+        methodAnalyzer.createMethods(classModel, "Relative.Path");
 
         verify(methodCache, never()).create(any(), eq(ConstructorDescriptor.class));
     }
@@ -168,7 +160,6 @@ public class MethodAnalyzerTest {
         methodModel.setExtensionMethod(true);
         methodModel.setExtendsType("NewClass");
         ClassModel classModel = createClassModel(methodModels);
-        FileModel fileModel = createFileModel(classModel, "Relative.Path");
 
         TypeDescriptor typeDescriptor = new ClassDescriptorImpl("TypeName");
         when(typeCache.findOrCreate("NewClass")).thenReturn(typeDescriptor);
@@ -177,7 +168,7 @@ public class MethodAnalyzerTest {
         MethodDescriptor methodDescriptor = new MethodDescriptorImpl();
         when(methodCache.create(any(), eq(MethodDescriptor.class))).thenReturn(methodDescriptor);
 
-        methodAnalyzer.createMethods(toList(fileModel));
+        methodAnalyzer.createMethods(classModel, "Relative.Path");
 
         assertThat(methodDescriptor.getExtendedType()).isEqualTo(typeDescriptor);
     }
@@ -231,26 +222,6 @@ public class MethodAnalyzerTest {
         return classModel;
     }
 
-    private FileModel createFileModel(InterfaceModel interfaceModel, String relativePath){
-        FileModel fileModel = new FileModel();
-        List<InterfaceModel> interfaceModels = toList(interfaceModel);
-        fileModel.setClasses(new ArrayList<>());
-        fileModel.setInterfaces(interfaceModels);
-        fileModel.setRelativePath(relativePath);
-
-        return fileModel;
-    }
-
-    private FileModel createFileModel(ClassModel classModel, String relativePath) {
-        FileModel fileModel = new FileModel();
-        List<ClassModel> classModels = toList(classModel);
-        fileModel.setClasses(classModels);
-        fileModel.setInterfaces(new ArrayList<>());
-        fileModel.setRelativePath(relativePath);
-
-        return fileModel;
-    }
-
     void fillMethodModel(MethodModel methodModel, int seed){
         methodModel.setEffectiveLineCount(seed);
         methodModel.setLastLineNumber(seed);
@@ -261,11 +232,5 @@ public class MethodAnalyzerTest {
         methodModel.setCyclomaticComplexity(seed);
         methodModel.setImplementation(seed % 2 == 1);
         methodModel.setParameters(new ArrayList<>());
-    }
-
-    private <T> List<T> toList(T item){
-        List<T> list = new ArrayList<>();
-        list.add(item);
-        return list;
     }
 }
