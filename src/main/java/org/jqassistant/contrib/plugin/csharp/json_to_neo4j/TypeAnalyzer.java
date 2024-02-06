@@ -37,7 +37,6 @@ public class TypeAnalyzer {
     }
 
     protected void createTypes(List<FileModel> fileModelList) {
-
         for (FileModel fileModel : fileModelList) {
             CSharpFileDescriptor cSharpFileDescriptor = fileCache.get(fileModel.getAbsolutePath());
 
@@ -48,7 +47,6 @@ public class TypeAnalyzer {
     }
 
     private void createType(CSharpFileDescriptor cSharpFileDescriptor, TypeModel typeModel) {
-
         TypeDescriptor typeDescriptor = typeCache.create(typeModel);
         fillDescriptor(typeDescriptor, typeModel);
         cSharpFileDescriptor.getTypes().add(typeDescriptor);
@@ -89,23 +87,20 @@ public class TypeAnalyzer {
         }
     }
 
-    private static void addInterfaceInformation(InterfaceTypeDescriptor descriptor, InterfaceModel typeModel) {
-        descriptor.setAccessibility(typeModel.getAccessibility());
-        descriptor.setPartial(typeModel.isPartial());
+    private static void addInterfaceInformation(InterfaceTypeDescriptor descriptor, InterfaceModel interfaceModel) {
+        descriptor.setPartial(interfaceModel.isPartial());
     }
 
-    private static void addClassInformation(ClassDescriptor descriptor, ClassModel typeModel) {
-        descriptor.setPartial(typeModel.isPartial());
-        descriptor.setAbstract(typeModel.isAbstractKeyword());
-        descriptor.setSealed(typeModel.isSealed());
-        descriptor.setStatic(typeModel.isStaticKeyword());
-        descriptor.setAccessibility(typeModel.getAccessibility());
+    private static void addClassInformation(ClassDescriptor descriptor, ClassModel classModel) {
+        descriptor.setPartial(classModel.isPartial());
+        descriptor.setAbstract(classModel.isAbstractKeyword());
+        descriptor.setSealed(classModel.isSealed());
+        descriptor.setStatic(classModel.isStaticKeyword());
     }
 
-    private static void addStructInformation(StructDescriptor descriptor, StructModel typeModel) {
-        descriptor.setPartial(typeModel.isPartial());
-        descriptor.setAccessibility(typeModel.getAccessibility());
-        descriptor.setReadOnly(typeModel.isReadOnly());
+    private static void addStructInformation(StructDescriptor descriptor, StructModel structModel) {
+        descriptor.setPartial(structModel.isPartial());
+        descriptor.setReadOnly(structModel.isReadOnly());
     }
 
     public void createEnumMembers(EnumModel enumModel) {
