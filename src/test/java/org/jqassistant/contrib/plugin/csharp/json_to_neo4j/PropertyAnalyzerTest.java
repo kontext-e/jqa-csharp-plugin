@@ -3,7 +3,7 @@ package org.jqassistant.contrib.plugin.csharp.json_to_neo4j;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.caches.PropertyCache;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.caches.TypeCache;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.ClassModel;
-import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.FileModel;
+import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.MemberOwningTypeModel;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.PropertyAccessorModel;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.PropertyModel;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.testImplementations.ClassDescriptorImpl;
@@ -16,7 +16,6 @@ import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -48,9 +47,9 @@ public class PropertyAnalyzerTest {
     void testCreateNoProperties(){
         List<PropertyModel> propertyModels = packagePropertiesToList();
         ClassDescriptorImpl classDescriptor = new ClassDescriptorImpl("Class");
-        List<FileModel> fileModel = prepareClassAndFileStructure(propertyModels);
+        MemberOwningTypeModel classModel = prepareClassAndFileStructure(propertyModels);
 
-        propertyAnalyzer.createProperties(fileModel);
+        propertyAnalyzer.createProperties(classModel);
 
         verifyNoInteractions(propertyCache);
         verify(typeCache, times(1)).findAny(any());
@@ -62,9 +61,9 @@ public class PropertyAnalyzerTest {
         PropertyModel propertyModel = new PropertyModel();
         fillPropertyModel(propertyModel);
         List<PropertyModel> propertyModels = packagePropertiesToList(propertyModel);
-        List<FileModel> fileModel = prepareClassAndFileStructure(propertyModels);
+        MemberOwningTypeModel classModel = prepareClassAndFileStructure(propertyModels);
 
-        propertyAnalyzer.createProperties(fileModel);
+        propertyAnalyzer.createProperties(classModel);
 
         verify(typeCache, times(1)).findOrCreate(anyString());
         verify(typeCache, times(1)).findAny(anyString());
@@ -84,9 +83,9 @@ public class PropertyAnalyzerTest {
         initAccessor.setKind("init");
         initAccessor.setAccessibility("Protected");
         propertyModel.setAccessors(Arrays.asList(getAccessor, setAccessor, initAccessor));
-        List<FileModel> fileModelList = prepareClassAndFileStructure(packagePropertiesToList(propertyModel));
+        MemberOwningTypeModel ClassModel = prepareClassAndFileStructure(packagePropertiesToList(propertyModel));
 
-        propertyAnalyzer.createProperties(fileModelList);
+        propertyAnalyzer.createProperties(ClassModel);
     }
 
     private void prepareMocks() {
@@ -106,14 +105,12 @@ public class PropertyAnalyzerTest {
         propertyModel.setAccessors(new ArrayList<>());
     }
 
-    private List<FileModel> prepareClassAndFileStructure(List<PropertyModel> propertyModels){
+    private MemberOwningTypeModel prepareClassAndFileStructure(List<PropertyModel> propertyModels){
         ClassModel classModel = new ClassModel();
         classModel.setFqn("Another.Class.Model");
         classModel.setProperties(propertyModels);
 
-        FileModel fileModel = new FileModel();
-        fileModel.setClasses(Collections.singletonList(classModel));
-        return Collections.singletonList(fileModel);
+        return classModel;
     }
 
     private List<PropertyModel> packagePropertiesToList(PropertyModel... propertyModels){

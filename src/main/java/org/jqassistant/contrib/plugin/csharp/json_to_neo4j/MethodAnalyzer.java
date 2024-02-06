@@ -4,7 +4,6 @@ import com.buschmais.jqassistant.core.store.api.Store;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.caches.MethodCache;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.caches.TypeCache;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.ConstructorModel;
-import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.FileModel;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.MemberOwningTypeModel;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.MethodModel;
 import org.jqassistant.contrib.plugin.csharp.model.ConstructorDescriptor;
@@ -12,7 +11,6 @@ import org.jqassistant.contrib.plugin.csharp.model.MemberOwningTypeDescriptor;
 import org.jqassistant.contrib.plugin.csharp.model.MethodDescriptor;
 import org.jqassistant.contrib.plugin.csharp.model.TypeDescriptor;
 
-import java.util.List;
 import java.util.Optional;
 
 public class MethodAnalyzer {
@@ -29,15 +27,7 @@ public class MethodAnalyzer {
         parameterAnalyzer = new ParameterAnalyzer(typeCache, store);
     }
 
-    public void createMethods(List<FileModel> fileModelList) {
-        for (FileModel fileModel : fileModelList) {
-            for (MemberOwningTypeModel memberOwningTypeModel : fileModel.getMemberOwningTypes()){
-                createMethods(memberOwningTypeModel, fileModel.getRelativePath());
-            }
-        }
-    }
-
-    private void createMethods(MemberOwningTypeModel memberOwningModel, String filePath){
+    public void createMethods(MemberOwningTypeModel memberOwningModel, String filePath){
         Optional<TypeDescriptor> typeDescriptor = typeCache.findTypeByRelativePath(memberOwningModel.getKey(), filePath);
         if (!typeDescriptor.isPresent()) return;
 
