@@ -7,6 +7,7 @@ import org.jqassistant.contrib.plugin.csharp.model.EnumValueDescriptor;
 import org.jqassistant.contrib.plugin.csharp.model.FieldDescriptor;
 import org.jqassistant.contrib.plugin.csharp.model.InterfaceTypeDescriptor;
 import org.jqassistant.contrib.plugin.csharp.model.MemberDescriptor;
+import org.jqassistant.contrib.plugin.csharp.model.MemberOwningTypeDescriptor;
 import org.jqassistant.contrib.plugin.csharp.model.MethodDescriptor;
 import org.jqassistant.contrib.plugin.csharp.model.PropertyDescriptor;
 import org.jqassistant.contrib.plugin.csharp.model.RecordClassDescriptor;
@@ -27,7 +28,7 @@ public class TypeAnalyzerIT extends CSharpIntegrationTest{
     @Test
     @TestStore(reset = false)
     void TestClass(){
-        ClassDescriptor clazz = (ClassDescriptor) queryForType("TypeClass").get(0);
+        ClassDescriptor clazz = (ClassDescriptor) queryForType("Project1.Types","TypeClass").get(0);
 
         assertThat(clazz.getInterfaces().size()).isEqualTo(0);
         assertThat(clazz.getSuperClass().getFullQualifiedName()).isEqualTo("object");
@@ -55,7 +56,7 @@ public class TypeAnalyzerIT extends CSharpIntegrationTest{
     @Test
     @TestStore(reset = false)
     void TestInterface(){
-        InterfaceTypeDescriptor interfaceDescriptor = (InterfaceTypeDescriptor) queryForType("ITypeInterface").get(0);
+        InterfaceTypeDescriptor interfaceDescriptor = (InterfaceTypeDescriptor) queryForType("Project1.Types","ITypeInterface").get(0);
 
         assertThat(interfaceDescriptor.getInterfaces().size()).isEqualTo(0);
         assertThat(interfaceDescriptor.getTypeFragments().size()).isEqualTo(0);
@@ -77,7 +78,7 @@ public class TypeAnalyzerIT extends CSharpIntegrationTest{
     @Test
     @TestStore(reset = false)
     void TestStruct(){
-        StructDescriptor struct = (StructDescriptor) queryForType("TypeStruct").get(0);
+        StructDescriptor struct = (StructDescriptor) queryForType("Project1.Types","TypeStruct").get(0);
 
         assertThat(struct.getTypeFragments().size()).isEqualTo(0);
         assertThat(struct.getAccessibility()).isEqualTo("Public");
@@ -101,7 +102,7 @@ public class TypeAnalyzerIT extends CSharpIntegrationTest{
     @Test
     @TestStore(reset = false)
     void TestRecordClass(){
-        RecordClassDescriptor record = (RecordClassDescriptor) queryForType("TypeRecord").get(0);
+        RecordClassDescriptor record = (RecordClassDescriptor) queryForType("Project1.Types","TypeRecord").get(0);
 
         assertThat(record.getInterfaces().size()).isEqualTo(0);
         assertThat(record.getSuperClass().getFullQualifiedName()).isEqualTo("object");
@@ -129,7 +130,7 @@ public class TypeAnalyzerIT extends CSharpIntegrationTest{
     @Test
     @TestStore(reset = false)
     void TestRecordStruct(){
-        RecordStructDescriptor recordStruct = (RecordStructDescriptor) queryForType("TypeRecordStruct").get(0);
+        RecordStructDescriptor recordStruct = (RecordStructDescriptor) queryForType("Project1.Types","TypeRecordStruct").get(0);
 
         assertThat(recordStruct.getTypeFragments().size()).isEqualTo(0);
         assertThat(recordStruct.getAccessibility()).isEqualTo("Public");
@@ -153,7 +154,7 @@ public class TypeAnalyzerIT extends CSharpIntegrationTest{
     @Test
     @TestStore(reset = false)
     void TestEnumType(){
-        EnumTypeDescriptor enumDescriptor = (EnumTypeDescriptor) queryForType("TypeEnum").get(0);
+        EnumTypeDescriptor enumDescriptor = (EnumTypeDescriptor) queryForType("Project1.Types", "TypeEnum").get(0);
 
         assertThat(enumDescriptor.getAccessibility()).isEqualTo("Public");
         assertThat(enumDescriptor.isPartial()).isFalse();
@@ -181,7 +182,7 @@ public class TypeAnalyzerIT extends CSharpIntegrationTest{
     @Test
     @TestStore(reset = false)
     void TestRecordDeclarationShorthand(){
-        RecordClassDescriptor typeDescriptor = (RecordClassDescriptor) queryForType("ShortHandRecord").get(0);
+        RecordClassDescriptor typeDescriptor = (RecordClassDescriptor) queryForType("Project1.Types","ShortHandRecord").get(0);
         assertThat(typeDescriptor.getDeclaredMembers().size()).isEqualTo(1);
         ConstructorDescriptor constructor = (ConstructorDescriptor) typeDescriptor.getDeclaredMembers()
                 .stream().filter(m -> m instanceof ConstructorDescriptor).collect(Collectors.toList()).get(0);
@@ -190,11 +191,61 @@ public class TypeAnalyzerIT extends CSharpIntegrationTest{
         assertThat(constructor.getAccessibility()).isEqualTo("Public");
     }
 
-    private <T extends TypeDescriptor> List<T> queryForType(String typeName){
+    @Test
+    @TestStore(reset = false)
+    void testPrimaryConstructors(){
+        List<MethodDescriptor> constructors = findConstructorsOfType("Constructors");
+
+        assertThat(constructors.size()).isEqualTo(2);
+        assertThat(constructors.stream().allMatch(c -> c instanceof ConstructorDescriptor)).isTrue();
+        MethodDescriptor primaryConstructor = constructors.stream().filter(c -> c.getParameters().size() == 2).collect(Collectors.toList()).get(0);
+//TODO        assertThat(primaryConstructor.getParameters().stream().allMatch(p -> p.getType().getName().equals("double"))).isTrue();
+        assertThat(primaryConstructor.getParameters().size()).isEqualTo(2);
+        MethodDescriptor explicitConstructor = constructors.stream().filter(c -> c.getParameters().isEmpty()).collect(Collectors.toList()).get(0);
+        assertThat(explicitConstructor.getParameters().isEmpty()).isTrue();
+    }
+
+
+    @Test
+    @TestStore(reset = false)
+    void testDefaultConstructor(){
+        List<MethodDescriptor> defaultConstructors = findConstructorsOfType("ClassWithDefaultConstructor");
+        assertThat(defaultConstructors.size()).isEqualTo(1);
+        assertThat(defaultConstructors.get(0).getParameters().isEmpty()).isTrue();
+        assertThat(defaultConstructors.get(0).getAccessibility()).isEqualTo("Public");
+    }
+
+    @Test
+    @TestStore(reset = false)
+    void testClassWithoutConstructor(){
+        ClassDescriptor clazz = (ClassDescriptor) query("Match (c:Class) Where c.name=\"ClassWithoutAnyConstructor\" Return c\n").getColumn("c").get(0);
+        assertThat(clazz.getDeclaredMembers().isEmpty()).isTrue();
+    }
+
+    @Test
+    @TestStore(reset = false)
+    void testRecordStruct(){
+        List<MethodDescriptor> constructors = findConstructorsOfType("RecordStructWithTwoGeneratedConstructors");
+        assertThat(constructors.size()).isEqualTo(2);
+        assertThat(constructors.stream().anyMatch(c -> c.getParameters().size() == 2)).isTrue();
+        assertThat(constructors.stream().anyMatch(c -> c.getParameters().isEmpty())).isTrue();
+        assertThat(constructors.stream().allMatch(c -> c.getAccessibility().equals("Public"))).isTrue();
+    }
+
+    private <T extends TypeDescriptor> List<T> queryForType(String namespace, String typeName){
         return query(
-                String.format("Match (n:Namespace)-[]->(t:Type) Where n.fqn=\"Project1.Types\" And t.name=\"%s\" Return t",
-                        typeName))
+                String.format("Match (n:Namespace)-[]->(t:Type) Where n.fqn=\"%s\" And t.name=\"%s\" Return t",
+                        namespace, typeName))
                 .getColumn("t");
+    }
+
+    private List<MethodDescriptor> findConstructorsOfType(String nameOfClass){
+        MemberOwningTypeDescriptor type = (MemberOwningTypeDescriptor) queryForType("Project_1", nameOfClass).get(0);
+        return type.getDeclaredMembers()
+                .stream()
+                .filter(m -> m instanceof ConstructorDescriptor)
+                .map(m -> (MethodDescriptor) m)
+                .collect(Collectors.toList());
     }
 
 }

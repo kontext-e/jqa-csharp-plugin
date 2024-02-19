@@ -14,9 +14,12 @@ public class Constructors(double dx, double dy)
 public class ClassWithDefaultConstructor { }
 public static class ClassWithoutAnyConstructor { }
 
+public record ShortHandRecord(int A, int B);
 
 public record Test
 {
     private string _field;
     private int Property { get; set; }
 }
+
+public record struct RecordStructWithTwoGeneratedConstructors(string A, string B);

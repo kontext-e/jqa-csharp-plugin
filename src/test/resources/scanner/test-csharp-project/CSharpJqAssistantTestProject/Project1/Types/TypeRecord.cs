@@ -17,3 +17,5 @@ public record TypeRecord
         Console.WriteLine("Hello World");
     }
 }
+
+public record ShortHandRecord(int A, int B);
