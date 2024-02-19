@@ -18,6 +18,7 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
@@ -174,6 +175,19 @@ public class TypeAnalyzerIT extends CSharpIntegrationTest{
         assertThat(values.get(1).getName()).isEqualTo("B");
         assertThat(values.get(2).getName()).isEqualTo("C");
         assertThat(values.get(3).getName()).isEqualTo("D");
+    }
+
+
+    @Test
+    @TestStore(reset = false)
+    void TestRecordDeclarationShorthand(){
+        RecordClassDescriptor typeDescriptor = (RecordClassDescriptor) queryForType("ShortHandRecord").get(0);
+        assertThat(typeDescriptor.getDeclaredMembers().size()).isEqualTo(1);
+        ConstructorDescriptor constructor = (ConstructorDescriptor) typeDescriptor.getDeclaredMembers()
+                .stream().filter(m -> m instanceof ConstructorDescriptor).collect(Collectors.toList()).get(0);
+        assertThat(constructor.getParameters().size()).isEqualTo(2);
+        assertThat(constructor.getName()).isEqualTo("ShortHandRecord");
+        assertThat(constructor.getAccessibility()).isEqualTo("Public");
     }
 
     private <T extends TypeDescriptor> List<T> queryForType(String typeName){

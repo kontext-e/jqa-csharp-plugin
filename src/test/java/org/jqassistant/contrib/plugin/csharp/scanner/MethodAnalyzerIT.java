@@ -85,6 +85,37 @@ public class MethodAnalyzerIT extends CSharpIntegrationTest {
         assertThat(method.getCyclomaticComplexity()).isEqualTo(3);
     }
 
+    @Test
+    @TestStore(reset = false)
+    void testPrimaryConstructors(){
+        List<MethodDescriptor> constructors = queryForMethods("Constructors", "Constructors");
+
+        assertThat(constructors.size()).isEqualTo(2);
+        assertThat(constructors.stream().allMatch(c -> c instanceof ConstructorDescriptor)).isTrue();
+        MethodDescriptor primaryConstructor = constructors.stream().filter(c -> c.getParameters().size() == 2).collect(Collectors.toList()).get(0);
+        assertThat(primaryConstructor.getParameters().size()).isEqualTo(2);
+        MethodDescriptor explicitConstructor = constructors.stream().filter(c -> c.getParameters().isEmpty()).collect(Collectors.toList()).get(0);
+        assertThat(explicitConstructor.getParameters().isEmpty()).isTrue();
+    }
+
+
+
+    @Test
+    @TestStore(reset = false)
+    void testDefaultConstructor(){
+        List<MethodDescriptor> defaultConstructors = queryForMethods("ClassWithDefaultConstructor", "ClassWithDefaultConstructor");
+        assertThat(defaultConstructors.size()).isEqualTo(1);
+        assertThat(defaultConstructors.get(0).getParameters().isEmpty()).isTrue();
+        assertThat(defaultConstructors.get(0).getAccessibility()).isEqualTo("Public");
+    }
+
+    @Test
+    @TestStore(reset = false)
+    void testClassWithoutConstructor(){
+        ClassDescriptor clazz = (ClassDescriptor) query("Match (c:Class) Where c.name=\"ClassWithoutAnyConstructor\" Return c\n").getColumn("c").get(0);
+        assertThat(clazz.getDeclaredMembers().isEmpty()).isTrue();
+    }
+
 
     private List<MethodDescriptor> queryForMethods(String nameOfClass, String nameOfMethod){
         return query(

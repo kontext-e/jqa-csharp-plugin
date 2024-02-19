@@ -15,7 +15,10 @@ import java.nio.channels.ReadableByteChannel;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-import static org.apache.commons.lang.SystemUtils.*;
+import static org.apache.commons.lang.SystemUtils.IS_OS_LINUX;
+import static org.apache.commons.lang.SystemUtils.IS_OS_MAC_OSX;
+import static org.apache.commons.lang.SystemUtils.IS_OS_WINDOWS;
+import static org.apache.commons.lang.SystemUtils.OS_NAME;
 
 public class CSharpToJsonToolManager {
 
@@ -95,8 +98,7 @@ public class CSharpToJsonToolManager {
 
         File zip = Paths.get(directory.getAbsolutePath(), "temp.zip").toFile();
         FileOutputStream fileOutputStream = new FileOutputStream(zip);
-        fileOutputStream.getChannel()
-                .transferFrom(readableByteChannel, 0, Long.MAX_VALUE);
+        fileOutputStream.getChannel().transferFrom(readableByteChannel, 0, Long.MAX_VALUE);
         fileOutputStream.close();
         return zip;
 
