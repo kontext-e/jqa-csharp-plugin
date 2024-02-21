@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Project_1.Partiality
+namespace Project1.Partiality
 {
     public partial class PartialClass
     {

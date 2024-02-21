@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Project_1
+namespace Project1
 {
     class Properties
     {
@@ -25,4 +25,10 @@ namespace Project_1
         }
 
     }
+
+    public record ReadOnlyRecord(int A, int B);
+
+    public record struct WriteableRecordStruct(float F);
+
+    public readonly record struct ReadOnlyRecordStruct(string A, string B);
 }

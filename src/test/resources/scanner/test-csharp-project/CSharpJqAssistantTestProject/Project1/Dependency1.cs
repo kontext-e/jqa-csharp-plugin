@@ -1,7 +1,7 @@
 ﻿using System;
 using MyAlias = System.Collections.Generic;
 
-namespace Project_1
+namespace Project1
 {
     internal class Dependency1
     {

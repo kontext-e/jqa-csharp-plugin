@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Project_1;
+namespace Project1;
 
 public class Methods
 {
@@ -17,6 +17,10 @@ public class Methods
 
     public void MethodWithLocalMethod() { void LocalMethod(){} }
     public void ExpressionMethod(string text) => Console.WriteLine(text);
+
+    public static void MethodWithActionAsArgument(Action<string> action) => action("Hello World");
+
+    public static bool MethodWithFunctionAsArgument(Func<int, bool> func) => func(2); 
 
 }
 

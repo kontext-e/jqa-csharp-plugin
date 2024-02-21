@@ -3,7 +3,7 @@
     <PropertyGroup>
         <OutputType>Exe</OutputType>
         <TargetFramework>net8.0</TargetFramework>
-        <RootNamespace>Project_1</RootNamespace>
+        <RootNamespace>Project1</RootNamespace>
         <LangVersion>default</LangVersion>
     </PropertyGroup>
 

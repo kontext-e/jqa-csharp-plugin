@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Project_1;
+namespace Project1;
 
 public class Constructors(double dx, double dy)
 {
@@ -14,12 +14,5 @@ public class Constructors(double dx, double dy)
 public class ClassWithDefaultConstructor { }
 public static class ClassWithoutAnyConstructor { }
 
-public record ShortHandRecord(int A, int B);
-
-public record Test
-{
-    private string _field;
-    private int Property { get; set; }
-}
-
-public record struct RecordStructWithTwoGeneratedConstructors(string A, string B);
+public record OneConstructor(int A, int B);
+public record struct TwoConstructors(string A, string B);

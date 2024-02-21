@@ -1,4 +1,4 @@
-﻿namespace Project_1;
+﻿namespace Project1;
 
 public class Fields
 {
