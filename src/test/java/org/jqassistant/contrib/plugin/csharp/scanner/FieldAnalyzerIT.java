@@ -19,7 +19,7 @@ public class FieldAnalyzerIT extends CSharpIntegrationTest{
         assertThat(field.isStatic()).isFalse();
         assertThat(field.isRequired()).isFalse();
         assertThat(field.getType().getFullQualifiedName()).isEqualTo("string");
-        assertThat(field.getFullQualifiedName()).isEqualTo("Project_1.Fields.privateField");
+        assertThat(field.getFullQualifiedName()).isEqualTo("Project1.Fields.privateField");
         assertThat(field.getDeclaringType().getName()).isEqualTo("Fields");
     }
 

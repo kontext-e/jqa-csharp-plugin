@@ -80,7 +80,7 @@ public class DependencyAnalyzerIT extends CSharpIntegrationTest{
 
     private <T extends TypeDescriptor> List<T> queryForType(String typeName){
         return query(
-                String.format("Match (n:Namespace)-[]->(t:Type) Where n.fqn=\"Project_1.TypeDependencies\" And t.name=\"%s\" Return t",
+                String.format("Match (n:Namespace)-[]->(t:Type) Where n.fqn=\"Project1.TypeDependencies\" And t.name=\"%s\" Return t",
                         typeName))
                 .getColumn("t");
     }

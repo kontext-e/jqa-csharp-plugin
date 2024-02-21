@@ -43,7 +43,7 @@ public class PartialityAnalyzerIT extends CSharpIntegrationTest{
     @Test
     @TestStore(reset = false)
     void testPartialMethods(){
-        List<MethodDescriptor> partialMethods = query("Match (c:Class)-[]-(m:Method) where c.fqn=\"Project_1.Partiality.PartialClass\" return m").getColumn("m");
+        List<MethodDescriptor> partialMethods = query("Match (c:Class)-[]-(m:Method) where c.fqn=\"Project1.Partiality.PartialClass\" return m").getColumn("m");
 
         assertThat(partialMethods.size()).isEqualTo(3);
         List<MethodDescriptor> implementedMethods = partialMethods.stream().filter(m -> m.getName().equals("PartialMethod")).collect(Collectors.toList());
@@ -76,7 +76,7 @@ public class PartialityAnalyzerIT extends CSharpIntegrationTest{
 
     private <T extends TypeDescriptor> List<T> queryForType(String typeName){
         return query(
-                String.format("Match (n:Namespace)-[]->(t:Type) Where n.fqn=\"Project_1.Partiality\" And t.name=\"%s\" Return t",
+                String.format("Match (n:Namespace)-[]->(t:Type) Where n.fqn=\"Project1.Partiality\" And t.name=\"%s\" Return t",
                         typeName))
                 .getColumn("t");
     }

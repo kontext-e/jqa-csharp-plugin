@@ -50,12 +50,12 @@ public class InvocationAnalyzerIT extends CSharpIntegrationTest {
     @Test
     @TestStore(reset = false)
     void testObjectCreations(){
-        List<InvokesDescriptor> invocations = query("Match r=(m:Method)-[i:INVOKES]-(c:Constructor) where m.name=\"Invocations\" and c.name=\"Properties()\" Return i").getColumn("i");
+        List<InvokesDescriptor> invocations = query("Match r=(m:Method)-[i:INVOKES]-(c:Constructor) where m.name=\"ImplicitObjectCreations\" and c.name=\"Properties()\" Return i").getColumn("i");
         assertThat(invocations.size()).isEqualTo(4);
-        assertThat(invocations.stream().anyMatch(invokesDescriptor -> invokesDescriptor.getLineNumber() == 37)).isTrue();
-        assertThat(invocations.stream().anyMatch(invokesDescriptor -> invokesDescriptor.getLineNumber() == 38)).isTrue();
-        assertThat(invocations.stream().anyMatch(invokesDescriptor -> invokesDescriptor.getLineNumber() == 39)).isTrue();
-        assertThat(invocations.stream().anyMatch(invokesDescriptor -> invokesDescriptor.getLineNumber() == 40)).isTrue();
+        assertThat(invocations.stream().anyMatch(invokesDescriptor -> invokesDescriptor.getLineNumber() == 60)).isTrue();
+        assertThat(invocations.stream().anyMatch(invokesDescriptor -> invokesDescriptor.getLineNumber() == 61)).isTrue();
+        assertThat(invocations.stream().anyMatch(invokesDescriptor -> invokesDescriptor.getLineNumber() == 62)).isTrue();
+        assertThat(invocations.stream().anyMatch(invokesDescriptor -> invokesDescriptor.getLineNumber() == 63)).isTrue();
     }
 
     @Test

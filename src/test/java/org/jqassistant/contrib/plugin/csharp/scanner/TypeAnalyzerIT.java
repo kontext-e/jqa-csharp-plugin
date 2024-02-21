@@ -182,12 +182,12 @@ public class TypeAnalyzerIT extends CSharpIntegrationTest{
     @Test
     @TestStore(reset = false)
     void TestRecordDeclarationShorthand(){
-        RecordClassDescriptor typeDescriptor = (RecordClassDescriptor) queryForType("Project1.Types","ShortHandRecord").get(0);
-        assertThat(typeDescriptor.getDeclaredMembers().size()).isEqualTo(1);
+        RecordClassDescriptor typeDescriptor = (RecordClassDescriptor) queryForType("Project1","OneConstructor").get(0);
+        assertThat(typeDescriptor.getDeclaredMembers().size()).isEqualTo(3);
         ConstructorDescriptor constructor = (ConstructorDescriptor) typeDescriptor.getDeclaredMembers()
                 .stream().filter(m -> m instanceof ConstructorDescriptor).collect(Collectors.toList()).get(0);
         assertThat(constructor.getParameters().size()).isEqualTo(2);
-        assertThat(constructor.getName()).isEqualTo("ShortHandRecord");
+        assertThat(constructor.getName()).isEqualTo("OneConstructor");
         assertThat(constructor.getAccessibility()).isEqualTo("Public");
     }
 
@@ -225,7 +225,7 @@ public class TypeAnalyzerIT extends CSharpIntegrationTest{
     @Test
     @TestStore(reset = false)
     void testRecordStruct(){
-        List<MethodDescriptor> constructors = findConstructorsOfType("RecordStructWithTwoGeneratedConstructors");
+        List<MethodDescriptor> constructors = findConstructorsOfType("TwoConstructors");
         assertThat(constructors.size()).isEqualTo(2);
         assertThat(constructors.stream().anyMatch(c -> c.getParameters().size() == 2)).isTrue();
         assertThat(constructors.stream().anyMatch(c -> c.getParameters().isEmpty())).isTrue();
@@ -240,7 +240,7 @@ public class TypeAnalyzerIT extends CSharpIntegrationTest{
     }
 
     private List<MethodDescriptor> findConstructorsOfType(String nameOfClass){
-        MemberOwningTypeDescriptor type = (MemberOwningTypeDescriptor) queryForType("Project_1", nameOfClass).get(0);
+        MemberOwningTypeDescriptor type = (MemberOwningTypeDescriptor) queryForType("Project1", nameOfClass).get(0);
         return type.getDeclaredMembers()
                 .stream()
                 .filter(m -> m instanceof ConstructorDescriptor)
