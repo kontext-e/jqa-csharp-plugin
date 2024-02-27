@@ -8,7 +8,7 @@ import java.util.List;
 
 public class MemberOwningTypeDescriptorImpl extends TypeDescriptorImpl implements MemberOwningTypeDescriptor {
 
-    private List<MemberDescriptor> declaredMembers = new ArrayList<>();
+    private final List<MemberDescriptor> declaredMembers = new ArrayList<>();
 
     public MemberOwningTypeDescriptorImpl(String name) {
         super(name);

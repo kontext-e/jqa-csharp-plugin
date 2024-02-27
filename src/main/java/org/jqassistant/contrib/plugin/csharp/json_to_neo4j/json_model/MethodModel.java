@@ -10,47 +10,49 @@ import java.util.List;
 @Getter
 public class MethodModel implements JsonModel {
 
-    protected String name;
+    private String name;
 
-    protected String fqn;
+    private String fqn;
 
     @JsonProperty("static")
-    protected boolean staticKeyword;
+    private boolean staticKeyword;
 
     @JsonProperty("abstract")
-    protected boolean abstractKeyword;
+    private boolean abstractKeyword;
 
-    protected boolean sealed;
+    private boolean sealed;
 
-    protected boolean async;
+    private boolean async;
 
-    protected boolean override;
+    private boolean override;
 
-    protected boolean virtual;
+    private boolean virtual;
 
-    protected String accessibility;
+    private String accessibility;
 
-    protected String returnType;
+    private String returnType;
 
     protected int firstLineNumber;
 
-    protected int lastLineNumber;
+    private int firstLineNumber;
 
-    protected int effectiveLineCount;
+    private int lastLineNumber;
 
-    protected int cyclomaticComplexity;
+    private int effectiveLineCount;
+
+    private int cyclomaticComplexity;
 
     @JsonProperty("isImplementation")
-    protected boolean isImplementation;
+    private boolean isImplementation;
 
-    protected boolean partial;
+    private boolean partial;
 
     @JsonProperty("isExtensionMethod")
-    protected boolean isExtensionMethod;
+    private boolean isExtensionMethod;
 
-    protected String extendsType;
+    private String extendsType;
 
-    protected List<InvokesModel> invocations;
+    private List<InvokesModel> invokedBy;
 
     protected List<MemberAccessModel> memberAccesses;
 
