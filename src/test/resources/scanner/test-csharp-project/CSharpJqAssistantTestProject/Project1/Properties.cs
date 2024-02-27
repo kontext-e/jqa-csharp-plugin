@@ -10,7 +10,7 @@ namespace Project1
     {
         private string _backingField;
 
-        private int ImplicitlyPrivateProperty { get; init; }
+        int ImplicitlyPrivateProperty { get; init; }
         public string ExplicitlyPublicProperty { get; }
         private protected int PrivateProtectedProperty { get; }
         public string PropertyWithDifferingAccessorAccessibility { get; private set; }

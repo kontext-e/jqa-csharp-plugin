@@ -55,12 +55,12 @@ public class Invocations
 
     private static void ImplicitObjectCreations(Properties prop)
     {
-        var partialClass = new PartialClass(); //Tests Object Createn Syntax
+        var partialClass = new PartialClass(); //Tests Object Create Syntax
         var typeClass = new TypeClass(Properties.StaticProperty); //Tests Normal Constructor Call
         var properties = new Properties(); //Tests Default Constructor
         Properties properties2 = new(); //Tests Implicit Object Creation in assignment
         properties2 = new();
-        ImplicitObjectCreations(new()); //Tests Implicit Object Creation in Exoression Statment
+        ImplicitObjectCreations(new()); //Tests Implicit Object Creation in Expression Statement
         var list = new List<int> { 3, 8 };
         var method = new TypeStruct("String") //Tests Type Initializer
         {

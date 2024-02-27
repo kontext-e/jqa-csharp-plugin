@@ -14,5 +14,5 @@ public class Constructors(double dx, double dy)
 public class ClassWithDefaultConstructor { }
 public static class ClassWithoutAnyConstructor { }
 
-public record OneConstructor(int A, int B);
+public record OnePublicConstructor(int A, int B);
 public record struct TwoConstructors(string A, string B);
