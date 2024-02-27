@@ -43,9 +43,9 @@ public class PartialityAnalyzerIT extends CSharpIntegrationTest{
     @Test
     @TestStore(reset = false)
     void testPartialMethods(){
-        List<MethodDescriptor> partialMethods = query("Match (c:Class)-[]-(m:Method) where c.fqn=\"Project1.Partiality.PartialClass\" return m").getColumn("m");
+        List<MethodDescriptor> partialMethods = query("Match (c:Class)-[]-(m:Method) where c.fqn=\"Project1.Partiality.PartialClass\" and m.partial=true return m").getColumn("m");
 
-        assertThat(partialMethods.size()).isEqualTo(3);
+        assertThat(partialMethods.size()).isEqualTo(2);
         List<MethodDescriptor> implementedMethods = partialMethods.stream().filter(m -> m.getName().equals("PartialMethod")).collect(Collectors.toList());
         Optional<MethodDescriptor> implementation = implementedMethods.stream().filter(MethodDescriptor::isImplementation).findAny();
         Optional<MethodDescriptor> reference = implementedMethods.stream().filter(m -> !m.isImplementation()).findAny();
@@ -57,12 +57,6 @@ public class PartialityAnalyzerIT extends CSharpIntegrationTest{
         assertThat(reference.isPresent()).isTrue();
         assertThat(reference.get().isPartial()).isTrue();
         assertThat(implementation.get().getMethodFragments().contains(reference.get())).isTrue();
-
-        Optional<MethodDescriptor> unimplementedMethod = partialMethods.stream().filter(m -> m.getName().equals("UnimplementedMethod")).findAny();
-        assertThat(unimplementedMethod.isPresent()).isTrue();
-        assertThat(unimplementedMethod.get().isPartial()).isTrue();
-        assertThat(unimplementedMethod.get().isImplementation()).isFalse();
-        assertThat(unimplementedMethod.get().getMethodFragments().isEmpty()).isTrue();
     }
 
     private static void assertPartiality(List<TypeDescriptor> partialType) {

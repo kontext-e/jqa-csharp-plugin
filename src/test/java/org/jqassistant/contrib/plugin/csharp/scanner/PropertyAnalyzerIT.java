@@ -1,15 +1,13 @@
 package org.jqassistant.contrib.plugin.csharp.scanner;
 
-import com.buschmais.jqassistant.plugin.common.api.model.NamedDescriptor;
 import org.jqassistant.contrib.plugin.csharp.model.MethodDescriptor;
 import org.jqassistant.contrib.plugin.csharp.model.PropertyDescriptor;
 import org.junit.jupiter.api.Test;
 
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
-import static java.util.Comparator.comparing;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class PropertyAnalyzerIT extends CSharpIntegrationTest {
@@ -25,14 +23,14 @@ public class PropertyAnalyzerIT extends CSharpIntegrationTest {
     @Test
     @TestStore(reset = false)
     void testImplicitlyPrivateProperty() {
-        PropertyDescriptor property = queryForProperty("ImplicitlyPrivateProperty").get(0);
+        Map<String, List<Object>> result = queryForPropertyAndAccessors("ImplicitlyPrivateProperty");
 
-        assertThat(property.getAccessibility()).isEqualTo("Private");
-        assertThat(property.getAccessors().get(0).getAccessibility()).isEqualTo("Private");
-        List<MethodDescriptor> accessors = new LinkedList<>(property.getAccessors());
-        accessors.sort(comparing(NamedDescriptor::getName));
-        assertThat(accessors.get(0).getName()).startsWith("get");
-        assertThat(accessors.get(1).getName()).startsWith("init");
+        assertThat(result.get("m").size()).isEqualTo(2);
+        assertThat(result.get("p").stream().map(p->(PropertyDescriptor)p).allMatch(p->p.getAccessibility().equals("Private"))).isTrue();
+        MethodDescriptor getter = getAccessorOfType(result, "get");
+        assertThat(getter.getAccessibility()).isEqualTo("Private");
+        MethodDescriptor setter = getAccessorOfType(result, "set");
+        assertThat(setter.getAccessibility()).isEqualTo("Private");
     }
 
     @Test
@@ -46,15 +44,14 @@ public class PropertyAnalyzerIT extends CSharpIntegrationTest {
     @Test
     @TestStore(reset = false)
     void testPropertyWithDifferingAccessorAccessibility(){
-        PropertyDescriptor property = queryForProperty("PropertyWithDifferingAccessorAccessibility").get(0);
 
-        assertThat(property.getAccessors().size()).isEqualTo(2);
-        List<MethodDescriptor> accessors = new LinkedList<>(property.getAccessors());
-        accessors.sort(comparing(NamedDescriptor::getName));
-        assertThat(accessors.get(0).getName()).startsWith("get");
-        assertThat(accessors.get(0).getAccessibility()).isEqualTo("Public");
-        assertThat(accessors.get(1).getName()).startsWith("set");
-        assertThat(accessors.get(1).getAccessibility()).isEqualTo("Private");
+        Map<String, List<Object>> result = queryForPropertyAndAccessors("PropertyWithDifferingAccessorAccessibility");
+
+        assertThat(result.get("m").size()).isEqualTo(2);
+        MethodDescriptor getter = getAccessorOfType(result, "get");
+        assertThat(getter.getAccessibility()).isEqualTo("Public");
+        MethodDescriptor setter = getAccessorOfType(result, "set");
+        assertThat(setter.getAccessibility()).isEqualTo("Private");
     }
 
     @Test
@@ -67,36 +64,51 @@ public class PropertyAnalyzerIT extends CSharpIntegrationTest {
     @Test
     @TestStore(reset = false)
     void testExpressionProperty(){
-        PropertyDescriptor property = queryForProperty("ExpressionBodiedProperty").get(0);
+        Map<String, List<Object>> result = queryForPropertyAndAccessors("ExpressionBodiedProperty");
 
-        assertThat(property.getAccessors().size()).isEqualTo(1);
-        assertThat(property.getAccessors().get(0).getName()).startsWith("get");
-        assertThat(property.getAccessors().get(0).getAccessibility()).isEqualTo("Public");
+        assertThat(result.get("m").size()).isEqualTo(1);
+        MethodDescriptor getter = getAccessorOfType(result, "get");
+        assertThat(getter.getName()).startsWith("get");
+        assertThat(getter.getAccessibility()).isEqualTo("Public");
     }
 
     @Test
     @TestStore(reset = false)
     void testPropertyWithExplicitAccessors(){
-        PropertyDescriptor property = queryForProperty("PropertyWithExplicitAccessors").get(0);
+        Map<String, List<Object>> result = queryForPropertyAndAccessors("PropertyWithExplicitAccessors");
 
-        assertThat(property.getAccessors().size()).isEqualTo(2);
-        List<MethodDescriptor> accessors = new LinkedList<>(property.getAccessors());
-        accessors.sort(comparing(NamedDescriptor::getName));
-        assertThat(accessors.get(0).getName()).startsWith("get");
-        assertThat(accessors.get(0).getAccessibility()).isEqualTo("Public");
-        assertThat(accessors.get(1).getName()).startsWith("set");
-        assertThat(accessors.get(1).getAccessibility()).isEqualTo("Public");
+        assertThat(result.get("m").size()).isEqualTo(2);
+        MethodDescriptor getter = getAccessorOfType(result, "get");
+        assertThat(getter.getAccessibility()).isEqualTo("Public");
+        MethodDescriptor setter = getAccessorOfType(result, "set");
+        assertThat(setter.getAccessibility()).isEqualTo("Public");
     }
 
     @Test
     @TestStore(reset = false)
     void testPropertyAccessorReturnType(){
-        PropertyDescriptor property = queryForProperty("ImplicitlyPrivateProperty").get(0);
+        Map<String, List<Object>> result = queryForPropertyAndAccessors("ImplicitlyPrivateProperty");
 
-        MethodDescriptor init = property.getAccessors().stream().filter(a -> a.getName().contains("init")).findAny().get();
-        assertThat(init.getReturns().getFullQualifiedName()).isEqualTo("void");
-        MethodDescriptor get = property.getAccessors().stream().filter(a -> a.getName().contains("get")).findAny().get();
-        assertThat(get.getReturns().getFullQualifiedName()).isEqualTo("int");
+        assertThat(result.get("m").size()).isEqualTo(2);
+        MethodDescriptor getter = getAccessorOfType(result, "get");
+        assertThat(getter.getReturns().getFullQualifiedName()).isEqualTo("int");
+        MethodDescriptor setter = getAccessorOfType(result, "set");
+        assertThat(setter.getReturns().getFullQualifiedName()).isEqualTo("void");
+    }
+
+    private static MethodDescriptor getAccessorOfType(Map<String, List<Object>> result, String accessor) {
+        return result.get("m").stream()
+                .map(m -> (MethodDescriptor) m)
+                .filter(m -> m.getName().startsWith(accessor))
+                .collect(Collectors.toList())
+                .get(0);
+    }
+
+    private Map<String, List<Object>> queryForPropertyAndAccessors(String implicitlyPrivateProperty) {
+        return query(
+                String.format("Match (p:Property)-[:ASSOCIATED_PROPERTY]-(m:Method) where p.name=\"%s\" return p, m",
+                        implicitlyPrivateProperty))
+                .getColumns();
     }
 
 

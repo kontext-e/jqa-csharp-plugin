@@ -2,6 +2,7 @@ package org.jqassistant.contrib.plugin.csharp.json_to_neo4j;
 
 import com.buschmais.jqassistant.core.store.api.Store;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.caches.MethodCache;
+import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.caches.PropertyCache;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.caches.TypeCache;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.ClassModel;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.ConstructorModel;
@@ -44,7 +45,8 @@ public class MethodAnalyzerTest {
         store = mock();
         methodCache = mock();
         typeCache = mock();
-        methodAnalyzer = new MethodAnalyzer(store, methodCache, typeCache);
+        PropertyCache propertyCache = mock();
+        methodAnalyzer = new MethodAnalyzer(store, methodCache, typeCache, propertyCache);
     }
 
     @Test

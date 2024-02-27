@@ -5,8 +5,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.List;
-
 @Setter
 @Getter
 @NoArgsConstructor
@@ -20,12 +18,12 @@ public class PropertyModel implements JsonModel {
 
     private String accessibility;
 
-    private List<PropertyAccessorModel> accessors;
-
     @JsonProperty("static")
     private boolean staticKeyword;
 
     private boolean required;
+
+    private boolean readonly;
 
     @Override
     public String getKey() {

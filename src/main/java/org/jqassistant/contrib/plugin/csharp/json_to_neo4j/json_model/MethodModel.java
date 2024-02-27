@@ -32,7 +32,7 @@ public class MethodModel implements JsonModel {
 
     private String returnType;
 
-    protected int firstLineNumber;
+    private String associatedProperty;
 
     private int firstLineNumber;
 
@@ -54,9 +54,7 @@ public class MethodModel implements JsonModel {
 
     private List<InvokesModel> invokedBy;
 
-    protected List<MemberAccessModel> memberAccesses;
-
-    protected List<ParameterModel> parameters;
+    private List<ParameterModel> parameters;
 
     @Override
     public String getKey() {

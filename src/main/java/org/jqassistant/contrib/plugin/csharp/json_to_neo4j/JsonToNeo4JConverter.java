@@ -52,10 +52,10 @@ public class JsonToNeo4JConverter {
         this.inputDirectory = inputDirectory;
 
         this.partialityAnalyzer = new PartialityAnalyzer(methodCache, typeCache);
-        this.invocationAnalyzer = new InvocationAnalyzer(store, methodCache, propertyCache);
-        this.methodAnalyzer = new MethodAnalyzer(store, methodCache, typeCache);
+        this.invocationAnalyzer = new InvocationAnalyzer(store, methodCache);
+        this.methodAnalyzer = new MethodAnalyzer(store, methodCache, typeCache, propertyCache);
         this.dependencyAnalyzer = new DependencyAnalyzer(cSharpFileCache, namespaceCache, typeCache, store);
-        this.propertyAnalyzer = new PropertyAnalyzer(typeCache, propertyCache, methodAnalyzer);
+        this.propertyAnalyzer = new PropertyAnalyzer(typeCache, propertyCache);
         this.fieldAnalyzer = new FieldAnalyzer(store, fieldCache, typeCache);
         this.typeAnalyzer = new TypeAnalyzer(namespaceCache, cSharpFileCache, enumValueCache, typeCache);
     }
@@ -89,8 +89,8 @@ public class JsonToNeo4JConverter {
             fileModel.getEnums().forEach(typeAnalyzer::createEnumMembers);
             for (MemberOwningTypeModel memberOwningTypeModel : fileModel.getMemberOwningTypes()) {
                 fieldAnalyzer.createFields(memberOwningTypeModel, fileModel.getRelativePath());
-                methodAnalyzer.createMethods(memberOwningTypeModel, fileModel.getRelativePath());
                 propertyAnalyzer.createProperties(memberOwningTypeModel);
+                methodAnalyzer.createMethods(memberOwningTypeModel, fileModel.getRelativePath());
             }
         }
     }
@@ -102,8 +102,6 @@ public class JsonToNeo4JConverter {
             for (MemberOwningTypeModel memberOwningTypeModel : fileModel.getMemberOwningTypes()){
                 memberOwningTypeModel.getMethods().forEach(invocationAnalyzer::addInvocations);
                 memberOwningTypeModel.getConstructors().forEach(invocationAnalyzer::addInvocations);
-                memberOwningTypeModel.getMethods().forEach(invocationAnalyzer::addPropertyAccesses);
-                memberOwningTypeModel.getConstructors().forEach(invocationAnalyzer::addPropertyAccesses);
             }
         }
         partialityAnalyzer.linkPartialClasses();

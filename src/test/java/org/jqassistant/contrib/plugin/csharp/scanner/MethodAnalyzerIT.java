@@ -51,7 +51,7 @@ public class MethodAnalyzerIT extends CSharpIntegrationTest {
     @Test
     @TestStore(reset = false)
     void TestConstructor(){
-        MethodDescriptor method = queryForMethods("Methods", "Methods").get(0);
+        MethodDescriptor method = queryForMethods("Methods", ".ctor").get(0);
         assertThat(method.getReturns().getFullQualifiedName()).isEqualTo("Project1.Methods");
         assertThat(method instanceof ConstructorDescriptor).isTrue();
     }

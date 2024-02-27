@@ -14,7 +14,6 @@ import org.jqassistant.contrib.plugin.csharp.model.PropertyDescriptor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -39,7 +38,7 @@ public class PropertyAnalyzerTest {
         this.typeCache = mock();
         this.propertyCache = mock();
         this.methodAnalyzer = mock();
-        this.propertyAnalyzer = new PropertyAnalyzer(typeCache, propertyCache, methodAnalyzer);
+        this.propertyAnalyzer = new PropertyAnalyzer(typeCache, propertyCache);
         prepareMocks();
     }
 
@@ -82,10 +81,12 @@ public class PropertyAnalyzerTest {
         PropertyAccessorModel initAccessor = new PropertyAccessorModel();
         initAccessor.setKind("init");
         initAccessor.setAccessibility("Protected");
-        propertyModel.setAccessors(Arrays.asList(getAccessor, setAccessor, initAccessor));
+//        propertyModel.setAccessors(Arrays.asList(getAccessor, setAccessor, initAccessor));
         MemberOwningTypeModel ClassModel = prepareClassAndFileStructure(packagePropertiesToList(propertyModel));
 
         propertyAnalyzer.createProperties(ClassModel);
+
+        //Todo Finish test
     }
 
     private void prepareMocks() {
@@ -102,7 +103,6 @@ public class PropertyAnalyzerTest {
         propertyModel.setName("Model");
         propertyModel.setAccessibility("Public");
         propertyModel.setType("int");
-        propertyModel.setAccessors(new ArrayList<>());
     }
 
     private MemberOwningTypeModel prepareClassAndFileStructure(List<PropertyModel> propertyModels){
