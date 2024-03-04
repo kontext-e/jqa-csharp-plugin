@@ -25,9 +25,11 @@ public interface MethodDescriptor extends MemberDescriptor, AbstractDescriptor, 
 
     @Outgoing
     List<InvokesDescriptor> getInvokes();
-
     @Incoming
     List<InvokesDescriptor> getInvokedBy();
+
+    @Outgoing
+    List<ArrayCreationDescriptor> getCreatesArray();
 
     @Relation("PARTIAL_WITH")
     List<MethodDescriptor> getMethodFragments();

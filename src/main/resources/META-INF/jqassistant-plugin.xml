@@ -24,6 +24,7 @@
         <class>org.jqassistant.contrib.plugin.csharp.model.StructDescriptor</class>
         <class>org.jqassistant.contrib.plugin.csharp.model.RecordStructDescriptor</class>
         <class>org.jqassistant.contrib.plugin.csharp.model.RecordClassDescriptor</class>
+        <class>org.jqassistant.contrib.plugin.csharp.model.ArrayCreationDescriptor</class>
     </model>
     <scanner>
         <class>org.jqassistant.contrib.plugin.csharp.scanner.CSharpDirectoryScannerPlugin</class>

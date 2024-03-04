@@ -5,10 +5,10 @@ import lombok.Setter;
 
 @Setter
 @Getter
-public class MemberAccessModel {
+public class ArrayCreationModel {
 
     private int lineNumber;
 
-    private String memberId;
+    private String type;
 
 }

@@ -2,6 +2,7 @@ package org.jqassistant.contrib.plugin.csharp.json_to_neo4j;
 
 import com.buschmais.jqassistant.core.store.api.Store;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.caches.MethodCache;
+import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.caches.TypeCache;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.InvokesModel;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.MethodModel;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.testImplementations.InvokesDescriptorImpl;
@@ -28,20 +29,24 @@ public class InvocationAnalyzerTest {
     private Store store;
     private MethodCache methodCache;
     private InvocationAnalyzer invocationAnalyzer;
+    private TypeCache typeCache;
 
     @BeforeEach
     void setup(){
         store = mock();
         methodCache = mock();
-        invocationAnalyzer = new InvocationAnalyzer(store, methodCache);
+        typeCache = mock();
+        invocationAnalyzer = new InvocationAnalyzer(store, methodCache, typeCache);
     }
 
     @Test
     void testMethodNoInvocations(){
         MethodModel methodModel = new MethodModel();
         methodModel.setInvokedBy(new ArrayList<>());
+        methodModel.setInvokes(new ArrayList<>());
+        methodModel.setCreatesArrays(new ArrayList<>());
 
-        invocationAnalyzer.addInvocations(methodModel);
+        invocationAnalyzer.analyzeInvocations(methodModel);
 
         verify(store, never()).create(any());
         verify(methodCache, never()).findAny(any());
@@ -54,6 +59,8 @@ public class InvocationAnalyzerTest {
         invokesModel.setLineNumber(3);
         invokesModel.setMethodId("Some.Method.ID");
         MethodModel methodModel = new MethodModel();
+        methodModel.setInvokes(new ArrayList<>());
+        methodModel.setCreatesArrays(new ArrayList<>());
         methodModel.setInvokedBy(Collections.singletonList(invokesModel));
 
         MethodDescriptor methodDescriptor = new MethodDescriptorImpl();
@@ -63,7 +70,7 @@ public class InvocationAnalyzerTest {
         InvokesDescriptor invokesDescriptor = new InvokesDescriptorImpl();
         when(store.create(any(), eq(InvokesDescriptor.class), any())).thenReturn(invokesDescriptor);
 
-        invocationAnalyzer.addInvocations(methodModel);
+        invocationAnalyzer.analyzeInvocations(methodModel);
 
         verify(methodCache).findAny(any());
         verify(methodCache).findOrCreate(any());

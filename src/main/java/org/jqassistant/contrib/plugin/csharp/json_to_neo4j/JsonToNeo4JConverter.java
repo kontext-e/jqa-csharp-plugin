@@ -52,7 +52,7 @@ public class JsonToNeo4JConverter {
         this.inputDirectory = inputDirectory;
 
         this.partialityAnalyzer = new PartialityAnalyzer(methodCache, typeCache);
-        this.invocationAnalyzer = new InvocationAnalyzer(store, methodCache);
+        this.invocationAnalyzer = new InvocationAnalyzer(store, methodCache, typeCache);
         this.methodAnalyzer = new MethodAnalyzer(store, methodCache, typeCache, propertyCache);
         this.dependencyAnalyzer = new DependencyAnalyzer(cSharpFileCache, namespaceCache, typeCache, store);
         this.propertyAnalyzer = new PropertyAnalyzer(typeCache, propertyCache);
@@ -100,8 +100,8 @@ public class JsonToNeo4JConverter {
             fileModel.getClasses().forEach(dependencyAnalyzer::linkBaseTypes);
             fileModel.getRecordClasses().forEach(dependencyAnalyzer::linkBaseTypes);
             for (MemberOwningTypeModel memberOwningTypeModel : fileModel.getMemberOwningTypes()){
-                memberOwningTypeModel.getMethods().forEach(invocationAnalyzer::addInvocations);
-                memberOwningTypeModel.getConstructors().forEach(invocationAnalyzer::addInvocations);
+                memberOwningTypeModel.getMethods().forEach(invocationAnalyzer::analyzeInvocations);
+                memberOwningTypeModel.getConstructors().forEach(invocationAnalyzer::analyzeInvocations);
             }
         }
         partialityAnalyzer.linkPartialClasses();

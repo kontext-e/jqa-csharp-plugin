@@ -2,6 +2,7 @@ package org.jqassistant.contrib.plugin.csharp.json_to_neo4j.testImplementations;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.jqassistant.contrib.plugin.csharp.model.ArrayCreationDescriptor;
 import org.jqassistant.contrib.plugin.csharp.model.FieldDescriptor;
 import org.jqassistant.contrib.plugin.csharp.model.InvokesDescriptor;
 import org.jqassistant.contrib.plugin.csharp.model.MemberOwningTypeDescriptor;
@@ -41,6 +42,7 @@ public class MethodDescriptorImpl implements MethodDescriptor {
     private String relativePath;
     private PropertyDescriptor associatedProperty;
 
+    private List<ArrayCreationDescriptor> createsArray;
     private List<InvokesDescriptor> invokes;
     private List<InvokesDescriptor> invokedBy;
     private TypeDescriptor returns;

@@ -54,6 +54,10 @@ public class MethodModel implements JsonModel {
 
     private List<InvokesModel> invokedBy;
 
+    private List<InvokesModel> invokes;
+
+    private List<ArrayCreationModel> createsArrays;
+
     private List<ParameterModel> parameters;
 
     @Override
