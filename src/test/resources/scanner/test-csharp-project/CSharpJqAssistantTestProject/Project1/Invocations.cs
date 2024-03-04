@@ -36,6 +36,7 @@ public class Invocations
         };
 
         var property = Property;
+        Method(); //Test Second Call to same Method
 
         var func = (int number) => { return (number % 2) == 0; };
         bool is2Even = Methods.MethodWithFunctionAsArgument(func); //Tests Function as Argument
@@ -45,22 +46,23 @@ public class Invocations
 
     public void ArrayCreations()
     {
-        int[] array1 = new int[5]; // Declare a single-dimensional array of 5 integers
+        int[] array1, array3 = new int[5]; // Declare a single-dimensional array of 5 integers
         int[] array2 = [1, 2, 3, 4, 5, 6]; // Declare and set array element values
         int[,] multiDimensionalArray1 = new int[2, 3]; // Declare a two dimensional array
         int[,] multiDimensionalArray2 = { { 1, 2, 3 }, { 4, 5, 6 } }; // Declare and set array element values
         int[][] jaggedArray = new int[6][]; // Declare a jagged array
+        var b = new[] { "hello", null, "world" }; // Implicitly Typed Array Creations
         jaggedArray[0] = [1, 2, 3, 4]; // Set the values of the first array in the jagged array structure
     }
 
-    private static void ImplicitObjectCreations(Properties prop)
+    private static void ObjectCreations(Properties prop)
     {
         var partialClass = new PartialClass(); //Tests Object Create Syntax
         var typeClass = new TypeClass(Properties.StaticProperty); //Tests Normal Constructor Call
         var properties = new Properties(); //Tests Default Constructor
         Properties properties2 = new(); //Tests Implicit Object Creation in assignment
         properties2 = new();
-        ImplicitObjectCreations(new()); //Tests Implicit Object Creation in Expression Statement
+        ObjectCreations(new()); //Tests Implicit Object Creation in Expression Statement
         var list = new List<int> { 3, 8 };
         var method = new TypeStruct("String") //Tests Type Initializer
         {
@@ -68,5 +70,13 @@ public class Invocations
         };
     }
 
-    private bool Method() => true;
+    private static void CallOverloadedMethod()
+    {
+        Dependency1.DoSomething(3.5f);
+        Dependency1.DoSomething(new Properties());
+        // MethodOverloads.OverloadedMethod(123.567f);
+        // MethodOverloads.OverloadedMethod( new[] { "Hello" }, 123.567f);
+    }
+
+    private static bool Method() => true;
 }

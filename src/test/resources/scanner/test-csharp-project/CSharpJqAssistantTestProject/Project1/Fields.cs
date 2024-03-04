@@ -8,4 +8,5 @@ public class Fields
     public required bool RequiredField;
     protected volatile float VolatileField;
     protected internal const string DefaultField = "Initial String";
+    protected internal const int DefaultInt = 0, DefaultSomething = 3;
 }

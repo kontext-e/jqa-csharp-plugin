@@ -17,7 +17,7 @@ namespace Project1
 
         private static void CallDep1()
         {
-            new Dependency1().DoNothing();
+            new Dependency1();
         }
 
         private static float CallDep2()
