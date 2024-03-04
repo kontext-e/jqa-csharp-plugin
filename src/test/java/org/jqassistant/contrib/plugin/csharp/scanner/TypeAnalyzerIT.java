@@ -199,7 +199,6 @@ public class TypeAnalyzerIT extends CSharpIntegrationTest{
         assertThat(constructors.size()).isEqualTo(2);
         assertThat(constructors.stream().allMatch(c -> c instanceof ConstructorDescriptor)).isTrue();
         MethodDescriptor primaryConstructor = constructors.stream().filter(c -> c.getParameters().size() == 2).collect(Collectors.toList()).get(0);
-//TODO        assertThat(primaryConstructor.getParameters().stream().allMatch(p -> p.getType().getName().equals("double"))).isTrue();
         assertThat(primaryConstructor.getParameters().size()).isEqualTo(2);
         MethodDescriptor explicitConstructor = constructors.stream().filter(c -> c.getParameters().isEmpty()).collect(Collectors.toList()).get(0);
         assertThat(explicitConstructor.getParameters().isEmpty()).isTrue();

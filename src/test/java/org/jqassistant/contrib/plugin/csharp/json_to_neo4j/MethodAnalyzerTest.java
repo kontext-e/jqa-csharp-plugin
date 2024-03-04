@@ -12,10 +12,12 @@ import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.testImplementations.C
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.testImplementations.ConstructorDescriptorImpl;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.testImplementations.InterfaceDescriptorImpl;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.testImplementations.MethodDescriptorImpl;
+import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.testImplementations.PropertyDescriptorImpl;
 import org.jqassistant.contrib.plugin.csharp.model.ConstructorDescriptor;
 import org.jqassistant.contrib.plugin.csharp.model.InterfaceTypeDescriptor;
 import org.jqassistant.contrib.plugin.csharp.model.MemberDescriptor;
 import org.jqassistant.contrib.plugin.csharp.model.MethodDescriptor;
+import org.jqassistant.contrib.plugin.csharp.model.PropertyDescriptor;
 import org.jqassistant.contrib.plugin.csharp.model.TypeDescriptor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -39,13 +41,14 @@ public class MethodAnalyzerTest {
     MethodCache methodCache;
     TypeCache typeCache;
     MethodAnalyzer methodAnalyzer;
+    private PropertyCache propertyCache;
 
     @BeforeEach
     void setup(){
         store = mock();
         methodCache = mock();
         typeCache = mock();
-        PropertyCache propertyCache = mock();
+        propertyCache = mock();
         methodAnalyzer = new MethodAnalyzer(store, methodCache, typeCache, propertyCache);
     }
 
@@ -173,6 +176,21 @@ public class MethodAnalyzerTest {
         methodAnalyzer.createMethods(classModel, "Relative.Path");
 
         assertThat(methodDescriptor.getExtendedType()).isEqualTo(typeDescriptor);
+    }
+
+    @Test
+    void testPropertyGetterSetter(){
+        MethodModel methodModel = createMethodModels(1).get(0);
+        methodModel.setAssociatedProperty("PropertyModel");
+
+        MethodDescriptor methodDescriptor = new MethodDescriptorImpl();
+        when(methodCache.create(any(), eq(MethodDescriptor.class))).thenReturn(methodDescriptor);
+        PropertyDescriptor property = new PropertyDescriptorImpl();
+        when(propertyCache.getPropertyFromSubstring("PropertyModel")).thenReturn(Optional.of(property));
+
+        methodAnalyzer.createMethodDescriptor(methodModel);
+
+        assertThat(methodDescriptor.getAssociatedProperty()).isEqualTo(property);
     }
 
     private static void assertMemberDescriptorHasBeenFilled(MemberDescriptor descriptor) {

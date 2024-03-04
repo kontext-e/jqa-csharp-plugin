@@ -3,10 +3,14 @@ package org.jqassistant.contrib.plugin.csharp.json_to_neo4j;
 import com.buschmais.jqassistant.core.store.api.Store;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.caches.MethodCache;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.caches.TypeCache;
+import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.ArrayCreationModel;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.InvokesModel;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.MethodModel;
+import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.testImplementations.ArrayCreationDescriptorImpl;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.testImplementations.InvokesDescriptorImpl;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.testImplementations.MethodDescriptorImpl;
+import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.testImplementations.TypeDescriptorImpl;
+import org.jqassistant.contrib.plugin.csharp.model.ArrayCreationDescriptor;
 import org.jqassistant.contrib.plugin.csharp.model.InvokesDescriptor;
 import org.jqassistant.contrib.plugin.csharp.model.MethodDescriptor;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,6 +25,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -54,7 +59,7 @@ public class InvocationAnalyzerTest {
     }
 
     @Test
-    void testMethodInvocations(){
+    void testMethodUsages(){
         InvokesModel invokesModel = new InvokesModel();
         invokesModel.setLineNumber(3);
         invokesModel.setMethodId("Some.Method.ID");
@@ -76,6 +81,54 @@ public class InvocationAnalyzerTest {
         verify(methodCache).findOrCreate(any());
         verify(store).create(any(), eq(InvokesDescriptor.class), any());
         assertThat(invokesDescriptor.getLineNumber()).isEqualTo(3);
-        //Testing for RelationDescriptors such as InvokesDescriptor.class seems to be difficult or impossible
+    }
+
+    @Test
+    void testInvocationsByMethod(){
+        InvokesModel invokesModel = new InvokesModel();
+        invokesModel.setLineNumber(5);
+        invokesModel.setMethodId("Some.Method.ID");
+        MethodModel methodModel = new MethodModel();
+        methodModel.setInvokedBy(new ArrayList<>());
+        methodModel.setCreatesArrays(new ArrayList<>());
+        methodModel.setInvokes(Collections.singletonList(invokesModel));
+
+        MethodDescriptor methodDescriptor = new MethodDescriptorImpl();
+        when(methodCache.findAny(anyString())).thenReturn(methodDescriptor);
+        MethodDescriptor invokedMethodDescriptor = new MethodDescriptorImpl();
+        when(methodCache.findOrCreate(any())).thenReturn(invokedMethodDescriptor);
+        InvokesDescriptor invokesDescriptor = new InvokesDescriptorImpl();
+        when(store.create(any(), eq(InvokesDescriptor.class), any())).thenReturn(invokesDescriptor);
+
+        invocationAnalyzer.analyzeInvocations(methodModel);
+
+        verify(methodCache, times(2)).findAny(any());
+        verify(store).create(any(), eq(InvokesDescriptor.class), any());
+        assertThat(invokesDescriptor.getLineNumber()).isEqualTo(5);
+    }
+
+    @Test
+    void testArrayCreation(){
+        ArrayCreationModel arrayCreationModel = new ArrayCreationModel();
+        arrayCreationModel.setLineNumber(5);
+        arrayCreationModel.setType("Some.Type");
+        MethodModel methodModel = new MethodModel();
+        methodModel.setInvokedBy(new ArrayList<>());
+        methodModel.setInvokes(new ArrayList<>());
+        methodModel.setCreatesArrays(Collections.singletonList(arrayCreationModel));
+
+        MethodDescriptor methodDescriptor = new MethodDescriptorImpl();
+        when(methodCache.findAny(anyString())).thenReturn(methodDescriptor);
+        TypeDescriptorImpl createdType = new TypeDescriptorImpl("CreatedType");
+        when(typeCache.findOrCreate(any())).thenReturn(createdType);
+        ArrayCreationDescriptorImpl arrayCreationDescriptor = new ArrayCreationDescriptorImpl();
+        when(store.create(any(), eq(ArrayCreationDescriptor.class), any())).thenReturn(arrayCreationDescriptor);
+
+        invocationAnalyzer.analyzeInvocations(methodModel);
+
+        verify(methodCache).findAny(any());
+        verify(typeCache).findOrCreate(any());
+        verify(store).create(any(), eq(ArrayCreationDescriptor.class), any());
+        assertThat(arrayCreationDescriptor.getLineNumber()).isEqualTo(5);
     }
 }

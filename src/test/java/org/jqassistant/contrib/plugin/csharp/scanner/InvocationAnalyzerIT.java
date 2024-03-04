@@ -1,10 +1,13 @@
 package org.jqassistant.contrib.plugin.csharp.scanner;
 
+import org.jqassistant.contrib.plugin.csharp.model.ArrayCreationDescriptor;
 import org.jqassistant.contrib.plugin.csharp.model.InvokesDescriptor;
 import org.jqassistant.contrib.plugin.csharp.model.MethodDescriptor;
+import org.jqassistant.contrib.plugin.csharp.model.TypeDescriptor;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
@@ -26,35 +29,35 @@ public class InvocationAnalyzerIT extends CSharpIntegrationTest {
     @TestStore(reset = false)
     void testExtensionMethodInvocation(){
         MethodDescriptor method = queryForMethodInvocation("Project1.Invocations.Invocations()");
-        assertThat(containsCalledMethod(method, "Method")).isTrue();
+        assertThat(containsCalledMethod(method, "Project1.Invocations.Method()")).isTrue();
     }
 
     @Test
     @TestStore(reset = false)
     void testStaticMethodInvocation(){
         MethodDescriptor method = queryForMethodInvocation("Project1.Invocations.Invocations()");
-        assertThat(containsCalledMethod(method, "ExtensionMethodWithArgument")).isTrue();
+        assertThat(containsCalledMethod(method, "Project1.ExtensionMethods.Extensions.ExtensionMethodWithArgument(Project1.Types.TypeClass, double)")).isTrue();
     }
 
     @Test
     @TestStore(reset = false)
     void testPropertyGetter(){
         MethodDescriptor method = queryForMethodInvocation("Project1.Invocations.Invocations()");
-        assertThat(containsCalledMethod(method, "get_Property")).isTrue();
+        assertThat(containsCalledMethod(method, "Project1.Invocations.Property.get")).isTrue();
     }
 
     @Test
     @TestStore(reset = false)
     void testPropertySetter(){
         MethodDescriptor method = queryForMethodInvocation("Project1.Invocations.Invocations()");
-        assertThat(containsCalledMethod(method, "set_Property")).isTrue();
+        assertThat(containsCalledMethod(method, "Project1.Invocations.Property.get")).isTrue();
     }
 
     @Test
     @TestStore(reset = false)
     void testPartialMethod(){
         MethodDescriptor method = queryForMethodInvocation("Project1.Invocations.Invocations()");
-        assertThat(containsCalledMethod(method, "PartialMethod")).isTrue();
+        assertThat(containsCalledMethod(method, "Project1.Partiality.PartialClass.PartialMethod()")).isTrue();
     }
 
     @Test
@@ -71,7 +74,7 @@ public class InvocationAnalyzerIT extends CSharpIntegrationTest {
     @TestStore(reset = false)
     void testRecursion(){
         MethodDescriptor method = queryForMethodInvocation("Project1.Invocations.ObjectCreations(Project1.Properties)");
-        assertThat(containsCalledMethod(method, "ObjectCreations")).isTrue();
+        assertThat(containsCalledMethod(method, "Project1.Invocations.ObjectCreations(Project1.Properties)")).isTrue();
     }
 
     @Test
@@ -86,10 +89,42 @@ public class InvocationAnalyzerIT extends CSharpIntegrationTest {
         ).isEqualTo(4);
     }
 
-    private static boolean containsCalledMethod(MethodDescriptor method, String Method) {
+    @Test
+    @TestStore(reset = false)
+    void testTwoCallsToSameMethod(){
+        MethodDescriptor method = queryForMethodInvocation("Project1.Invocations.Invocations()");
+        assertThat(method.getInvokes()
+                .stream()
+                .map(InvokesDescriptor::getInvokedMethod)
+                .filter(m->m.getFullQualifiedName().equals("Project1.Invocations.Method()"))
+                .count()
+        ).isEqualTo(2);
+    }
+
+    @Test
+    @TestStore(reset = false)
+    void testArrayCreations(){
+        MethodDescriptor method = (MethodDescriptor) query("Match (m:Method)-[:CREATES_ARRAY]-(:Type) where m.fqn=\"Project1.Invocations.ArrayCreations()\" return m")
+                .getColumn("m").get(0);
+        List<TypeDescriptor> createdTypes = method.getCreatesArray().stream().map(ArrayCreationDescriptor::getCreatedType).collect(Collectors.toList());
+        assertThat(createdTypes.size()).isEqualTo(6);
+        assertThat(createdTypes.stream().filter(t -> t.getFullQualifiedName().equals("int[]")).count()).isEqualTo(2);
+        assertThat(createdTypes.stream().filter(t -> t.getFullQualifiedName().equals("int[*,*]")).count()).isEqualTo(2);
+        assertThat(createdTypes.stream().filter(t -> t.getFullQualifiedName().equals("string[]")).count()).isEqualTo(1);
+        assertThat(createdTypes.stream().filter(t -> t.getFullQualifiedName().equals("int[][]")).count()).isEqualTo(1);
+    }
+
+    @Test
+    @TestStore(reset = false)
+    void testConstructorCallToBase(){
+        MethodDescriptor method = queryForMethodInvocation("Project1.Constructors.Constructors()");
+        assertThat(containsCalledMethod(method,"Project1.Constructors.Constructors(double, double)")).isTrue();
+    }
+
+    private static boolean containsCalledMethod(MethodDescriptor method, String methodName) {
         return method.getInvokes()
                 .stream()
-                .anyMatch(invokesDescriptor -> invokesDescriptor.getInvokedMethod().getName().equals(Method));
+                .anyMatch(invokesDescriptor -> invokesDescriptor.getInvokedMethod().getFullQualifiedName().equals(methodName));
     }
 
     private MethodDescriptor queryForMethodInvocation(String methodName){

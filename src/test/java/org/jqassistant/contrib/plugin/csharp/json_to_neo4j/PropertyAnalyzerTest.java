@@ -4,7 +4,6 @@ import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.caches.PropertyCache;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.caches.TypeCache;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.ClassModel;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.MemberOwningTypeModel;
-import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.PropertyAccessorModel;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.PropertyModel;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.testImplementations.ClassDescriptorImpl;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.testImplementations.MethodDescriptorImpl;
@@ -67,26 +66,6 @@ public class PropertyAnalyzerTest {
         verify(typeCache, times(1)).findOrCreate(anyString());
         verify(typeCache, times(1)).findAny(anyString());
         verify(propertyCache, times(1)).create(anyString());
-    }
-
-    @Test
-    void testCreateAccessors(){
-        PropertyModel propertyModel = new PropertyModel();
-        PropertyAccessorModel getAccessor = new PropertyAccessorModel();
-        getAccessor.setKind("get");
-        getAccessor.setAccessibility("Public");
-        PropertyAccessorModel setAccessor = new PropertyAccessorModel();
-        setAccessor.setKind("set");
-        setAccessor.setAccessibility("Private");
-        PropertyAccessorModel initAccessor = new PropertyAccessorModel();
-        initAccessor.setKind("init");
-        initAccessor.setAccessibility("Protected");
-//        propertyModel.setAccessors(Arrays.asList(getAccessor, setAccessor, initAccessor));
-        MemberOwningTypeModel ClassModel = prepareClassAndFileStructure(packagePropertiesToList(propertyModel));
-
-        propertyAnalyzer.createProperties(ClassModel);
-
-        //Todo Finish test
     }
 
     private void prepareMocks() {

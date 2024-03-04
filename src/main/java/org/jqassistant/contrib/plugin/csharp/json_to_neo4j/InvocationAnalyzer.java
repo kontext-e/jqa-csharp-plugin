@@ -23,6 +23,12 @@ public class InvocationAnalyzer {
         this.typeCache = typeCache;
     }
 
+    protected void analyzeInvocations(MethodModel methodModel){
+        addInvocations(methodModel);
+        addArrayCreations(methodModel);
+        addImplicitObjectCreations(methodModel);
+    }
+
     private void addInvocations(MethodModel methodModel) {
         if (methodModel.getInvokedBy().isEmpty()) return;
 
@@ -36,12 +42,6 @@ public class InvocationAnalyzer {
         MethodDescriptor invokedMethodDescriptor = methodCache.findOrCreate(invokesModel.getMethodId());
         InvokesDescriptor invokesDescriptor = store.create(invokedMethodDescriptor, InvokesDescriptor.class, methodDescriptor);
         invokesDescriptor.setLineNumber(invokesModel.getLineNumber());
-    }
-
-    protected void analyzeInvocations(MethodModel methodModel){
-        addInvocations(methodModel);
-        addArrayCreations(methodModel);
-        addImplicitObjectCreations(methodModel);
     }
 
     private void addArrayCreations(MethodModel methodModel) {
