@@ -11,7 +11,7 @@
 
     <groupId>org.jqassistant.contrib.plugin</groupId>
     <artifactId>jqa-csharp-plugin</artifactId>
-    <version>0.1.2</version>
+    <version>0.2.0</version>
 
     <name>jQAssistant CSharp Plugin</name>
     <description>The jQAssistant plugin to scan and to analyze a CSharp instance.</description>
@@ -28,6 +28,11 @@
             <name>Dirk Mahler</name>
             <email>dirk.mahler@buschmais.com</email>
         </developer>
+        <developer>
+            <id>william-thimm</id>
+            <name>William Thimm</name>
+            <email>william.thimm@kontext-e.com</email>
+        </developer>
     </developers>
 
     <licenses>
@@ -38,9 +43,9 @@
     </licenses>
 
     <scm>
-        <connection>scm:git:git@github.com:softvis-research/jqa-csharp-plugin.git</connection>
-        <developerConnection>scm:git:git@github.com:softvis-research/jqa-csharp-plugin.git</developerConnection>
-        <url>https://github.com/softvis-research/jqa-csharp-plugin.git</url>
+        <connection>scm:git:git@github.com:kontext-e/jqa-csharp-plugin.git</connection>
+        <developerConnection>scm:git:git@github.com:kontext-e/jqa-csharp-plugin.git</developerConnection>
+        <url>https://github.com/kontext-e/jqa-csharp-plugin.git</url>
         <tag>HEAD</tag>
     </scm>
 
