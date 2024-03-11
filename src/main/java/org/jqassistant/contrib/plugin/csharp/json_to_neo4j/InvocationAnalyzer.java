@@ -11,16 +11,24 @@ import org.jqassistant.contrib.plugin.csharp.model.InvokesDescriptor;
 import org.jqassistant.contrib.plugin.csharp.model.MethodDescriptor;
 import org.jqassistant.contrib.plugin.csharp.model.TypeDescriptor;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 public class InvocationAnalyzer {
 
     private final Store store;
     private final MethodCache methodCache;
     private final TypeCache typeCache;
 
+    private final Map<String, List<InvokesModel>> processedInvocations;
+
     public InvocationAnalyzer(Store store, MethodCache methodCache, TypeCache typeCache) {
         this.store = store;
         this.methodCache = methodCache;
         this.typeCache = typeCache;
+        processedInvocations = new HashMap<>();
     }
 
     protected void analyzeInvocations(MethodModel methodModel){
@@ -34,7 +42,32 @@ public class InvocationAnalyzer {
 
         MethodDescriptor methodDescriptor = methodCache.findAny(methodModel.getKey());
         for (InvokesModel invokesModel : methodModel.getInvokedBy()) {
-            addInvocation(methodDescriptor, invokesModel);
+            if (hasBeenProcessed(methodModel, invokesModel)) continue;
+            markInvokesModelAsProcessed(methodModel, invokesModel);
+
+            addInvocation(methodDescriptor, invokesModel); //TODO Duplicate Call to partial Constructor
+        }
+    }
+
+    private boolean hasBeenProcessed(MethodModel methodModel, InvokesModel invokesModel) {
+        if (!processedInvocations.containsKey(methodModel.getKey())) { return false; }
+
+        List<InvokesModel> invokesModels = processedInvocations.get(methodModel.getKey());
+        for (InvokesModel i : invokesModels){
+            if (invokesModel.equals(i)){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void markInvokesModelAsProcessed(MethodModel methodModel, InvokesModel invokesModel) {
+        if (processedInvocations.containsKey(methodModel.getKey())){
+            processedInvocations.get(methodModel.getKey()).add(invokesModel);
+        } else {
+            List<InvokesModel> newList = new ArrayList<>();
+            newList.add(invokesModel);
+            processedInvocations.put(methodModel.getKey(), newList );
         }
     }
 

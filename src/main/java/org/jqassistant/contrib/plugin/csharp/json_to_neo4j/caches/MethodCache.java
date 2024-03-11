@@ -1,6 +1,7 @@
 package org.jqassistant.contrib.plugin.csharp.json_to_neo4j.caches;
 
 import com.buschmais.jqassistant.core.store.api.Store;
+import org.jqassistant.contrib.plugin.csharp.model.ConstructorDescriptor;
 import org.jqassistant.contrib.plugin.csharp.model.MethodDescriptor;
 
 import java.util.ArrayList;
@@ -25,7 +26,10 @@ public class MethodCache {
         return methodDescriptor.orElseGet(() -> methodDescriptors.get(0));
     }
 
-    public <T extends MethodDescriptor> T create(String fqn, Class<T> descriptorClass) {
+    public <T extends MethodDescriptor> MethodDescriptor create(String fqn, Class<T> descriptorClass) {
+        if (cache.containsKey(fqn) && descriptorClass.equals(ConstructorDescriptor.class))
+            return cache.get(fqn).get(0);
+
         T descriptor = store.create(descriptorClass);
         descriptor.setFullQualifiedName(fqn);
 

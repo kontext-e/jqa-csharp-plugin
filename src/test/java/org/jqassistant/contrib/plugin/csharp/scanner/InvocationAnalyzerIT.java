@@ -121,6 +121,18 @@ public class InvocationAnalyzerIT extends CSharpIntegrationTest {
         assertThat(containsCalledMethod(method,"Project1.Constructors.Constructors(double, double)")).isTrue();
     }
 
+    @Test
+    @TestStore(reset = false)
+    void testCallToPartialClassConstructor(){
+        MethodDescriptor method = queryForMethodInvocation("Project1.Invocations.ObjectCreations(Project1.Properties)");
+        assertThat(method.getInvokes()
+                .stream()
+                .map(InvokesDescriptor::getInvokedMethod)
+                .filter(m->m.getFullQualifiedName().equals("Project1.Partiality.PartialClass.PartialClass()"))
+                .count()
+        ).isEqualTo(1);
+    }
+
     private static boolean containsCalledMethod(MethodDescriptor method, String methodName) {
         return method.getInvokes()
                 .stream()

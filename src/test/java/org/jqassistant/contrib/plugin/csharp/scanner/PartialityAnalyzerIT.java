@@ -59,6 +59,14 @@ public class PartialityAnalyzerIT extends CSharpIntegrationTest{
         assertThat(implementation.get().getMethodFragments().contains(reference.get())).isTrue();
     }
 
+    @Test
+    @TestStore(reset = false)
+    void testPartialClassConstructor(){
+        List<TypeDescriptor> partialClasses = queryForType("PartialClass");
+
+        
+    }
+
     private static void assertPartiality(List<TypeDescriptor> partialType) {
         assertThat(partialType.size()).isEqualTo(2);
         assertThat(partialType.get(0).getTypeFragments().contains(partialType.get(1))).isTrue();
