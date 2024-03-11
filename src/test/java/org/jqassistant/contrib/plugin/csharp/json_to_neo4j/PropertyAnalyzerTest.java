@@ -4,7 +4,6 @@ import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.caches.PropertyCache;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.caches.TypeCache;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.ClassModel;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.MemberOwningTypeModel;
-import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.PropertyAccessorModel;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.PropertyModel;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.testImplementations.ClassDescriptorImpl;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.testImplementations.MethodDescriptorImpl;
@@ -14,7 +13,6 @@ import org.jqassistant.contrib.plugin.csharp.model.PropertyDescriptor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -39,7 +37,7 @@ public class PropertyAnalyzerTest {
         this.typeCache = mock();
         this.propertyCache = mock();
         this.methodAnalyzer = mock();
-        this.propertyAnalyzer = new PropertyAnalyzer(typeCache, propertyCache, methodAnalyzer);
+        this.propertyAnalyzer = new PropertyAnalyzer(typeCache, propertyCache);
         prepareMocks();
     }
 
@@ -70,24 +68,6 @@ public class PropertyAnalyzerTest {
         verify(propertyCache, times(1)).create(anyString());
     }
 
-    @Test
-    void testCreateAccessors(){
-        PropertyModel propertyModel = new PropertyModel();
-        PropertyAccessorModel getAccessor = new PropertyAccessorModel();
-        getAccessor.setKind("get");
-        getAccessor.setAccessibility("Public");
-        PropertyAccessorModel setAccessor = new PropertyAccessorModel();
-        setAccessor.setKind("set");
-        setAccessor.setAccessibility("Private");
-        PropertyAccessorModel initAccessor = new PropertyAccessorModel();
-        initAccessor.setKind("init");
-        initAccessor.setAccessibility("Protected");
-        propertyModel.setAccessors(Arrays.asList(getAccessor, setAccessor, initAccessor));
-        MemberOwningTypeModel ClassModel = prepareClassAndFileStructure(packagePropertiesToList(propertyModel));
-
-        propertyAnalyzer.createProperties(ClassModel);
-    }
-
     private void prepareMocks() {
         PropertyDescriptor propertyDescriptor = new PropertyDescriptorImpl();
         when(propertyCache.create(any())).thenReturn(propertyDescriptor);
@@ -102,7 +82,6 @@ public class PropertyAnalyzerTest {
         propertyModel.setName("Model");
         propertyModel.setAccessibility("Public");
         propertyModel.setType("int");
-        propertyModel.setAccessors(new ArrayList<>());
     }
 
     private MemberOwningTypeModel prepareClassAndFileStructure(List<PropertyModel> propertyModels){

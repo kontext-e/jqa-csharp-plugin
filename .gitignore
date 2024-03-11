@@ -13,8 +13,8 @@ jqassistant/store_lock
 run-csharp-plugin-*.sh
 
 # Test C# Project
-/src/test/resources/scanner/test-csharp-project/CSharpJqAssistantTestProject/Project 1/bin/
-/src/test/resources/scanner/test-csharp-project/CSharpJqAssistantTestProject/Project 1/obj/
+/src/test/resources/scanner/test-csharp-project/CSharpJqAssistantTestProject/Project1/bin/
+/src/test/resources/scanner/test-csharp-project/CSharpJqAssistantTestProject/Project1/obj/
 /src/test/resources/scanner/test-csharp-project/CSharpJqAssistantTestProject/.vs
 
 ignore.sh

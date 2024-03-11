@@ -1,19 +1,13 @@
 ﻿using System;
 using MyAlias = System.Collections.Generic;
 
-namespace Project_1
+namespace Project1
 {
     internal class Dependency1
     {
-        internal void DoNothing()
-        {
-            
-        }
-        
-        internal static Dependency1 DoSomething(float? t)
-        {
-            return null;
-        }
+        internal void DoNothing() { }
+
+        internal static Dependency1 DoSomething(float? t) { return null; }
         
         internal static void DoSomething(Dependency1? dep)
         {
@@ -21,9 +15,6 @@ namespace Project_1
             DoSomething(strings);
         }
 
-        private static void DoSomething(string[]? strings)
-        {
-            
-        }
+        private static void DoSomething(string[]? strings) { }
     }
 }

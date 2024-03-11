@@ -2,6 +2,7 @@ package org.jqassistant.contrib.plugin.csharp.json_to_neo4j.testImplementations;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.jqassistant.contrib.plugin.csharp.model.ArrayCreationDescriptor;
 import org.jqassistant.contrib.plugin.csharp.model.TypeDescriptor;
 
 import java.util.LinkedList;
@@ -16,6 +17,7 @@ public class TypeDescriptorImpl implements TypeDescriptor {
     }
 
     private List<TypeDescriptor> typeFragments = new LinkedList<>();
+    private List<ArrayCreationDescriptor> creatingMethods;
     private String name;
     private Integer lastLineNumber;
     private Integer firstLineNumber;

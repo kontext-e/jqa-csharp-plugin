@@ -2,17 +2,19 @@ package org.jqassistant.contrib.plugin.csharp.json_to_neo4j.testImplementations;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.jqassistant.contrib.plugin.csharp.model.MemberAccessDescriptor;
+import org.jqassistant.contrib.plugin.csharp.model.ArrayCreationDescriptor;
 import org.jqassistant.contrib.plugin.csharp.model.MethodDescriptor;
-import org.jqassistant.contrib.plugin.csharp.model.PropertyDescriptor;
+import org.jqassistant.contrib.plugin.csharp.model.TypeDescriptor;
 
 @Getter
 @Setter
-public class MemberAccessDescriptorImpl implements MemberAccessDescriptor {
+public class ArrayCreationDescriptorImpl implements ArrayCreationDescriptor {
 
     private int lineNumber;
-    private PropertyDescriptor accessedProperty;
-    private MethodDescriptor invokingMethod;
+    private String type;
+
+    private MethodDescriptor creatingMethod;
+    private TypeDescriptor createdType;
 
     @Override
     public <I> I getId() {

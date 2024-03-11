@@ -10,9 +10,9 @@ import static com.buschmais.xo.neo4j.api.annotation.Relation.Outgoing;
 @Relation("INVOKES")
 public interface InvokesDescriptor extends Descriptor, LineNumberDescriptor {
 
-    @Outgoing
+    @Incoming
     MethodDescriptor getInvokedMethod();
 
-    @Incoming
+    @Outgoing
     MethodDescriptor getInvokingMethod();
 }

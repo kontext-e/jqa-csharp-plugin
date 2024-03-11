@@ -15,13 +15,16 @@ import java.nio.channels.ReadableByteChannel;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-import static org.apache.commons.lang.SystemUtils.*;
+import static org.apache.commons.lang.SystemUtils.IS_OS_LINUX;
+import static org.apache.commons.lang.SystemUtils.IS_OS_MAC_OSX;
+import static org.apache.commons.lang.SystemUtils.IS_OS_WINDOWS;
+import static org.apache.commons.lang.SystemUtils.OS_NAME;
 
 public class CSharpToJsonToolManager {
 
     public static final String NAME = "C# to JSON converter";
 
-    private static final String CSHARP_TO_JSON_TOOL_VERSION = "v0.1.1-alpha";
+    private static final String CSHARP_TO_JSON_TOOL_VERSION = "v0.2.0";
     private static final String GITHUB_DOWNLOAD_URL = "https://github.com/softvis-research/csharp-to-json-converter/releases/download/%s/%s-x64-csharp-to-json-converter.zip";
     private static final String WINDOWS = "win";
     private static final String OSX = "osx";
@@ -95,8 +98,7 @@ public class CSharpToJsonToolManager {
 
         File zip = Paths.get(directory.getAbsolutePath(), "temp.zip").toFile();
         FileOutputStream fileOutputStream = new FileOutputStream(zip);
-        fileOutputStream.getChannel()
-                .transferFrom(readableByteChannel, 0, Long.MAX_VALUE);
+        fileOutputStream.getChannel().transferFrom(readableByteChannel, 0, Long.MAX_VALUE);
         fileOutputStream.close();
         return zip;
 

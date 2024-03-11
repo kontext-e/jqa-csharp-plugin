@@ -2,11 +2,11 @@
 
 using System;
 using System.Runtime.CompilerServices;
-using Project_1.ExtensionMethods;
+using Project1.ExtensionMethods;
 using static System.Math;
 using MyAlias = System.Collections.Generic;
 
-namespace Project_1
+namespace Project1
 {
     class Program
     {
@@ -17,7 +17,7 @@ namespace Project_1
 
         private static void CallDep1()
         {
-            new Dependency1().DoNothing();
+            new Dependency1();
         }
 
         private static float CallDep2()

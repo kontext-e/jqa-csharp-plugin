@@ -2,6 +2,7 @@ package org.jqassistant.contrib.plugin.csharp.json_to_neo4j;
 
 import com.buschmais.jqassistant.core.store.api.Store;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.caches.MethodCache;
+import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.caches.PropertyCache;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.caches.TypeCache;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.ConstructorModel;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.MemberOwningTypeModel;
@@ -9,6 +10,7 @@ import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.MethodMode
 import org.jqassistant.contrib.plugin.csharp.model.ConstructorDescriptor;
 import org.jqassistant.contrib.plugin.csharp.model.MemberOwningTypeDescriptor;
 import org.jqassistant.contrib.plugin.csharp.model.MethodDescriptor;
+import org.jqassistant.contrib.plugin.csharp.model.PropertyDescriptor;
 import org.jqassistant.contrib.plugin.csharp.model.TypeDescriptor;
 
 import java.util.Optional;
@@ -19,10 +21,12 @@ public class MethodAnalyzer {
 
     private final MethodCache methodCache;
     private final TypeCache typeCache;
+    private final PropertyCache propertyCache;
 
-    public MethodAnalyzer(Store store, MethodCache methodCache, TypeCache typeCache) {
+    public MethodAnalyzer(Store store, MethodCache methodCache, TypeCache typeCache, PropertyCache propertyCache) {
         this.methodCache = methodCache;
         this.typeCache = typeCache;
+        this.propertyCache = propertyCache;
 
         parameterAnalyzer = new ParameterAnalyzer(typeCache, store);
     }
@@ -55,6 +59,9 @@ public class MethodAnalyzer {
         if (methodModel.isExtensionMethod()){
             addExtensionRelation(methodModel, methodDescriptor);
         }
+        if (methodModel.getAssociatedProperty() != null){
+            addAssociatedProperty(methodModel, methodDescriptor);
+        }
         parameterAnalyzer.addParameters(methodModel, methodDescriptor);
 
         return methodDescriptor;
@@ -64,6 +71,11 @@ public class MethodAnalyzer {
         TypeDescriptor extendedType = typeCache.findOrCreate(methodModel.getExtendsType());
         methodDescriptor.setExtendedType(extendedType);
         methodDescriptor.setExtensionMethod(true);
+    }
+
+    private void addAssociatedProperty(MethodModel methodModel, MethodDescriptor methodDescriptor) {
+        Optional<PropertyDescriptor> associatedProperty = propertyCache.getPropertyFromSubstring(methodModel.getAssociatedProperty());
+        associatedProperty.ifPresent(methodDescriptor::setAssociatedProperty);
     }
 
     private static void fillMethodDescriptor(MethodModel methodModel, MethodDescriptor methodDescriptor) {

@@ -8,7 +8,7 @@ import java.util.List;
 
 public class InterfaceDescriptorImpl extends MemberOwningTypeDescriptorImpl implements InterfaceTypeDescriptor {
 
-    private List<TypeDescriptor> interfaces = new ArrayList<>();
+    private final List<TypeDescriptor> interfaces = new ArrayList<>();
 
     public InterfaceDescriptorImpl(String name) {
         super(name);

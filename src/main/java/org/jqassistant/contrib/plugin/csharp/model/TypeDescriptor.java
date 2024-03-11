@@ -5,6 +5,7 @@ import com.buschmais.jqassistant.plugin.common.api.model.MD5Descriptor;
 import com.buschmais.jqassistant.plugin.common.api.model.NamedDescriptor;
 import com.buschmais.xo.neo4j.api.annotation.Label;
 import com.buschmais.xo.neo4j.api.annotation.Relation;
+import com.buschmais.xo.neo4j.api.annotation.Relation.Incoming;
 
 import java.util.List;
 
@@ -20,6 +21,8 @@ public interface TypeDescriptor extends
         LineCountDescriptor {
 
 
+    @Incoming
+    List<ArrayCreationDescriptor> getCreatingMethods();
 
     @Relation("PARTIAL_WITH")
     List<TypeDescriptor> getTypeFragments();

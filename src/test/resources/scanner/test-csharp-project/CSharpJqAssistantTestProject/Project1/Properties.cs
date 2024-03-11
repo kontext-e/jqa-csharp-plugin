@@ -4,13 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Project_1
+namespace Project1
 {
     class Properties
     {
         private string _backingField;
 
-        private int ImplicitlyPrivateProperty { get; init; }
+        int ImplicitlyPrivateProperty { get; init; }
         public string ExplicitlyPublicProperty { get; }
         private protected int PrivateProtectedProperty { get; }
         public string PropertyWithDifferingAccessorAccessibility { get; private set; }
@@ -25,4 +25,10 @@ namespace Project_1
         }
 
     }
+
+    public record ReadOnlyRecord(int A, int B);
+
+    public record struct WriteableRecordStruct(float F);
+
+    public readonly record struct ReadOnlyRecordStruct(string A, string B);
 }
