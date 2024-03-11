@@ -1,4 +1,4 @@
-﻿namespace Project_1.TypeDependencies;
+﻿namespace Project1.TypeDependencies;
 
 public abstract class ParentClass { }
 public class FirstChildClass : ParentClass { }

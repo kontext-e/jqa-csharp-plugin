@@ -1,4 +1,4 @@
-´╗┐using Project1.Types;
+﻿using Project1.Types;
 
 namespace Project1.ExtensionMethods;
 

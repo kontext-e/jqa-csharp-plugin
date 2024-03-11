@@ -1,20 +1,30 @@
 ﻿using System;
+using Project1.TypeDependencies;
 using MyAlias = System.Collections.Generic;
 
 namespace Project1
 {
     internal class Dependency1
     {
-        internal void DoNothing() { }
-
-        internal static Dependency1 DoSomething(float? t) { return null; }
+        internal static Dependency1 DoSomething(float t) { return null; }
         
-        internal static void DoSomething(Dependency1? dep)
+        internal static void DoSomething(Properties dep)
         {
             String[] strings = { "Hi", "Hello" };
             DoSomething(strings);
         }
 
-        private static void DoSomething(string[]? strings) { }
+        internal static void DoSomething(string[] strings) { }
+    }
+
+    internal static class MethodOverloads
+    {
+        internal static void DoSomething(Properties dep)
+        {
+            Double d = 5.8;
+            DoSomething(d);
+        }
+
+        internal static void DoSomething(double strings) { }
     }
 }
