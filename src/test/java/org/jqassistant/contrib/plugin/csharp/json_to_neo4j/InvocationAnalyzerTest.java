@@ -18,6 +18,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -64,12 +65,13 @@ public class InvocationAnalyzerTest {
         invokesModel.setLineNumber(3);
         invokesModel.setMethodId("Some.Method.ID");
         MethodModel methodModel = new MethodModel();
+        methodModel.setFqn("f.q.n");
         methodModel.setInvokes(new ArrayList<>());
         methodModel.setCreatesArrays(new ArrayList<>());
         methodModel.setInvokedBy(Collections.singletonList(invokesModel));
 
         MethodDescriptor methodDescriptor = new MethodDescriptorImpl();
-        when(methodCache.findAny(anyString())).thenReturn(methodDescriptor);
+        when(methodCache.findAny(anyString())).thenReturn(Optional.of(methodDescriptor));
         MethodDescriptor invokedMethodDescriptor = new MethodDescriptorImpl();
         when(methodCache.findOrCreate(any())).thenReturn(invokedMethodDescriptor);
         InvokesDescriptor invokesDescriptor = new InvokesDescriptorImpl();
@@ -89,12 +91,13 @@ public class InvocationAnalyzerTest {
         invokesModel.setLineNumber(5);
         invokesModel.setMethodId("Some.Method.ID");
         MethodModel methodModel = new MethodModel();
+        methodModel.setFqn("f.q.n");
         methodModel.setInvokedBy(new ArrayList<>());
         methodModel.setCreatesArrays(new ArrayList<>());
         methodModel.setInvokes(Collections.singletonList(invokesModel));
 
         MethodDescriptor methodDescriptor = new MethodDescriptorImpl();
-        when(methodCache.findAny(anyString())).thenReturn(methodDescriptor);
+        when(methodCache.findAny(anyString())).thenReturn(Optional.of(methodDescriptor));
         MethodDescriptor invokedMethodDescriptor = new MethodDescriptorImpl();
         when(methodCache.findOrCreate(any())).thenReturn(invokedMethodDescriptor);
         InvokesDescriptor invokesDescriptor = new InvokesDescriptorImpl();
@@ -113,12 +116,13 @@ public class InvocationAnalyzerTest {
         arrayCreationModel.setLineNumber(5);
         arrayCreationModel.setType("Some.Type");
         MethodModel methodModel = new MethodModel();
+        methodModel.setFqn("f.q.n");
         methodModel.setInvokedBy(new ArrayList<>());
         methodModel.setInvokes(new ArrayList<>());
         methodModel.setCreatesArrays(Collections.singletonList(arrayCreationModel));
 
         MethodDescriptor methodDescriptor = new MethodDescriptorImpl();
-        when(methodCache.findAny(anyString())).thenReturn(methodDescriptor);
+        when(methodCache.findAny(anyString())).thenReturn(Optional.of(methodDescriptor));
         TypeDescriptorImpl createdType = new TypeDescriptorImpl("CreatedType");
         when(typeCache.findOrCreate(any())).thenReturn(createdType);
         ArrayCreationDescriptorImpl arrayCreationDescriptor = new ArrayCreationDescriptorImpl();

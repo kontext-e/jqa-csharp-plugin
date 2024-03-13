@@ -11,10 +11,7 @@ import org.jqassistant.contrib.plugin.csharp.model.InvokesDescriptor;
 import org.jqassistant.contrib.plugin.csharp.model.MethodDescriptor;
 import org.jqassistant.contrib.plugin.csharp.model.TypeDescriptor;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class InvocationAnalyzer {
 
@@ -40,12 +37,13 @@ public class InvocationAnalyzer {
     private void addInvocations(MethodModel methodModel) {
         if (methodModel.getInvokedBy().isEmpty()) return;
 
-        MethodDescriptor methodDescriptor = methodCache.findAny(methodModel.getKey());
+        Optional<MethodDescriptor> methodDescriptor = methodCache.findAny(methodModel.getKey());
+        if (!methodDescriptor.isPresent()) return;
         for (InvokesModel invokesModel : methodModel.getInvokedBy()) {
             if (hasBeenProcessed(methodModel, invokesModel)) continue;
             markInvokesModelAsProcessed(methodModel, invokesModel);
 
-            addInvocation(methodDescriptor, invokesModel); //TODO Duplicate Call to partial Constructor
+            addInvocation(methodDescriptor.get(), invokesModel); //TODO Duplicate Call to partial Constructor
         }
     }
 
@@ -80,10 +78,11 @@ public class InvocationAnalyzer {
     private void addArrayCreations(MethodModel methodModel) {
         if (methodModel.getCreatesArrays().isEmpty()) return;
 
-        MethodDescriptor methodDescriptor = methodCache.findAny(methodModel.getFqn());
+        Optional<MethodDescriptor> methodDescriptor = methodCache.findAny(methodModel.getFqn());
+        if (!methodDescriptor.isPresent()) return;
         for (ArrayCreationModel arrayCreationModel : methodModel.getCreatesArrays()){
             TypeDescriptor typeDescriptor = typeCache.findOrCreate(arrayCreationModel.getType());
-            ArrayCreationDescriptor arrayCreationDescriptor = store.create(methodDescriptor, ArrayCreationDescriptor.class, typeDescriptor);
+            ArrayCreationDescriptor arrayCreationDescriptor = store.create(methodDescriptor.get(), ArrayCreationDescriptor.class, typeDescriptor);
             arrayCreationDescriptor.setLineNumber(arrayCreationModel.getLineNumber());
         }
     }
@@ -91,10 +90,12 @@ public class InvocationAnalyzer {
     private void addImplicitObjectCreations(MethodModel methodModel) {
         if (methodModel.getInvokes().isEmpty()) return;
 
-        MethodDescriptor methodDescriptor = methodCache.findAny(methodModel.getFqn());
+        Optional<MethodDescriptor> methodDescriptor = methodCache.findAny(methodModel.getFqn());
+        if (!methodDescriptor.isPresent()) return;
         for (InvokesModel invokesModel : methodModel.getInvokes()){
-            MethodDescriptor invokedMethod = methodCache.findAny(invokesModel.getMethodId());
-            InvokesDescriptor invokesDescriptor = store.create(methodDescriptor, InvokesDescriptor.class, invokedMethod);
+            Optional<MethodDescriptor> invokedMethod = methodCache.findAny(invokesModel.getMethodId());
+            if (!invokedMethod.isPresent()) continue;
+            InvokesDescriptor invokesDescriptor = store.create(methodDescriptor.get(), InvokesDescriptor.class, invokedMethod.get());
             invokesDescriptor.setLineNumber(invokesModel.getLineNumber());
         }
     }

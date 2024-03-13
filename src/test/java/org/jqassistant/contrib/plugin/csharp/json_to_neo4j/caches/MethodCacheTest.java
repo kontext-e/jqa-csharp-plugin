@@ -8,6 +8,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -36,7 +37,10 @@ public class MethodCacheTest {
         MethodDescriptor result = methodCache.create("Fqn.Method", MethodDescriptor.class);
 
         assertThat(result instanceof ConstructorDescriptor).isFalse();
-        assertThat(methodCache.findAny("Fqn.Method")).isEqualTo(methodDescriptor);
+
+        Optional<MethodDescriptor> methodDescriptor1 = methodCache.findAny("Fqn.Method");
+        assertThat(methodDescriptor1.isPresent()).isTrue();
+        assertThat(methodDescriptor1.get()).isEqualTo(methodDescriptor);
         verify(mockStore, times(1)).create(MethodDescriptor.class);
     }
 
@@ -51,7 +55,9 @@ public class MethodCacheTest {
         result.setImplementation(true);
 
         assertThat(newResult.equals(result)).isFalse();
-        assertThat(methodCache.findAny("Fqn.Method")).isEqualTo(result);
+        Optional<MethodDescriptor> methodDescriptor = methodCache.findAny("Fqn.Method");
+        assertThat(methodDescriptor.isPresent()).isTrue();
+        assertThat(methodDescriptor.get()).isEqualTo(result);
         verify(mockStore, times(2)).create(MethodDescriptor.class);
     }
 

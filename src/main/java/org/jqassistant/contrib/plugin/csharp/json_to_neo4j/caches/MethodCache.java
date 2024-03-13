@@ -20,10 +20,11 @@ public class MethodCache {
         this.cache = new HashMap<>();
     }
 
-    public MethodDescriptor findAny(String fqn) {
+    public Optional<MethodDescriptor> findAny(String fqn) {
         List<MethodDescriptor> methodDescriptors = cache.get(fqn);
+        if (methodDescriptors == null) return Optional.empty();
         Optional<MethodDescriptor> methodDescriptor = methodDescriptors.stream().filter(MethodDescriptor::isImplementation).findAny();
-        return methodDescriptor.orElseGet(() -> methodDescriptors.get(0));
+        return Optional.of(methodDescriptor.orElseGet(() -> methodDescriptors.get(0)));
     }
 
     public <T extends MethodDescriptor> MethodDescriptor create(String fqn, Class<T> descriptorClass) {
@@ -46,7 +47,7 @@ public class MethodCache {
 
     public MethodDescriptor findOrCreate(String fqn) {
         if (cache.containsKey(fqn)) {
-            return findAny(fqn);
+            return findAny(fqn).get();
         }
         return create(fqn, MethodDescriptor.class);
     }
