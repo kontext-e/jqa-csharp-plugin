@@ -68,7 +68,7 @@ public class DependencyAnalyzer {
             if (CollectionUtils.isNotEmpty(interfaceModel.getImplementedInterfaces())) {
                 for (String interfaceFqn : interfaceModel.getImplementedInterfaces()) {
                     TypeDescriptor typeDescriptor = typeCache.findOrCreate(interfaceFqn);
-                    interfaceTypeDescriptor.getInterfaces().add(typeDescriptor);
+                    interfaceTypeDescriptor.getInterfaces().add((InterfaceTypeDescriptor) typeDescriptor);
                 }
             }
         }

@@ -9,5 +9,5 @@ import java.util.List;
 public interface InterfaceTypeDescriptor extends MemberOwningTypeDescriptor {
 
     @Relation("IMPLEMENTS")
-    List<TypeDescriptor> getInterfaces();
+    List<InterfaceTypeDescriptor> getInterfaces();
 }

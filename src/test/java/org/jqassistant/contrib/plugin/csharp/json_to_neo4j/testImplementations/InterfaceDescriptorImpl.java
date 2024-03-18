@@ -8,14 +8,14 @@ import java.util.List;
 
 public class InterfaceDescriptorImpl extends MemberOwningTypeDescriptorImpl implements InterfaceTypeDescriptor {
 
-    private final List<TypeDescriptor> interfaces = new ArrayList<>();
+    private final List<InterfaceTypeDescriptor> interfaces = new ArrayList<>();
 
     public InterfaceDescriptorImpl(String name) {
         super(name);
     }
 
     @Override
-    public List<TypeDescriptor> getInterfaces() {
+    public List<InterfaceTypeDescriptor> getInterfaces() {
         return interfaces;
     }
 }

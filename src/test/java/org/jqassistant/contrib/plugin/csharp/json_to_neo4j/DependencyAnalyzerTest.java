@@ -14,11 +14,7 @@ import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.testImplementations.I
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.testImplementations.NamespaceDescriptorImpl;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.testImplementations.TypeDescriptorImpl;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.testImplementations.UsesNamespaceDescriptorImpl;
-import org.jqassistant.contrib.plugin.csharp.model.CSharpFileDescriptor;
-import org.jqassistant.contrib.plugin.csharp.model.ClassDescriptor;
-import org.jqassistant.contrib.plugin.csharp.model.NamespaceDescriptor;
-import org.jqassistant.contrib.plugin.csharp.model.TypeDescriptor;
-import org.jqassistant.contrib.plugin.csharp.model.UsesNamespaceDescriptor;
+import org.jqassistant.contrib.plugin.csharp.model.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -156,9 +152,9 @@ public class DependencyAnalyzerTest {
         fileModel.setInterfaces(Collections.singletonList(interfaceModel));
 
         InterfaceDescriptorImpl interfaceDescriptor = new InterfaceDescriptorImpl("interface");
-        TypeDescriptor typeDescriptor1 =  new TypeDescriptorImpl("Interface1");
-        TypeDescriptor typeDescriptor2 =  new TypeDescriptorImpl("Interface2");
-        TypeDescriptor typeDescriptor3 =  new TypeDescriptorImpl("Interface3");
+        TypeDescriptor typeDescriptor1 =  new InterfaceDescriptorImpl("Interface1");
+        TypeDescriptor typeDescriptor2 =  new InterfaceDescriptorImpl("Interface2");
+        TypeDescriptor typeDescriptor3 =  new InterfaceDescriptorImpl("Interface3");
 
         when(typeCache.findOrCreate(anyString())).thenReturn(typeDescriptor1, typeDescriptor2, typeDescriptor3);
         when(typeCache.findAny(any())).thenReturn(interfaceDescriptor);
@@ -167,7 +163,7 @@ public class DependencyAnalyzerTest {
 
         verify(typeCache, times(3)).findOrCreate(anyString());
         assertThat(interfaceDescriptor.getInterfaces().size()).isEqualTo(3);
-        List<TypeDescriptor> interfaces = interfaceDescriptor.getInterfaces();
+        List<InterfaceTypeDescriptor> interfaces = interfaceDescriptor.getInterfaces();
         assertThat(interfaces.contains(typeDescriptor1)).isTrue();
         assertThat(interfaces.contains(typeDescriptor2)).isTrue();
         assertThat(interfaces.contains(typeDescriptor3)).isTrue();
