@@ -28,7 +28,7 @@ class ExecutionStreamLogger extends Thread {
             String line;
 
             while ((line = br.readLine()) != null) {
-                LOGGER.info("C# to JSON executor {}: {}", type, line);
+                System.out.println(line);
             }
 
         } catch (IOException ioe) {

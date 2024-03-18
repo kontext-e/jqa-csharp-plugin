@@ -141,7 +141,7 @@ public class JsonToNeo4JConverter {
 
     private FileModel parseAndCache(File jsonFile) {
 
-        LOGGER.info("Processing JSON file: '{}'.", jsonFile);
+        LOGGER.info("Processing JSON file: '{}'.", jsonFile.getName());
 
         ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 

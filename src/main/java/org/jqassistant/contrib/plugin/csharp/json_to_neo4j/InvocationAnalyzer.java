@@ -43,7 +43,7 @@ public class InvocationAnalyzer {
             if (hasBeenProcessed(methodModel, invokesModel)) continue;
             markInvokesModelAsProcessed(methodModel, invokesModel);
 
-            addInvocation(methodDescriptor.get(), invokesModel); //TODO Duplicate Call to partial Constructor
+            addInvocation(methodDescriptor.get(), invokesModel);
         }
     }
 
