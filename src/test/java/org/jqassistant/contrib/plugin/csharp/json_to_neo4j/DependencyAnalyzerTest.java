@@ -163,7 +163,7 @@ public class DependencyAnalyzerTest {
 
         verify(typeCache, times(3)).findOrCreate(anyString());
         assertThat(interfaceDescriptor.getInterfaces().size()).isEqualTo(3);
-        List<InterfaceTypeDescriptor> interfaces = interfaceDescriptor.getInterfaces();
+        List<TypeDescriptor> interfaces = interfaceDescriptor.getInterfaces();
         assertThat(interfaces.contains(typeDescriptor1)).isTrue();
         assertThat(interfaces.contains(typeDescriptor2)).isTrue();
         assertThat(interfaces.contains(typeDescriptor3)).isTrue();
