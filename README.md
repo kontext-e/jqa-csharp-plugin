@@ -1,7 +1,6 @@
 # jQAssistant C# Plugin
 
 [![GitHub license](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](LICENSE)
-[![Build Status](https://api.travis-ci.com/softvis-research/jqa-csharp-plugin.svg?branch=master)](https://travis-ci.com/softvis-research/jqa-csharp-plugin)
 
 This is a **C#** parser for [jQAssistant](https://jqassistant.org/). 
 It enables jQAssistant to scan and to analyze **C#** files.
@@ -26,7 +25,7 @@ jqassistant.sh server
 
 ## Model
 
-![Neo4j model for the jQAssistant C# plugin](./drawio/jqa-csharp-graphschema.jpg)
+![Neo4j model for the jQAssistant C# plugin](./drawio/DatabaseSchema.drawio.svg)
 
 ## Contribute
 
