@@ -110,7 +110,7 @@ public class InvocationAnalyzerIT extends CSharpIntegrationTest {
         assertThat(createdTypes.size()).isEqualTo(6);
         assertThat(createdTypes.stream().filter(t -> t.getFullQualifiedName().equals("int[]")).count()).isEqualTo(2);
         assertThat(createdTypes.stream().filter(t -> t.getFullQualifiedName().equals("int[*,*]")).count()).isEqualTo(2);
-        assertThat(createdTypes.stream().filter(t -> t.getFullQualifiedName().equals("string[]")).count()).isEqualTo(1);
+        assertThat(createdTypes.stream().filter(t -> t.getFullQualifiedName().equals("string?[]")).count()).isEqualTo(1);
         assertThat(createdTypes.stream().filter(t -> t.getFullQualifiedName().equals("int[][]")).count()).isEqualTo(1);
     }
 

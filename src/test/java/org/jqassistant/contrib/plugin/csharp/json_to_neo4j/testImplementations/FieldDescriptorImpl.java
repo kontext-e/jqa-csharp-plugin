@@ -7,6 +7,9 @@ import org.jqassistant.contrib.plugin.csharp.model.MemberOwningTypeDescriptor;
 import org.jqassistant.contrib.plugin.csharp.model.PrimitiveValueDescriptor;
 import org.jqassistant.contrib.plugin.csharp.model.TypeDescriptor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Getter
 @Setter
 public class FieldDescriptorImpl implements FieldDescriptor {
@@ -23,7 +26,7 @@ public class FieldDescriptorImpl implements FieldDescriptor {
     private String name;
     private String accessibility;
 
-    private TypeDescriptor type;
+    private List<TypeDescriptor> types = new ArrayList<>();
     private PrimitiveValueDescriptor value;
     private MemberOwningTypeDescriptor declaringType;
 

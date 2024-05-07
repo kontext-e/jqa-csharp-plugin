@@ -170,7 +170,7 @@ public class TypeAnalyzerIT extends CSharpIntegrationTest{
         List<EnumValueDescriptor> values = query("Match r=(v:Enum:Value)-[]-(t:Enum:Type) Where t.name=\"TypeEnum\" return v").getColumn("v");
 
         assertThat(values.size()).isEqualTo(4);
-        assertThat(values.stream().anyMatch(value -> !value.getType().getName().equals("TypeEnum"))).isFalse();
+        assertThat(values.stream().anyMatch(value -> !value.getTypes().get(0).getName().equals("TypeEnum"))).isFalse();
         values.sort(Comparator.comparing(EnumValueDescriptor::getName));
         assertThat(values.get(0).getName()).isEqualTo("A");
         assertThat(values.get(1).getName()).isEqualTo("B");

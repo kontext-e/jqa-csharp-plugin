@@ -17,7 +17,7 @@ public class PropertyAnalyzerIT extends CSharpIntegrationTest {
     @TestStore(reset = false)
     void testProperties() {
         List<Map<String, Object>> propertyDescriptorList = query("Match (c:Class)-[]->(p:Property) Where c.name=\"Properties\" Return p").getRows();
-        assertThat(propertyDescriptorList.size()).isEqualTo(7);
+        assertThat(propertyDescriptorList.size()).isEqualTo(9);
     }
 
     @Test
@@ -38,7 +38,8 @@ public class PropertyAnalyzerIT extends CSharpIntegrationTest {
     void testPrivateProtectedProperty() {
         PropertyDescriptor property = queryForProperty("PrivateProtectedProperty").get(0);
         assertThat(property.getAccessibility()).isEqualTo("ProtectedAndInternal");
-        assertThat(property.getType().getFullQualifiedName()).isEqualTo("int");
+        assertThat(property.getTypes().size()).isEqualTo(1);
+        assertThat(property.getTypes().get(0).getFullQualifiedName()).isEqualTo("int");
     }
 
     @Test

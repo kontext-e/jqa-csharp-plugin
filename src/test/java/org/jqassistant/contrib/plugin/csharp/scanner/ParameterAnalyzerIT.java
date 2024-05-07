@@ -41,6 +41,7 @@ public class ParameterAnalyzerIT extends CSharpIntegrationTest {
         assertThat(parameterDescriptors.get(1).getIndex()).isEqualTo(1);
         assertThat(parameterDescriptors.get(0).getName()).isEqualTo("methods");
         assertThat(parameterDescriptors.get(1).getName()).isEqualTo("number");
-        assertThat(parameterDescriptors.get(0).getType().getName()).isEqualTo("Methods");
+        assertThat(parameterDescriptors.get(0).getTypes().size()).isEqualTo(1);
+        assertThat(parameterDescriptors.get(0).getTypes().get(0).getName()).isEqualTo("Methods");
     }
 }

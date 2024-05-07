@@ -4,6 +4,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.LinkedList;
+import java.util.List;
+
 @Setter
 @Getter
 public class FieldModel implements JsonModel {
@@ -12,7 +15,7 @@ public class FieldModel implements JsonModel {
 
     private String fqn;
 
-    private String type;
+    private List<String> types = new LinkedList<>();
 
     @JsonProperty("abstract")
     private boolean abstractKeyword;

@@ -6,12 +6,15 @@ import org.jqassistant.contrib.plugin.csharp.model.EnumValueDescriptor;
 import org.jqassistant.contrib.plugin.csharp.model.FieldDescriptor;
 import org.jqassistant.contrib.plugin.csharp.model.TypeDescriptor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Getter
 @Setter
 public class EnumValueDescriptorIml implements EnumValueDescriptor {
 
     private String name;
-    private TypeDescriptor type;
+    private List<TypeDescriptor> types = new ArrayList<>();
     private FieldDescriptor value;
 
     @Override

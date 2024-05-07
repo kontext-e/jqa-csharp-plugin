@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static java.util.Collections.singletonList;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -120,7 +121,8 @@ public class FieldAnalyzerTest {
         assertThat(fieldDescriptor.getAccessibility()).isNotNull();
         assertThat(fieldDescriptor.isVolatile()).isTrue();
         assertThat(fieldDescriptor.isStatic()).isTrue();
-        assertThat(fieldDescriptor.getType().getName()).isEqualTo("TypeOfField");
+        assertThat(fieldDescriptor.getTypes().size()).isEqualTo(1);
+        assertThat(fieldDescriptor.getTypes().get(0).getName()).isEqualTo("TypeOfField");
     }
 
     private ClassModel createClassModel(String name, List<FieldModel> fields){
@@ -148,6 +150,7 @@ public class FieldAnalyzerTest {
         fieldModel.setVolatileKeyword(true);
         fieldModel.setSealed(true);
         fieldModel.setStaticKeyword(true);
+        fieldModel.setTypes(singletonList("FieldType"));
     }
 
 }

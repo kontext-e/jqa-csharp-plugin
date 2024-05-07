@@ -5,13 +5,15 @@ import lombok.Setter;
 import org.jqassistant.contrib.plugin.csharp.model.ParameterDescriptor;
 import org.jqassistant.contrib.plugin.csharp.model.TypeDescriptor;
 
+import java.util.List;
+
 @Getter
 @Setter
 public class ParameterDescriptorImpl implements ParameterDescriptor {
 
     private int index;
     private String name;
-    private TypeDescriptor type;
+    private List<TypeDescriptor> types;
 
     @Override
     public <I> I getId() {

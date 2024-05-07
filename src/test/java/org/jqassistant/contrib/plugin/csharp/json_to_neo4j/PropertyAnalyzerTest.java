@@ -14,6 +14,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -57,6 +58,7 @@ public class PropertyAnalyzerTest {
     @Test
     void testCreateProperty(){
         PropertyModel propertyModel = new PropertyModel();
+        propertyModel.setTypes(new LinkedList<>());
         fillPropertyModel(propertyModel);
         List<PropertyModel> propertyModels = packagePropertiesToList(propertyModel);
         MemberOwningTypeModel classModel = prepareClassAndFileStructure(propertyModels);
@@ -81,7 +83,7 @@ public class PropertyAnalyzerTest {
         propertyModel.setFqn("Property.Model");
         propertyModel.setName("Model");
         propertyModel.setAccessibility("Public");
-        propertyModel.setType("int");
+        propertyModel.getTypes().add("int");
     }
 
     private MemberOwningTypeModel prepareClassAndFileStructure(List<PropertyModel> propertyModels){

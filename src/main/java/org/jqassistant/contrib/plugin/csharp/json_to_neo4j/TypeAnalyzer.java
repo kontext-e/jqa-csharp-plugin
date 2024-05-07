@@ -108,7 +108,7 @@ public class TypeAnalyzer {
 
         for (EnumMemberModel enumMemberModel : enumModel.getMembers()) {
             EnumValueDescriptor enumValueDescriptor = enumValueCache.create(enumMemberModel.getKey());
-            enumValueDescriptor.setType(enumTypeDescriptor);
+            enumValueDescriptor.getTypes().add(enumTypeDescriptor);
             enumValueDescriptor.setName(enumMemberModel.getName());
         }
     }

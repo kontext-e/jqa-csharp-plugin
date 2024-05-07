@@ -47,6 +47,7 @@ public class ParameterAnalyzerTest {
         methodModel.setParameters(parameterModels);
 
         ParameterDescriptorImpl parameterDescriptor = new ParameterDescriptorImpl();
+        parameterDescriptor.setTypes(new ArrayList<>());
         when(store.create(ParameterDescriptor.class)).thenReturn(parameterDescriptor);
         TypeDescriptorImpl type = new TypeDescriptorImpl("Type");
         when(typeCache.findOrCreate(eq("int"))).thenReturn(type);
@@ -57,7 +58,8 @@ public class ParameterAnalyzerTest {
         assertThat(methodDescriptor.getParameters().size()).isEqualTo(1);
         ParameterDescriptor result = methodDescriptor.getParameters().get(0);
         assertThat(result.getIndex()).isEqualTo(0);
-        assertThat(result.getType()).isEqualTo(type);
+        assertThat(result.getTypes().size()).isEqualTo(1);
+        assertThat(result.getTypes().get(0)).isEqualTo(type);
         assertThat(result.getName()).isEqualTo("Param1");
     }
 
@@ -74,6 +76,8 @@ public class ParameterAnalyzerTest {
 
         ParameterDescriptorImpl parameterDescriptor1 = new ParameterDescriptorImpl();
         ParameterDescriptorImpl parameterDescriptor2 = new ParameterDescriptorImpl();
+        parameterDescriptor1.setTypes(new ArrayList<>());
+        parameterDescriptor2.setTypes(new ArrayList<>());
         when(store.create(ParameterDescriptor.class)).thenReturn(parameterDescriptor1, parameterDescriptor2);
         TypeDescriptorImpl typeInt = new TypeDescriptorImpl("TypeInt");
         when(typeCache.findOrCreate(eq("int"))).thenReturn(typeInt);

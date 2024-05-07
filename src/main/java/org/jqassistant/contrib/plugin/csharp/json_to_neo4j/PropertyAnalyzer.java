@@ -36,8 +36,9 @@ public class PropertyAnalyzer {
         propertyDescriptor.setRequired(propertyModel.isRequired());
         propertyDescriptor.setReadOnly(propertyModel.isReadonly());
 
-        TypeDescriptor typeDescriptor = typeCache.findOrCreate(propertyModel.getType());
-        propertyDescriptor.setType(typeDescriptor);
-
+        for (String type : propertyModel.getTypes()){
+            TypeDescriptor typeDescriptor = typeCache.findOrCreate(type);
+            propertyDescriptor.getTypes().add(typeDescriptor);
+        }
     }
 }

@@ -18,7 +18,8 @@ public class FieldAnalyzerIT extends CSharpIntegrationTest{
         assertThat(field.isVolatile()).isFalse();
         assertThat(field.isStatic()).isFalse();
         assertThat(field.isRequired()).isFalse();
-        assertThat(field.getType().getFullQualifiedName()).isEqualTo("string");
+        assertThat(field.getTypes().size()).isEqualTo(1);
+        assertThat(field.getTypes().get(0).getFullQualifiedName()).isEqualTo("string");
         assertThat(field.getFullQualifiedName()).isEqualTo("Project1.Fields.privateField");
         assertThat(field.getDeclaringType().getName()).isEqualTo("Fields");
     }
@@ -36,7 +37,8 @@ public class FieldAnalyzerIT extends CSharpIntegrationTest{
         FieldDescriptor field = queryForField("StaticField");
         assertThat(field.isStatic()).isTrue();
         assertThat(field.getAccessibility()).isEqualTo("Internal");
-        assertThat(field.getType().getName()).isEqualTo("Fields");
+        assertThat(field.getTypes().size()).isEqualTo(1);
+        assertThat(field.getTypes().get(0).getName()).isEqualTo("Fields");
     }
 
     @Test

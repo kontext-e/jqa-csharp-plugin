@@ -51,7 +51,7 @@ public class Invocations
         int[,] multiDimensionalArray1 = new int[2, 3]; // Declare a two dimensional array
         int[,] multiDimensionalArray2 = { { 1, 2, 3 }, { 4, 5, 6 } }; // Declare and set array element values
         int[][] jaggedArray = new int[6][]; // Declare a jagged array
-        var b = new[] { "hello", null, "world" }; // Implicitly Typed Array Creations
+        var b = new[] { "hello", null, "world" }; // Implicitly Typed Array Creations | Also Tests for nullable type, as this array is of type string?[] as there is a null in the initializer
         jaggedArray[0] = [1, 2, 3, 4]; // Set the values of the first array in the jagged array structure
     }
 

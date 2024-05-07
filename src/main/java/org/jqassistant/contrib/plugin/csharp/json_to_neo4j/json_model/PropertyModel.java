@@ -5,6 +5,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.LinkedList;
+import java.util.List;
+
 @Setter
 @Getter
 @NoArgsConstructor
@@ -14,7 +17,7 @@ public class PropertyModel implements JsonModel {
 
     private String fqn;
 
-    private String type;
+    private List<String> types = new LinkedList<>();
 
     private String accessibility;
 

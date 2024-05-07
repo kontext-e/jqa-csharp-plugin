@@ -54,8 +54,10 @@ public class FieldAnalyzer {
     }
 
     private void analyzeFieldType(FieldModel fieldModel, FieldDescriptor fieldDescriptor) {
-        TypeDescriptor typeDescriptor = typeCache.findOrCreate(fieldModel.getType());
-        fieldDescriptor.setType(typeDescriptor);
+        for (String type : fieldModel.getTypes()) {
+            TypeDescriptor typeDescriptor = typeCache.findOrCreate(type);
+            fieldDescriptor.getTypes().add(typeDescriptor);
+        }
     }
 
     private void analyzeConstantValues(FieldModel fieldModel, FieldDescriptor fieldDescriptor) {
