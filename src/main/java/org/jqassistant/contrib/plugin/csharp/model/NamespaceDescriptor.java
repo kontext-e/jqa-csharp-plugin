@@ -13,4 +13,7 @@ public interface NamespaceDescriptor extends CSharpDescriptor, FullQualifiedName
 
     @Relation("CONTAINS")
     List<TypeDescriptor> getContains();
+
+    @Relation("CONTAINS")
+    List<NamespaceDescriptor> getContainingNameSpaces();
 }

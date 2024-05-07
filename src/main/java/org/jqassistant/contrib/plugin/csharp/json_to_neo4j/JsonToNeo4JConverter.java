@@ -45,6 +45,7 @@ public class JsonToNeo4JConverter {
     private final PartialityAnalyzer partialityAnalyzer;
     private final PropertyAnalyzer propertyAnalyzer;
     private final InvocationAnalyzer invocationAnalyzer;
+    private final NamespaceAnalyzer namespaceAnalyzer;
 
     public JsonToNeo4JConverter(Store store, File inputDirectory) {
         initCaches(store);
@@ -58,6 +59,7 @@ public class JsonToNeo4JConverter {
         this.propertyAnalyzer = new PropertyAnalyzer(typeCache, propertyCache);
         this.fieldAnalyzer = new FieldAnalyzer(store, fieldCache, typeCache);
         this.typeAnalyzer = new TypeAnalyzer(namespaceCache, cSharpFileCache, enumValueCache, typeCache);
+        this.namespaceAnalyzer = new NamespaceAnalyzer(namespaceCache);
     }
 
     private void initCaches(Store store) {
@@ -106,6 +108,7 @@ public class JsonToNeo4JConverter {
         }
         partialityAnalyzer.linkPartialClasses();
         partialityAnalyzer.linkPartialMethods();
+        namespaceAnalyzer.addContainsRelationToNamespaces();
     }
 
     private void readJsonFilesRecursively(File currentDirectory, CSharpClassesDirectoryDescriptor parentDirectoryDescriptor) {
