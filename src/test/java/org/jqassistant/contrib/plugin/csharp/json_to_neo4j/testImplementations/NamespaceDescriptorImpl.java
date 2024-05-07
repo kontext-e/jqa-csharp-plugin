@@ -18,6 +18,7 @@ public class NamespaceDescriptorImpl implements NamespaceDescriptor {
     private String fullQualifiedName;
     private List<UsesNamespaceDescriptor> usedBy = new LinkedList<>();
     private List<TypeDescriptor> contains = new LinkedList<>();
+    private List<NamespaceDescriptor> containingNameSpaces = new LinkedList<>();
 
     @Override
     public <I> I getId() {
