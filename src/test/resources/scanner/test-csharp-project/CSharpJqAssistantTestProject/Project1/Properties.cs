@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Project1
 {
-    class Properties
+    public class Properties
     {
         private string _backingField;
 
@@ -23,7 +23,10 @@ namespace Project1
             get { return "Another String"; }
             set => _backingField = value;
         }
-
+        
+        public List<List<string>> NestedGenericProperty { get; set; } 
+        public List<string?>? GenericNullableProperty { get; set; }
+        
     }
 
     public record ReadOnlyRecord(int A, int B);

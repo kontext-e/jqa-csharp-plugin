@@ -1,4 +1,6 @@
-﻿namespace Project1;
+﻿using System.Collections.Generic;
+
+namespace Project1;
 
 public class Fields
 {
@@ -9,4 +11,17 @@ public class Fields
     protected volatile float VolatileField;
     protected internal const string DefaultField = "Initial String";
     protected internal const int DefaultInt = 0, DefaultSomething = 3;
+}
+
+public class GenericFields<T, TS> where T : Properties where TS : List<T>
+{
+    private List<T> GenericList { get; set; }
+
+    private TS GenericField;
+    
+    protected Dictionary<string[], TS[]> NestedGenericField;
+
+    private TS[] GenericArrayField;
+
+    private string[] nonGenericArrayField;
 }
