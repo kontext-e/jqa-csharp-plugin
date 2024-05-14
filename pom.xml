@@ -5,7 +5,7 @@
 
     <groupId>de.kontext-e.jqassistant.plugin</groupId>
     <artifactId>jqassistant.plugin.csharp</artifactId>
-    <version>0.2.0-SNAPSHOT</version>
+    <version>0.2.2</version>
 
     <name>jQAssistant CSharp Plugin</name>
     <description>The jQAssistant plugin to scan and to analyze a CSharp instance.</description>
@@ -378,6 +378,10 @@
             <id>ossrh</id>
             <url>https://oss.sonatype.org/content/repositories/snapshots</url>
         </snapshotRepository>
+        <repository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
+        </repository>
     </distributionManagement>
 
 </project>
