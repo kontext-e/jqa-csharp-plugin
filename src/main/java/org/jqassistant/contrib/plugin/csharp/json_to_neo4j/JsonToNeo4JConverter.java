@@ -108,6 +108,7 @@ public class JsonToNeo4JConverter {
         }
         partialityAnalyzer.linkPartialClasses();
         partialityAnalyzer.linkPartialMethods();
+        namespaceAnalyzer.constructMissingHigherLevelNamespaces();
         namespaceAnalyzer.addContainsRelationToNamespaces();
     }
 

@@ -1,11 +1,13 @@
 package org.jqassistant.contrib.plugin.csharp.json_to_neo4j.caches;
 
 import com.buschmais.jqassistant.core.store.api.Store;
+import com.buschmais.jqassistant.core.store.api.model.FullQualifiedNameDescriptor;
 import org.jqassistant.contrib.plugin.csharp.model.NamespaceDescriptor;
 
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class NamespaceCache {
 
@@ -32,5 +34,12 @@ public class NamespaceCache {
 
     public List<NamespaceDescriptor> getAllNamespaces() {
         return new LinkedList<>(cache.values());
+    }
+
+    public List<String> getAllNamespaceFQNs() {
+        return getAllNamespaces()
+                .stream()
+                .map(FullQualifiedNameDescriptor::getFullQualifiedName)
+                .collect(Collectors.toList());
     }
 }
