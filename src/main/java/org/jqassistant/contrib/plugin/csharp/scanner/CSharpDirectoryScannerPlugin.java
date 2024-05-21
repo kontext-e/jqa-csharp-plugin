@@ -57,7 +57,7 @@ public class CSharpDirectoryScannerPlugin extends AbstractDirectoryScannerPlugin
             jsonDirectory = cSharpToJsonToolExecutor.execute(container);
 
             JsonToNeo4JConverter jsonToNeo4JConverter = new JsonToNeo4JConverter(scannerContext.getStore(), jsonDirectory);
-            jsonToNeo4JConverter.readAllJsonFilesAndSaveToNeo4J();
+           jsonToNeo4JConverter.readAllJsonFilesAndSaveToNeo4J();
 
         } catch (CSharpPluginException e) {
             e.printStackTrace();

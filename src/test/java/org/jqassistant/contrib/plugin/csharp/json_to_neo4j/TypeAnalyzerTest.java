@@ -1,9 +1,6 @@
 package org.jqassistant.contrib.plugin.csharp.json_to_neo4j;
 
-import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.caches.CSharpFileCache;
-import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.caches.EnumValueCache;
-import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.caches.NamespaceCache;
-import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.caches.TypeCache;
+import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.caches.*;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.ClassModel;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.EnumMemberModel;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.EnumModel;

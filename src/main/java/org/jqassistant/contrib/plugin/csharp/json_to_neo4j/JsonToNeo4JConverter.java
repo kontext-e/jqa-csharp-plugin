@@ -3,17 +3,12 @@ package org.jqassistant.contrib.plugin.csharp.json_to_neo4j;
 import com.buschmais.jqassistant.core.store.api.Store;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.caches.CSharpFileCache;
-import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.caches.EnumValueCache;
-import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.caches.FieldCache;
-import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.caches.MethodCache;
-import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.caches.NamespaceCache;
-import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.caches.PropertyCache;
-import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.caches.TypeCache;
+import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.caches.*;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.FileModel;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.MemberOwningTypeModel;
+import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.json_model.ProjectModel;
 import org.jqassistant.contrib.plugin.csharp.model.CSharpClassesDirectoryDescriptor;
-import org.jqassistant.contrib.plugin.csharp.model.CSharpFileDescriptor;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
@@ -23,7 +18,7 @@ import java.util.List;
 
 public class JsonToNeo4JConverter {
 
-    private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(JsonToNeo4JConverter.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(JsonToNeo4JConverter.class);
 
     private final Store store;
     private final File inputDirectory;
@@ -31,13 +26,14 @@ public class JsonToNeo4JConverter {
 
     private TypeCache typeCache;
     private CSharpFileCache cSharpFileCache;
+    private CSharpDirectoryCache cSharpDirectoryCache;
     private EnumValueCache enumValueCache;
     private NamespaceCache namespaceCache;
     private MethodCache methodCache;
     private FieldCache fieldCache;
     private PropertyCache propertyCache;
 
-    private List<FileModel> fileModelList;
+    private List<ProjectModel> projectModelList;
 
     private final MethodAnalyzer methodAnalyzer;
     private final FieldAnalyzer fieldAnalyzer;
@@ -46,6 +42,8 @@ public class JsonToNeo4JConverter {
     private final PropertyAnalyzer propertyAnalyzer;
     private final InvocationAnalyzer invocationAnalyzer;
     private final NamespaceAnalyzer namespaceAnalyzer;
+    private final FileAnalyzer fileAnalyzer;
+    private final ProjectAnalyzer projectAnalyzer;
 
     public JsonToNeo4JConverter(Store store, File inputDirectory) {
         initCaches(store);
@@ -60,22 +58,26 @@ public class JsonToNeo4JConverter {
         this.fieldAnalyzer = new FieldAnalyzer(store, fieldCache, typeCache);
         this.typeAnalyzer = new TypeAnalyzer(namespaceCache, cSharpFileCache, enumValueCache, typeCache);
         this.namespaceAnalyzer = new NamespaceAnalyzer(namespaceCache);
+        this.fileAnalyzer = new FileAnalyzer(cSharpFileCache, cSharpDirectoryCache);
+        this.projectAnalyzer = new ProjectAnalyzer(store);
     }
 
     private void initCaches(Store store) {
-            namespaceCache = new NamespaceCache(store);
-            cSharpFileCache = new CSharpFileCache(store);
-            methodCache = new MethodCache(store);
-            enumValueCache = new EnumValueCache(store);
-            fieldCache = new FieldCache(store);
-            propertyCache = new PropertyCache(store);
-            typeCache = new TypeCache(store);
+        namespaceCache = new NamespaceCache(store);
+        cSharpFileCache = new CSharpFileCache(store);
+        cSharpDirectoryCache = new CSharpDirectoryCache(store);
+        methodCache = new MethodCache(store);
+        enumValueCache = new EnumValueCache(store);
+        fieldCache = new FieldCache(store);
+        propertyCache = new PropertyCache(store);
+        typeCache = new TypeCache(store);
+
     }
 
 
     public void readAllJsonFilesAndSaveToNeo4J() {
 
-        fileModelList = new ArrayList<>();
+        projectModelList = new ArrayList<>();
 
         readJsonFilesRecursively(inputDirectory, null);
 
@@ -84,26 +86,32 @@ public class JsonToNeo4JConverter {
     }
 
     private void createDataStructure() {
-        typeAnalyzer.createTypes(fileModelList);
-        for (FileModel fileModel : fileModelList) {
-            dependencyAnalyzer.createUsings(fileModel);
-            dependencyAnalyzer.linkInterfaces(fileModel);
-            fileModel.getEnums().forEach(typeAnalyzer::createEnumMembers);
-            for (MemberOwningTypeModel memberOwningTypeModel : fileModel.getMemberOwningTypes()) {
-                fieldAnalyzer.createFields(memberOwningTypeModel, fileModel.getRelativePath());
-                propertyAnalyzer.createProperties(memberOwningTypeModel);
-                methodAnalyzer.createMethods(memberOwningTypeModel, fileModel.getRelativePath());
+        projectModelList.forEach(projectModel -> projectModel.getFileModels().forEach(fileAnalyzer::analyzeFile));
+        projectModelList.forEach(projectModel -> typeAnalyzer.createTypes(projectModel.getFileModels()));
+        for (ProjectModel projectModel : projectModelList){
+            projectAnalyzer.createProject(projectModel);
+            for (FileModel fileModel : projectModel.getFileModels()) {
+                dependencyAnalyzer.createUsings(fileModel);
+                dependencyAnalyzer.linkInterfaces(fileModel);
+                fileModel.getEnums().forEach(typeAnalyzer::createEnumMembers);
+                for (MemberOwningTypeModel memberOwningTypeModel : fileModel.getMemberOwningTypes()) {
+                    fieldAnalyzer.createFields(memberOwningTypeModel, fileModel.getRelativePath());
+                    propertyAnalyzer.createProperties(memberOwningTypeModel);
+                    methodAnalyzer.createMethods(memberOwningTypeModel, fileModel.getRelativePath());
+                }
             }
         }
     }
 
     private void linkDataStructure() {
-        for (FileModel fileModel : fileModelList){
-            fileModel.getClasses().forEach(dependencyAnalyzer::linkBaseTypes);
-            fileModel.getRecordClasses().forEach(dependencyAnalyzer::linkBaseTypes);
-            for (MemberOwningTypeModel memberOwningTypeModel : fileModel.getMemberOwningTypes()){
-                memberOwningTypeModel.getMethods().forEach(invocationAnalyzer::analyzeInvocations);
-                memberOwningTypeModel.getConstructors().forEach(invocationAnalyzer::analyzeInvocations);
+        for (ProjectModel projectModel : projectModelList) {
+            for (FileModel fileModel : projectModel.getFileModels()) {
+                fileModel.getClasses().forEach(dependencyAnalyzer::linkBaseTypes);
+                fileModel.getRecordClasses().forEach(dependencyAnalyzer::linkBaseTypes);
+                for (MemberOwningTypeModel memberOwningTypeModel : fileModel.getMemberOwningTypes()) {
+                    memberOwningTypeModel.getMethods().forEach(invocationAnalyzer::analyzeInvocations);
+                    memberOwningTypeModel.getConstructors().forEach(invocationAnalyzer::analyzeInvocations);
+                }
             }
         }
         partialityAnalyzer.linkPartialClasses();
@@ -128,29 +136,18 @@ public class JsonToNeo4JConverter {
 
     private void scanFile(CSharpClassesDirectoryDescriptor parentDirectoryDescriptor, File file) {
 
-        FileModel fileModel = parseAndCache(file);
-        fileModelList.add(fileModel);
-
-        CSharpFileDescriptor cSharpFileDescriptor = null;
-        if (fileModel != null) {
-            cSharpFileDescriptor = cSharpFileCache.create(fileModel.getAbsolutePath());
-            cSharpFileDescriptor.setName(fileModel.getName());
-            cSharpFileDescriptor.setFileName(fileModel.getRelativePath());
-        }
-
-        if (parentDirectoryDescriptor != null) {
-            parentDirectoryDescriptor.getContains().add(cSharpFileDescriptor);
-        }
+        ProjectModel projectModel = parseAndCache(file);
+        projectModelList.add(projectModel);
     }
 
-    private FileModel parseAndCache(File jsonFile) {
+    private ProjectModel parseAndCache(File jsonFile) {
 
         LOGGER.info("Processing JSON file: '{}'.", jsonFile.getName());
 
         ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
         try {
-            return mapper.readValue(jsonFile, FileModel.class);
+            return mapper.readValue(jsonFile, ProjectModel.class);
         } catch (IOException e) {
             LOGGER.error("Failed to parse JSON.", e);
         }
