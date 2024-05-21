@@ -59,7 +59,7 @@ public class JsonToNeo4JConverter {
         this.typeAnalyzer = new TypeAnalyzer(namespaceCache, cSharpFileCache, enumValueCache, typeCache);
         this.namespaceAnalyzer = new NamespaceAnalyzer(namespaceCache);
         this.fileAnalyzer = new FileAnalyzer(cSharpFileCache, cSharpDirectoryCache);
-        this.projectAnalyzer = new ProjectAnalyzer(store);
+        this.projectAnalyzer = new ProjectAnalyzer(store, cSharpFileCache);
     }
 
     private void initCaches(Store store) {
