@@ -89,7 +89,8 @@ public class MethodAnalyzer {
         methodDescriptor.setCyclomaticComplexity(methodModel.getCyclomaticComplexity());
         methodDescriptor.setImplementation(methodModel.isImplementation());
         methodDescriptor.setPartial(methodModel.isPartial());
-        methodDescriptor.setExtensionMethod(false);
+        methodDescriptor.setExtensionMethod(methodModel.isExtensionMethod());
+        methodDescriptor.setStatic(methodModel.isStaticKeyword());
     }
 
     private void addReturnType(MethodModel methodModel, MethodDescriptor methodDescriptor) {
