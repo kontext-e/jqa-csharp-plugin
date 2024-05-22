@@ -1,0 +1,61 @@
+<jqassistant-rules xmlns="http://schema.jqassistant.org/rule/v1.10"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://schema.jqassistant.org/rule/v1.10 https://schema.jqassistant.org/rule/jqassistant-rule-v1.10.xsd">
+    <group id="C#:LineCount">
+        <includeConcept refId="C#:LineCount:*"/>
+    </group>
+
+    <concept id="C#:LineCount:Methods" severity="info">
+        <requiresParameter name="CSharp_LineCount_Methods_Limit" type="int" defaultValue="20"/>
+        <description> Listing 20 Methods with the highest Line-count </description>
+        <cypher><![CDATA[
+            MATCH
+                (m:Method)
+            WHERE
+                m.effectiveLineCount is not null
+            RETURN
+                m.fqn as Name, m.effectiveLineCount as LineCount
+            ORDER BY
+                m.effectiveLineCount
+            DESC LIMIT $CSharp_LineCount_Methods_Limit
+        ]]></cypher>
+        <report primaryColumn="Name" />
+    </concept>
+
+    <concept id="C#:LineCount:Methods:Categories" severity="info">
+        <description>Sorting Methods into categories based on Line-count</description>
+        <cypher><![CDATA[
+        WITH
+            [1, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 200, 300, 400, 500, 1000, 5000, 10000] AS ranges
+        UNWIND
+            range(0, size(ranges) - 2) AS i
+        MATCH
+            (m:Method)
+        WHERE
+            m.effectiveLineCount >= ranges[i]
+        AND
+            m.effectiveLineCount < ranges[i+1]
+        RETURN
+            ranges[i] AS `Line Count From`, ranges[i+1] AS `Line Count To`, count(m) AS `Number of Methods`
+        ]]></cypher>
+        <report primaryColumn="Line Count From" />
+    </concept>
+
+    <concept id="C#:LineCount:Types" severity="info">
+        <requiresParameter name="CSharp_LineCount_Types_Limit" type="int" defaultValue="20"/>
+        <description>Listing the 20 Types with the highest Line-count</description>
+        <cypher><![CDATA[
+            MATCH
+                (t:Type)
+            WHERE
+                t.effectiveLineCount is not null
+            RETURN
+                t.fqn as Name, t.effectiveLineCount as LineCount
+            ORDER BY
+                t.effectiveLineCount
+            DESC LIMIT $CSharp_LineCount_Types_Limit
+        ]]></cypher>
+        <report primaryColumn="Name" />
+    </concept>
+
+</jqassistant-rules>

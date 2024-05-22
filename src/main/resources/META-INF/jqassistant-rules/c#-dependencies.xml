@@ -1,0 +1,180 @@
+<jqassistant-rules xmlns="http://schema.jqassistant.org/rule/v1.10"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://schema.jqassistant.org/rule/v1.10 https://schema.jqassistant.org/rule/jqassistant-rule-v1.10.xsd">
+
+    <group id="C#:Dependencies">
+        <includeConcept refId="C#:Dependencies:*"/>
+        <includeConcept refId="C#:*"/>
+    </group>
+
+    <concept id="C#:Dependencies:Types:FieldsAndProperties" severity="info">
+        <description>Marks Types that have Fields or Properties of other Types as dependent on it</description>
+        <cypher><![CDATA[
+            MATCH
+                (s:Type)-[:DECLARES]-(:Field)-[f:OF_TYPE]-(t:Type)
+            WHERE
+                t.fqn contains "." and not t.fqn starts with "System"
+            AND
+                s <> t
+            WITH
+                s, t, count(f) as coupling
+            MERGE
+                (s)-[d:DEPENDS_ON]->(t)
+            ON CREATE SET
+                d.coupling = coupling
+            ON MATCH SET
+                d.coupling = d.coupling + coupling
+            RETURN s, t
+            UNION
+            MATCH
+                (s:Type)-[:DECLARES]-(:Property)-[f:OF_TYPE]-(t:Type)
+            WHERE
+                t.fqn contains "." and not t.fqn starts with "System"
+            AND
+                s <> t
+            WITH
+                s, t, count(f) as coupling
+            MERGE
+                (s)-[d:DEPENDS_ON]->(t)
+            ON CREATE SET
+                d.coupling = coupling
+            ON MATCH SET
+                d.coupling = d.coupling + coupling
+            RETURN
+                s, t
+        ]]></cypher>
+    </concept>
+
+    <concept id="C#:Dependencies:Types:Inheritance" severity="info">
+        <description>Marks Types that Inherit from another Type as dependent on it</description>
+        <cypher><![CDATA[
+            MATCH
+                (s:Type)-[c:EXTENDS|IMPLEMENTS]->(t:Type)
+            WHERE
+                t.fqn contains "." and not t.fqn starts with "System"
+            AND
+                s <> t
+            WITH s, t, count(c) as coupling
+            MERGE
+                (s)-[d:DEPENDS_ON]-(t)
+            ON CREATE SET
+                d.coupling = coupling
+            ON MATCH SET
+                d.coupling = d.coupling + coupling
+            RETURN
+                s.fqn, t.fqn
+        ]]></cypher>
+    </concept>
+
+    <concept id="C#:Dependencies:Types:StaticCalls" severity="info">
+        <description>Marks Types as dependent on one another if type a contains a method that calls a static method of another type</description>
+        <cypher><![CDATA[
+                        MATCH
+                (s:Type)-[:DECLARES]->(m:Method)-[i:INVOKES]->(n:Method)<-[:DECLARES]-(t:Type)
+            WHERE
+                n.static
+            AND
+                s <> t
+            AND
+                t.fqn contains "." and not t.fqn starts with "System"
+            WITH
+                s, t, count(i) as coupling, m, n
+            MERGE
+                (s)-[d:DEPENDS_ON]-(t)
+            ON CREATE SET
+                d.coupling = coupling
+            ON MATCH SET
+                d.coupling = d.coupling + coupling
+            RETURN
+                m.fqn, n.fqn
+        ]]></cypher>
+    </concept>
+
+    <concept id="C#:Dependencies:Namespaces" severity="info">
+        <requiresConcept refId="C#:Dependencies:Types:FieldsAndProperties"/>
+        <requiresConcept refId="C#:Dependencies:Types:Inheritance"/>
+        <requiresConcept refId="C#:Dependencies:Types:StaticCalls"/>
+        <description>Marks Namespaces dependent on each other based on dependencies of Types</description>
+        <cypher><![CDATA[
+            MATCH
+                (sourceNamespace:Namespace)-[:CONTAINS]->(sourceType:Type)-[d:DEPENDS_ON]->(targetType:Type)<-[:CONTAINS]-(targetNamespace:Namespace)
+            WHERE
+                sourceNamespace <> targetNamespace
+            WITH
+                sourceNamespace, targetNamespace, sum(d.coupling) as coupling
+            MERGE
+                (sourceNamespace)-[d:DEPENDS_ON]-(targetNamespace)
+            SET
+                d.coupling = coupling
+            RETURN
+                sourceNamespace.fqn, targetNamespace.fqn, coupling
+        ]]></cypher>
+    </concept>
+
+    <concept id="C#:Dependencies:Projects" severity="info">
+        <requiresConcept refId="C#:Dependencies:Types:FieldsAndProperties"/>
+        <requiresConcept refId="C#:Dependencies:Types:Inheritance"/>
+        <requiresConcept refId="C#:Dependencies:Types:StaticCalls"/>
+        <description>Marks Projects Dependent on each other based on dependencies of Types within Projects</description>
+        <cypher><![CDATA[
+            MATCH
+                (p:Project)-[:CONTAINS]->(f:File)-[:CONTAINS]->(t:Type)-[r:DEPENDS_ON]->(d:Type)<-[:CONTAINS]-(w:File)<-[:CONTAINS]-(b:Project)
+            WHERE
+                p<>b
+            WITH
+                p, b, sum(r.coupling) as coupling
+            MERGE
+                r=(p)-[d:DEPENDS_ON]-(b)
+            SET
+                d.coupling = coupling
+            RETURN DISTINCT
+                r
+        ]]></cypher>
+    </concept>
+
+    <concept id="C#:Dependencies:TransitivePackageDependenciesFromChildToOther" severity="info">
+        <requiresConcept refId="C#:Dependencies:Namespaces"/>
+        <requiresConcept refId="C#:Namespaces:Levels"/>
+        <description>Add a DEPENDS_ON relationship to parents of namespace P *to* other namespace that depend on P</description>
+        <cypher><![CDATA[
+            MATCH
+                (parent:Namespace)-[:CONTAINS*]->(child:Namespace)-[r:DEPENDS_ON]->(other:Namespace)
+            WHERE
+                parent.level >= other.level
+			AND
+            	parent <> other
+            AND
+            	not exists(r.resolved)
+            MERGE
+                (parent)-[d:DEPENDS_ON]->(other)
+            SET
+                d.resolved=true
+            RETURN
+                distinct parent.fqn, other.fqn
+        ]]></cypher>
+    </concept>
+
+    <concept id="C#:Dependencies:TransitivePackageDependenciesFromOtherToChild" severity="info">
+        <requiresConcept refId="C#:Dependencies:Namespaces"/>
+        <requiresConcept refId="C#:Namespaces:Levels"/>
+        <description>Add a DEPENDS_ON relationship to parents of a package P *from* other namespace that depend on P.</description>
+        <cypher><![CDATA[
+            MATCH
+                (other:Namespace)-[r:DEPENDS_ON]->(child:Namespace),
+                (parent:Namespace)-[:CONTAINS*]->(child:Namespace)
+            WHERE
+                other.level <= parent.level
+			AND
+            	parent <> other
+            AND
+            	not exists(r.resolved)
+            MERGE
+                (other)-[d:DEPENDS_ON]->(parent)
+            SET
+                d.resolved=true
+            RETURN
+                distinct other.fqn, parent.fqn
+        ]]></cypher>
+    </concept>
+
+</jqassistant-rules>

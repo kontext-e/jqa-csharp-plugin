@@ -1,0 +1,74 @@
+<jqassistant-rules xmlns="http://schema.jqassistant.org/rule/v1.10"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://schema.jqassistant.org/rule/v1.10 https://schema.jqassistant.org/rule/jqassistant-rule-v1.10.xsd">
+
+    <group id="C#:Metrics:Methods">
+        <includeConcept refId="C#:Metrics:Methods:*"/>
+    </group>
+
+    <concept id="C#:Metrics:Methods:RatioPublic" severity="info">
+        <description>Calculates Ratio of public Methods to all Methods  </description>
+        <cypher><![CDATA[
+            Match
+                (n:Method)
+            WITH
+                count(n) as totalMethods
+            MATCH
+                (m:Method)
+            WHERE
+                m.accessibility = "Public"
+            RETURN
+                count(m)*1.0/totalMethods as RatioPublicMethods
+        ]]></cypher>
+    </concept>
+
+    <concept id="C#:Metrics:Methods:MostUsedMethod" severity="info">
+        <requiresParameter name="CSharp_Metrics_Methods_MostUsedMethod_Limit" type="int" defaultValue="20"/>
+        <description>Returns the Methods with the most incoming invokes-relation</description>
+        <cypher><![CDATA[
+        MATCH
+            (m:Method)-[i:INVOKES]->(n:Method)
+        RETURN
+            n.fqn as Method, count(i) as NumberOfInvokingMethods
+        ORDER BY
+            count(i)
+        DESC LIMIT $CSharp_Metrics_Methods_MostUsedMethod_Limit
+        ]]></cypher>
+        <report primaryColumn="Method" />
+    </concept>
+
+    <concept id="C#:Metrics:Methods:MostUsedMethodExceptAccessors" severity="info">
+        <requiresConcept refId="C#:Concept:Getter"/>
+        <requiresConcept refId="C#:Concept:Setter"/>
+        <requiresParameter name="CSharp_Metrics_Methods_MostUsedMethodExceptAccessors_Limit" type="int" defaultValue="20"/>
+        <description>Returns the Methods with the most incoming invokes-relation except getter/setter</description>
+        <cypher><![CDATA[
+            MATCH
+                (m:Method)-[i:INVOKES]->(n:Method)
+            WHERE NOT
+                n:Accessor
+            RETURN
+                n.fqn as Method, count(i) as NumberOfInvokingMethods
+            ORDER BY
+                count(i)
+            DESC LIMIT $CSharp_Metrics_Methods_MostUsedMethodExceptAccessors_Limit
+        ]]></cypher>
+        <report primaryColumn="Method" />
+    </concept>
+
+    <concept id="C#:Metrics:Methods:MostPartial" severity="info">
+        <requiresParameter name="CSharp_Metrics_Methods_MostPartial_Limit" type="int" defaultValue="20"/>
+        <description>Shows the 20 Methods with the highest number of partial Fragments</description>
+        <cypher><![CDATA[
+            MATCH
+                (m:Method)-[r:PARTIAL_WITH]-(n:Method)
+            RETURN
+                m.fqn as Name, count(n) as NumberOfPartialFragments
+            ORDER BY
+                count(n)
+            DESC LIMIT $CSharp_Metrics_Methods_MostPartial_Limit
+        ]]></cypher>
+        <report primaryColumn="Name" />
+    </concept>
+
+</jqassistant-rules>

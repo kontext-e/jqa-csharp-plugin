@@ -1,0 +1,93 @@
+<jqassistant-rules xmlns="http://schema.jqassistant.org/rule/v1.10"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://schema.jqassistant.org/rule/v1.10 https://schema.jqassistant.org/rule/jqassistant-rule-v1.10.xsd">
+
+    <group id="C#:Accessibility">
+        <includeConcept refId="C#:Accessibility:*"/>
+    </group>
+
+    <concept id="C#:Accessibility:PublicMethods" severity="info">
+        <description>Marks all public methods with label Public</description>
+        <cypher><![CDATA[
+            MATCH
+                (m:Method)
+            WHERE
+                m.accessibility='Public'
+            SET
+                m:Public
+            RETURN
+                count(m.name)
+        ]]></cypher>
+    </concept>
+
+    <concept id="C#:Accessibility:ProtectedMethods" severity="info">
+        <description>Marks all protected methods with label Protected</description>
+        <cypher><![CDATA[
+            MATCH
+                (m:Method)
+            WHERE
+                m.accessibility='Protected'
+            SET
+                m:Protected
+            RETURN
+                count(m.name)
+        ]]></cypher>
+    </concept>
+
+    <concept id="C#:Accessibility:PrivateMethods" severity="info">
+        <description>Marks all private methods with label Private</description>
+        <cypher><![CDATA[
+            MATCH
+                (m:Method)
+            WHERE
+                m.accessibility='Private'
+            SET
+                m:Private
+            RETURN
+                count(m.name)
+        ]]></cypher>
+    </concept>
+
+    <concept id="C#:Accessibility:PublicTypes" severity="info">
+        <description>Marks all public types with label Public</description>
+        <cypher><![CDATA[
+            MATCH
+                (m:Type)
+            WHERE
+                m.accessibility='Public'
+            SET
+                m:Public
+            RETURN
+                count(m.name)
+        ]]></cypher>
+    </concept>
+
+    <concept id="C#:Accessibility:ProtectedTypes" severity="info">
+        <description>Marks all protected types with label Protected</description>
+        <cypher><![CDATA[
+            MATCH
+                (m:Type)
+            WHERE
+                m.accessibility='Protected'
+            SET
+                m:Protected
+            RETURN
+                count(m.name)
+        ]]></cypher>
+    </concept>
+
+    <concept id="C#:Accessibility:PrivateTypes" severity="info">
+        <description>Marks all private types with label Private</description>
+        <cypher><![CDATA[
+            MATCH
+                (m:Type)
+            WHERE
+                m.accessibility='Private'
+            SET
+                m:Private
+            RETURN
+                count(m.name)
+        ]]></cypher>
+    </concept>
+
+</jqassistant-rules>

@@ -1,0 +1,38 @@
+<jqassistant-rules xmlns="http://schema.jqassistant.org/rule/v1.10"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://schema.jqassistant.org/rule/v1.10 https://schema.jqassistant.org/rule/jqassistant-rule-v1.10.xsd">
+
+    <group id="C#:Metrics:Types">
+        <includeConcept refId="C#:Metrics:Types:*"/>
+    </group>
+
+    <concept id="C#:Metrics:Types:NumberOfMethods" severity="info">
+        <description>Shows the 20 Classes with the highest number of Methods</description>
+        <cypher><![CDATA[
+            MATCH
+                (C:Class)-[r:DECLARES]-(m:Method)
+            RETURN
+                C.name as Name, count(r) as NumberOfDeclaredMethods
+            ORDER BY
+                count(r)
+            DESC LIMIT 20
+        ]]></cypher>
+        <report primaryColumn="Name" />
+    </concept>
+
+    <concept id="C#:Metrics:Types:MostPartial" severity="info">
+
+        <description>Shows the 20 Types with the highest number of partial Fragments</description>
+        <cypher><![CDATA[
+            MATCH
+                (t:Type)-[r:PARTIAL_WITH]-(d:Type)
+            RETURN
+                t.fqn as Name, count(d) as NumberOfPartialFragments
+            ORDER BY
+                count(d)
+            DESC LIMIT 20
+        ]]></cypher>
+        <report primaryColumn="Name" />
+    </concept>
+
+</jqassistant-rules>

@@ -1,0 +1,68 @@
+<jqassistant-rules xmlns="http://schema.jqassistant.org/rule/v1.10"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://schema.jqassistant.org/rule/v1.10 https://schema.jqassistant.org/rule/jqassistant-rule-v1.10.xsd">
+
+    <group id="C#:Concepts">
+        <includeConcept refId="C#:Concept:*"/>
+    </group>
+
+    <concept id="C#:Concept:DesignerClasses" severity="info">
+        <description>Marks all Designer Classes and their types and members as Generated</description>
+        <cypher><![CDATA[
+            MATCH
+                (f:File)-[:CONTAINS]-(t:Type)-[:DECLARES]-(m:Member)
+            WHERE
+                f.name ENDS WITH 'Designer.cs'
+            SET
+                f:Generated
+            SET
+                t:Generated
+            SET
+                m:Generated
+            RETURN
+                count(f)
+        ]]></cypher>
+    </concept>
+
+    <concept id="C#:Concept:Setter" severity="info">
+        <description>Marks Setters as such</description>
+        <cypher><![CDATA[
+            MATCH
+                (s:Method)
+            WHERE
+                s.fqn ENDS WITH 'set'
+            SET
+                s:Setter:Accessor
+            RETURN
+                count(s)
+        ]]></cypher>
+    </concept>
+
+    <concept id="C#:Concept:Getter" severity="info">
+        <description>Marks Getters as such</description>
+        <cypher><![CDATA[
+            MATCH
+                (g:Method)
+            WHERE
+                g.fqn ENDS WITH 'get'
+            SET
+                g:Getter:Accessor
+            RETURN
+                count(g)
+        ]]></cypher>
+    </concept>
+
+    <!--  rename  -->
+    <concept id="C#:Namespaces:Levels" severity="info">
+        <description>Adds int 'level' to each namespace</description>
+        <cypher><![CDATA[
+            MATCH
+                (n:Namespace)
+            SET
+                n.level = Size(Split(n.fqn, '.'))
+            RETURN
+                n
+        ]]></cypher>
+    </concept>
+
+</jqassistant-rules>

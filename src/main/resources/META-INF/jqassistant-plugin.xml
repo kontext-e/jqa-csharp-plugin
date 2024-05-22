@@ -30,4 +30,13 @@
     <scanner>
         <class>org.jqassistant.contrib.plugin.csharp.scanner.CSharpDirectoryScannerPlugin</class>
     </scanner>
+    <rules>
+        <resource>c#-concepts.xml</resource>
+        <resource>c#-dependencies.xml</resource>
+        <resource>c#-linecount.xml</resource>
+        <resource>c#-metric-methods.xml</resource>
+        <resource>c#-metrics-types.xml</resource>
+        <resource>c#-metrics-coupling.xml</resource>
+        <resource>c#-visibility.xml</resource>
+    </rules>
 </jqassistant-plugin>

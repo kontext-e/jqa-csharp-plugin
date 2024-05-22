@@ -1,0 +1,37 @@
+<jqassistant-rules xmlns="http://schema.jqassistant.org/rule/v1.10"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://schema.jqassistant.org/rule/v1.10 https://schema.jqassistant.org/rule/jqassistant-rule-v1.10.xsd">
+
+    <group id="C#:Metrics:Coupling">
+        <includeConcept refId="C#:Metrics:Coupling:*"/>
+    </group>
+
+    <concept id="C#:Metrics:Coupling:Namespaces" severity="info">
+        <description>Shows a list of dependent namespaces and their coupling (descending)</description>
+        <cypher><![CDATA[
+            MATCH
+                r=(n:Namespace)-[d:DEPENDS_ON]-(m:Namespace)
+            RETURN
+                n.fqn, m.fqn, d.coupling
+            ORDER BY
+                d.coupling
+            DESC
+        ]]></cypher>
+        <report primaryColumn="Name" />
+    </concept>
+
+    <concept id="C#:Metrics:Coupling:Projects" severity="info">
+        <description>Shows a list of dependent Projects and their coupling (descending)</description>
+        <cypher><![CDATA[
+            MATCH
+                r=(n:Project)-[d:DEPENDS_ON]-(m:Project)
+            RETURN
+                n.fqn, m.fqn, d.coupling
+            ORDER BY
+                d.coupling
+            DESC
+        ]]></cypher>
+        <report primaryColumn="Name" />
+    </concept>
+
+</jqassistant-rules>
