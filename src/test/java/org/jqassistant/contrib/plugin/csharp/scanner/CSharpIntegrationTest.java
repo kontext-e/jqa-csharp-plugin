@@ -1,6 +1,6 @@
 package org.jqassistant.contrib.plugin.csharp.scanner;
 
-import com.buschmais.jqassistant.plugin.common.test.AbstractPluginIT;
+import com.buschmais.jqassistant.core.test.plugin.AbstractPluginIT;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.JsonToNeo4JConverter;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;

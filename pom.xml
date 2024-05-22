@@ -5,7 +5,7 @@
 
     <groupId>de.kontext-e.jqassistant.plugin</groupId>
     <artifactId>jqassistant.plugin.csharp</artifactId>
-    <version>0.2.3</version>
+    <version>0.2.4-SNAPSHOT</version>
 
     <name>jQAssistant CSharp Plugin</name>
     <description>The jQAssistant plugin to scan and to analyze a CSharp instance.</description>
@@ -68,19 +68,11 @@
             <version>3.11</version>
         </dependency>
 
-
         <!-- https://mvnrepository.com/artifact/org.projectlombok/lombok -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <version>1.18.28</version>
-        </dependency>
-
-
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-            <version>2.12.7.1</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/net.harawata/appdirs -->
@@ -96,39 +88,32 @@
             <artifactId>zip4j</artifactId>
             <version>2.11.3</version>
         </dependency>
-
         <dependency>
             <groupId>com.buschmais.jqassistant.core</groupId>
             <artifactId>scanner</artifactId>
-            <version>1.12.0</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>com.buschmais.jqassistant.plugin</groupId>
-            <artifactId>common</artifactId>
-            <version>1.12.0</version>
-            <scope>provided</scope>
+            <version>2.1.0</version>
         </dependency>
         <dependency>
             <groupId>com.buschmais.jqassistant.core</groupId>
-            <artifactId>plugin</artifactId>
-            <version>1.12.0</version>
-            <scope>provided</scope>
+            <artifactId>report</artifactId>
+            <version>2.1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.buschmais.jqassistant.plugin</groupId>
+            <artifactId>common</artifactId>
+            <version>2.1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.buschmais.jqassistant.core</groupId>
+            <artifactId>store</artifactId>
+            <version>2.1.0</version>
         </dependency>
 
         <!-- Test dependencies -->
         <dependency>
-            <groupId>com.buschmais.jqassistant.neo4jserver</groupId>
-            <artifactId>neo4jv3</artifactId>
-            <version>1.12.0</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.buschmais.jqassistant.plugin</groupId>
-            <artifactId>common</artifactId>
-            <version>1.12.0</version>
-            <type>test-jar</type>
+            <groupId>com.buschmais.jqassistant.core</groupId>
+            <artifactId>test</artifactId>
+            <version>2.1.0</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -167,63 +152,10 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>com.buschmais.jqassistant</groupId>
-            <artifactId>jqa-distribution-specification</artifactId>
-            <version>${com.buschmais.jqassistant.version}</version>
-            <type>pom</type>
-            <scope>import</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.buschmais.xo</groupId>
-            <artifactId>xo.api</artifactId>
-            <version>${com.buschmais.xo.version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.buschmais.xo</groupId>
-            <artifactId>xo.spi</artifactId>
-            <version>${com.buschmais.xo.version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.buschmais.xo</groupId>
-            <artifactId>xo.impl</artifactId>
-            <version>${com.buschmais.xo.version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
             <version>${org.slf4j.version}</version>
             <scope>provided</scope>
-        </dependency>
-        <!--  jQA test dependencies  -->
-        <dependency>
-            <groupId>com.buschmais.jqassistant.core</groupId>
-            <artifactId>test</artifactId>
-            <version>${com.buschmais.jqassistant.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.buschmais.jqassistant.core</groupId>
-            <artifactId>store</artifactId>
-            <type>test-jar</type>
-            <version>${com.buschmais.jqassistant.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.buschmais.jqassistant.core</groupId>
-            <artifactId>analysis</artifactId>
-            <type>test-jar</type>
-            <version>${com.buschmais.jqassistant.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.buschmais.jqassistant.plugin</groupId>
-            <artifactId>java</artifactId>
-            <type>test-jar</type>
-            <version>${com.buschmais.jqassistant.version}</version>
-            <scope>test</scope>
         </dependency>
         <!--  General test dependencies  -->
         <dependency>
@@ -242,12 +174,6 @@
             <groupId>org.mockito</groupId>
             <artifactId>mockito-junit-jupiter</artifactId>
             <version>${org.mockito.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.hamcrest</groupId>
-            <artifactId>java-hamcrest</artifactId>
-            <version>${org.hamcrest.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -312,32 +238,6 @@
                     <source>8</source>
                     <target>8</target>
                 </configuration>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-shade-plugin</artifactId>
-                <version>3.1.1</version>
-
-                <configuration>
-                    <artifactSet>
-                        <excludes>
-                            <exclude>com.buschmais.xo:*</exclude>
-                            <exclude>javax.xml.bind:*</exclude>
-                            <exclude>javax.ws.rs:*</exclude>
-                            <exclude>com.sun.jersey:*</exclude>
-                        </excludes>
-                    </artifactSet>
-                </configuration>
-
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>shade</goal>
-                        </goals>
-                    </execution>
-                </executions>
             </plugin>
 
             <!--https://spotbugs.readthedocs.io/en/latest/maven.html-->

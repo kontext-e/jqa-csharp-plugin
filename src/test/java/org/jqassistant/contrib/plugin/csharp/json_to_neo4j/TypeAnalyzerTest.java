@@ -139,7 +139,6 @@ class TypeAnalyzerTest {
     private static <T extends TypeModel> void createTypeModel(Class<T> tClass, int i, T type) {
         when(type.getName()).thenReturn(tClass.toString() + i);
         when(type.getFqn()).thenReturn(tClass.toString() + i);
-        when(type.getMd5()).thenReturn(tClass.toString() + i);
         when(type.getFirstLineNumber()).thenReturn(5 + i);
         when(type.getLastLineNumber()).thenReturn(10 + i);
         when(type.getEffectiveLineCount()).thenReturn(5*i);
@@ -192,7 +191,6 @@ class TypeAnalyzerTest {
         TypeDescriptor typeDescriptor = cSharpFileDescriptor.getTypes().get(0);
         assertThat(typeDescriptor.getName()).isNotNull();
         assertThat(typeDescriptor.getFullQualifiedName()).isNotNull();
-        assertThat(typeDescriptor.getMd5()).isNotNull();
         assertThat(typeDescriptor.getRelativePath()).isNotNull();
         assertThat(typeDescriptor.getFirstLineNumber()).isNotNull();
         assertThat(typeDescriptor.getLastLineNumber()).isNotNull();

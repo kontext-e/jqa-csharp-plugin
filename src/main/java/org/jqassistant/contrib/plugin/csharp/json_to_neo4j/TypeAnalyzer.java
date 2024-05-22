@@ -64,7 +64,6 @@ public class TypeAnalyzer {
     private static void addGeneralInformation(TypeDescriptor descriptor, TypeModel typeModel) {
         descriptor.setName(typeModel.getName());
         descriptor.setFullQualifiedName(typeModel.getFqn());
-        descriptor.setMd5(typeModel.getMd5());
         descriptor.setRelativePath(typeModel.getRelativePath());
         descriptor.setFirstLineNumber(typeModel.getFirstLineNumber());
         descriptor.setLastLineNumber(typeModel.getLastLineNumber());

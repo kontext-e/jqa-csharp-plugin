@@ -15,8 +15,6 @@ public class TypeModel {
 
     private String fqn;
 
-    private String md5;
-
     private int firstLineNumber;
 
     private int lastLineNumber;

@@ -11,6 +11,4 @@ public class InterfaceModel extends MemberOwningTypeModel implements JsonModel {
 
     private boolean partial;
 
-    private String md5;
-
 }
