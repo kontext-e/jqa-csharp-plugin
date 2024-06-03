@@ -94,7 +94,9 @@ public class MethodAnalyzer {
     }
 
     private void addReturnType(MethodModel methodModel, MethodDescriptor methodDescriptor) {
-        TypeDescriptor returnTypeDescriptor = typeCache.findOrCreate(methodModel.getReturnType());
-        methodDescriptor.setReturns(returnTypeDescriptor);
+        for (String type : methodModel.getReturnTypes()) {
+            TypeDescriptor returnTypeDescriptor = typeCache.findOrCreate(type);
+            methodDescriptor.setReturns(returnTypeDescriptor);
+        }
     }
 }

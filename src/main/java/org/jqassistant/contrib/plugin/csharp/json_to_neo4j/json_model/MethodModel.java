@@ -30,7 +30,7 @@ public class MethodModel implements JsonModel {
 
     private String accessibility;
 
-    private String returnType;
+    private List<String> returnTypes;
 
     private String associatedProperty;
 

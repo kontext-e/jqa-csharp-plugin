@@ -13,6 +13,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -107,7 +108,7 @@ public class ParameterAnalyzerTest {
     private static ParameterModel createParameterModel(String name, String type) {
         ParameterModel parameterModel = new ParameterModel();
         parameterModel.setName(name);
-        parameterModel.setType(type);
+        parameterModel.setTypes(Collections.singletonList(type));
         return parameterModel;
     }
 

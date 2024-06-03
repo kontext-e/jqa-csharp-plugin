@@ -22,10 +22,7 @@ import org.jqassistant.contrib.plugin.csharp.model.TypeDescriptor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -252,5 +249,6 @@ public class MethodAnalyzerTest {
         methodModel.setCyclomaticComplexity(seed);
         methodModel.setImplementation(seed % 2 == 1);
         methodModel.setParameters(new ArrayList<>());
+        methodModel.setReturnTypes(Collections.singletonList("void"));
     }
 }

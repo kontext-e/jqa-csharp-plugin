@@ -46,9 +46,11 @@ public class ParameterAnalyzer {
 
     private void fillParameterDescriptor(int index, ParameterModel parameterModel, ParameterDescriptor parameterDescriptor) {
 
-        TypeDescriptor parameterTypeDescriptor = typeCache.findOrCreate(parameterModel.getType());
-        parameterDescriptor.setIndex(index);
-        parameterDescriptor.getTypes().add(parameterTypeDescriptor);
         parameterDescriptor.setName(parameterModel.getName());
+        parameterDescriptor.setIndex(index);
+        for (String type : parameterModel.getTypes()) {
+            TypeDescriptor parameterTypeDescriptor = typeCache.findOrCreate(type);
+            parameterDescriptor.getTypes().add(parameterTypeDescriptor);
+        }
     }
 }
