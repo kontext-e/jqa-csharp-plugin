@@ -17,8 +17,8 @@ public interface MethodDescriptor extends MemberDescriptor, AbstractDescriptor, 
     List<ParameterDescriptor> getParameters();
 
     @Relation("RETURNS")
-    TypeDescriptor getReturns();
-    void setReturns(TypeDescriptor returns);
+    List<TypeDescriptor> getReturns();
+    void setReturns(List<TypeDescriptor> returns);
 
     @Relation("THROWS")
     List<TypeDescriptor> getDeclaredThrowables();

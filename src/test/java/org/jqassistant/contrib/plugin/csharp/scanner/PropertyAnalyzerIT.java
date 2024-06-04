@@ -92,9 +92,9 @@ public class PropertyAnalyzerIT extends CSharpIntegrationTest {
 
         assertThat(result.get("m").size()).isEqualTo(2);
         MethodDescriptor getter = getAccessorOfType(result, "get");
-        assertThat(getter.getReturns().getFullQualifiedName()).isEqualTo("int");
+        assertThat(getter.getReturns().get(0).getFullQualifiedName()).isEqualTo("int");
         MethodDescriptor setter = getAccessorOfType(result, "set");
-        assertThat(setter.getReturns().getFullQualifiedName()).isEqualTo("void");
+        assertThat(setter.getReturns().get(0).getFullQualifiedName()).isEqualTo("void");
     }
 
     private static MethodDescriptor getAccessorOfType(Map<String, List<Object>> result, String accessor) {

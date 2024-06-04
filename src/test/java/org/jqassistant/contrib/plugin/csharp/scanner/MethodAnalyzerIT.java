@@ -22,7 +22,7 @@ public class MethodAnalyzerIT extends CSharpIntegrationTest {
     @TestStore(reset = false)
     void testMethodReturnType(){
         MethodDescriptor method = queryForMethods("Methods", "MethodWithReturnType").get(0);
-        assertThat(method.getReturns().getFullQualifiedName()).isEqualTo("int");
+        assertThat(method.getReturns().get(0).getFullQualifiedName()).isEqualTo("int");
     }
 
     @Test
@@ -52,7 +52,7 @@ public class MethodAnalyzerIT extends CSharpIntegrationTest {
     @TestStore(reset = false)
     void TestConstructor(){
         MethodDescriptor method = queryForMethods("Methods", ".ctor").get(0);
-        assertThat(method.getReturns().getFullQualifiedName()).isEqualTo("Project1.Methods");
+        assertThat(method.getReturns().get(0).getFullQualifiedName()).isEqualTo("Project1.Methods");
         assertThat(method instanceof ConstructorDescriptor).isTrue();
     }
 
