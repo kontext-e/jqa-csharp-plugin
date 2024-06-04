@@ -43,4 +43,6 @@ public class NonGenericClass
         return input;
     }
     
+    private void RecursiveGenericMethod<TRec>(TRec recursiveArgument) where TRec : EvenMoreGeneric<TRec> { }
+    
 }
