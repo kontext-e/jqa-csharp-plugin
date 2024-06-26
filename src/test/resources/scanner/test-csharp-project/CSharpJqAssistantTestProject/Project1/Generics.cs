@@ -25,7 +25,7 @@ public class EvenMoreGeneric<T>
 
 public class NonGenericClass
 {
-    protected T GenericMethodInNonGenericClass<T>(T input) => input;
+    public T GenericMethodInNonGenericClass<T>(T input) => input;
     protected T GenericMethodInNonGenericClassWithConstraints<T>(T input) where T : Properties => input;
     private TRec RecursiveGenericMethod<TRec>(TRec recursiveArgument) where TRec : EvenMoreGeneric<TRec> => recursiveArgument;
 }

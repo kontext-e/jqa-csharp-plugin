@@ -44,7 +44,7 @@ public class Invocations
         
     }
 
-    public void ArrayCreations()
+    public static void ArrayCreations()
     {
         int[] array1, array3 = new int[5]; // Declare a single-dimensional array of 5 integers
         int[] array2 = [1, 2, 3, 4, 5, 6]; // Declare and set array element values
@@ -76,6 +76,19 @@ public class Invocations
         Dependency1.DoSomething(new Properties());
         // MethodOverloads.OverloadedMethod(123.567f);
         // MethodOverloads.OverloadedMethod( new[] { "Hello" }, 123.567f);
+    }
+
+    private void Foo()
+    {
+        var nonGenericClass = new NonGenericClass();
+        var methods = new Methods();
+    }
+
+    private void InvocationOfGenericMethods()
+    {
+        var properties = new Properties();
+        var nonGenericClass = new NonGenericClass();
+        nonGenericClass.GenericMethodInNonGenericClass(new List<Properties>{properties});
     }
 
     private static bool Method() => true;

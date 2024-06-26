@@ -6,6 +6,7 @@ namespace Project1.Partiality
     {
         public partial int PartialMethod()
         {
+            Invocations.ArrayCreations();
             return 0;
         }
     }
