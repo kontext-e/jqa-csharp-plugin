@@ -31,7 +31,6 @@ public class InvocationAnalyzer {
     protected void analyzeInvocations(MethodModel methodModel){
         addInvocations(methodModel);
         addArrayCreations(methodModel);
-        addImplicitObjectCreations(methodModel);
     }
 
     private void addInvocations(MethodModel methodModel) {
@@ -40,6 +39,8 @@ public class InvocationAnalyzer {
         Optional<MethodDescriptor> methodDescriptor = methodCache.findAny(methodModel.getKey());
         if (!methodDescriptor.isPresent()) return;
         for (InvokesModel invokesModel : methodModel.getInvokedBy()) {
+            //The following two lines are an ugly workaround for the issue that for partial Methods
+            //each part of the method is asked "who are you invoked by?" so invocations are processed multiple times
             if (hasBeenProcessed(methodModel, invokesModel)) continue;
             markInvokesModelAsProcessed(methodModel, invokesModel);
 
@@ -84,19 +85,6 @@ public class InvocationAnalyzer {
             TypeDescriptor typeDescriptor = typeCache.findOrCreate(arrayCreationModel.getType());
             ArrayCreationDescriptor arrayCreationDescriptor = store.create(methodDescriptor.get(), ArrayCreationDescriptor.class, typeDescriptor);
             arrayCreationDescriptor.setLineNumber(arrayCreationModel.getLineNumber());
-        }
-    }
-
-    private void addImplicitObjectCreations(MethodModel methodModel) {
-        if (methodModel.getInvokes().isEmpty()) return;
-
-        Optional<MethodDescriptor> methodDescriptor = methodCache.findAny(methodModel.getFqn());
-        if (!methodDescriptor.isPresent()) return;
-        for (InvokesModel invokesModel : methodModel.getInvokes()){
-            Optional<MethodDescriptor> invokedMethod = methodCache.findAny(invokesModel.getMethodId());
-            if (!invokedMethod.isPresent()) continue;
-            InvokesDescriptor invokesDescriptor = store.create(methodDescriptor.get(), InvokesDescriptor.class, invokedMethod.get());
-            invokesDescriptor.setLineNumber(invokesModel.getLineNumber());
         }
     }
 }

@@ -26,7 +26,6 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -49,7 +48,6 @@ public class InvocationAnalyzerTest {
     void testMethodNoInvocations(){
         MethodModel methodModel = new MethodModel();
         methodModel.setInvokedBy(new ArrayList<>());
-        methodModel.setInvokes(new ArrayList<>());
         methodModel.setCreatesArrays(new ArrayList<>());
 
         invocationAnalyzer.analyzeInvocations(methodModel);
@@ -66,7 +64,6 @@ public class InvocationAnalyzerTest {
         invokesModel.setMethodId("Some.Method.ID");
         MethodModel methodModel = new MethodModel();
         methodModel.setFqn("f.q.n");
-        methodModel.setInvokes(new ArrayList<>());
         methodModel.setCreatesArrays(new ArrayList<>());
         methodModel.setInvokedBy(Collections.singletonList(invokesModel));
 
@@ -86,31 +83,6 @@ public class InvocationAnalyzerTest {
     }
 
     @Test
-    void testInvocationsByMethod(){
-        InvokesModel invokesModel = new InvokesModel();
-        invokesModel.setLineNumber(5);
-        invokesModel.setMethodId("Some.Method.ID");
-        MethodModel methodModel = new MethodModel();
-        methodModel.setFqn("f.q.n");
-        methodModel.setInvokedBy(new ArrayList<>());
-        methodModel.setCreatesArrays(new ArrayList<>());
-        methodModel.setInvokes(Collections.singletonList(invokesModel));
-
-        MethodDescriptor methodDescriptor = new MethodDescriptorImpl();
-        when(methodCache.findAny(anyString())).thenReturn(Optional.of(methodDescriptor));
-        MethodDescriptor invokedMethodDescriptor = new MethodDescriptorImpl();
-        when(methodCache.findOrCreate(any())).thenReturn(invokedMethodDescriptor);
-        InvokesDescriptor invokesDescriptor = new InvokesDescriptorImpl();
-        when(store.create(any(), eq(InvokesDescriptor.class), any())).thenReturn(invokesDescriptor);
-
-        invocationAnalyzer.analyzeInvocations(methodModel);
-
-        verify(methodCache, times(2)).findAny(any());
-        verify(store).create(any(), eq(InvokesDescriptor.class), any());
-        assertThat(invokesDescriptor.getLineNumber()).isEqualTo(5);
-    }
-
-    @Test
     void testArrayCreation(){
         ArrayCreationModel arrayCreationModel = new ArrayCreationModel();
         arrayCreationModel.setLineNumber(5);
@@ -118,7 +90,6 @@ public class InvocationAnalyzerTest {
         MethodModel methodModel = new MethodModel();
         methodModel.setFqn("f.q.n");
         methodModel.setInvokedBy(new ArrayList<>());
-        methodModel.setInvokes(new ArrayList<>());
         methodModel.setCreatesArrays(Collections.singletonList(arrayCreationModel));
 
         MethodDescriptor methodDescriptor = new MethodDescriptorImpl();
