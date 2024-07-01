@@ -66,6 +66,55 @@
         ]]></cypher>
     </concept>
 
+    <concept id="C#:Dependencies:Methods:Returns" severity="info">
+        <description>Marks Types as dependent on each other when a type contains a method that returns another type</description>
+        <cypher><![CDATA[
+            MATCH
+                (t:Type)-[:DECLARES]->(m:Method)-[:RETURNS]->(d:Type)
+            WHERE
+                t<>d
+            AND
+                d.fqn contains '.'
+            MERGE
+                (t)-[:DEPENDS_ON]->(d)
+            RETURN
+                t.fqn, d.fqn
+        ]]></cypher>
+    </concept>
+
+    <concept id="C#:Dependencies:Methods:Parameters" severity="info">
+        <description>Marks Types as dependent on each other when a type contains a method that has a parameter of another type</description>
+        <cypher><![CDATA[
+            MATCH
+                (t:Type)-[:DECLARES]->(m:Method)-[:HAS]->(p:Parameter)-[:OF_TYPE]->(d:Type)
+            WHERE
+                t<>d
+            AND
+                d.fqn contains '.'
+            MERGE
+                (t)-[:DEPENDS_ON]->(d)
+            RETURN
+                t.fqn, d.fqn
+        ]]></cypher>
+    </concept>
+
+    <concept id="C#:Dependencies:Methods:TypeParameters" severity="info">
+        <description>Marks Types as dependent on each other when a type contains a method calls a method with type parameters of another type</description>
+        <cypher><![CDATA[
+            MATCH
+                (t:Type)-[:DECLARES]->(m:Method)-[:INVOKES]->(:Invocation)->[:WITH_TYPE_PARAMETER]->(d:Type)
+            WHERE
+                t<>d
+            AND
+                d.fqn contains '.'
+            MERGE
+                (t)-[:DEPENDS_ON]->(d)
+            RETURN
+                t.fqn, d.fqn
+        ]]></cypher>
+    </concept>
+
+
     <concept id="C#:Dependencies:Types:StaticCalls" severity="info">
         <description>Marks Types as dependent on one another if type a contains a method that calls a static method of another type</description>
         <cypher><![CDATA[
@@ -94,6 +143,9 @@
         <requiresConcept refId="C#:Dependencies:Types:FieldsAndProperties"/>
         <requiresConcept refId="C#:Dependencies:Types:Inheritance"/>
         <requiresConcept refId="C#:Dependencies:Types:StaticCalls"/>
+        <requiresConcept refId="C#:Dependencies:Methods:Returns"/>
+        <requiresConcept refId="C#:Dependencies:Methods:Parameters"/>
+        <requiresConcept refId="C#:Dependencies:Methods:TypeParameters"/>
         <description>Marks Namespaces dependent on each other based on dependencies of Types</description>
         <cypher><![CDATA[
             MATCH
@@ -115,6 +167,9 @@
         <requiresConcept refId="C#:Dependencies:Types:FieldsAndProperties"/>
         <requiresConcept refId="C#:Dependencies:Types:Inheritance"/>
         <requiresConcept refId="C#:Dependencies:Types:StaticCalls"/>
+        <requiresConcept refId="C#:Dependencies:Methods:Returns"/>
+        <requiresConcept refId="C#:Dependencies:Methods:Parameters"/>
+        <requiresConcept refId="C#:Dependencies:Methods:TypeParameters"/>
         <description>Marks Projects Dependent on each other based on dependencies of Types within Projects</description>
         <cypher><![CDATA[
             MATCH
@@ -174,6 +229,34 @@
                 d.resolved=true
             RETURN
                 distinct other.fqn, parent.fqn
+        ]]></cypher>
+    </concept>
+    
+    <concept id="C#:Dependencies:Namespaces:HighestFanOut">
+        <requiresConcept refId="C#:Dependencies:Namespaces"/>
+        <description>Lists the namespace that depend on the most other namespaces</description>
+        <cypher><![CDATA[
+            MATCH
+                (n:Namespace)-[d:DEPENDS_ON]->(m:Namespace)
+            RETURN
+                n.fqn, count(d)
+            ORDER BY
+                count(d)
+            DESC
+        ]]></cypher>
+    </concept>
+
+    <concept id="C#:Dependencies:Namespaces:HighestFanIn">
+        <requiresConcept refId="C#:Dependencies:Namespaces"/>
+        <description>Lists the namespaces that are dependent on the most</description>
+        <cypher><![CDATA[
+            MATCH
+                (n:Namespace)<-[d:DEPENDS_ON]-(m:Namespace)
+            RETURN
+                n.fqn, count(d)
+            ORDER BY
+                count(d)
+            DESC
         ]]></cypher>
     </concept>
 
