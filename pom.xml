@@ -5,7 +5,7 @@
 
     <groupId>de.kontext-e.jqassistant.plugin</groupId>
     <artifactId>jqassistant.plugin.csharp</artifactId>
-    <version>0.2.4</version>
+    <version>0.3.0</version>
 
     <name>jQAssistant CSharp Plugin</name>
     <description>The jQAssistant plugin to scan and to analyze a CSharp instance.</description>
