@@ -4,6 +4,9 @@ import lombok.Getter;
 import lombok.Setter;
 import org.jqassistant.contrib.plugin.csharp.model.InvokesDescriptor;
 import org.jqassistant.contrib.plugin.csharp.model.MethodDescriptor;
+import org.jqassistant.contrib.plugin.csharp.model.TypeDescriptor;
+
+import java.util.List;
 
 @Getter
 @Setter
@@ -13,6 +16,7 @@ public class InvokesDescriptorImpl implements InvokesDescriptor {
 
     private MethodDescriptor invokedMethod;
     private MethodDescriptor invokingMethod;
+    private List<TypeDescriptor> genericTypeArguments;
 
     @Override
     public <I> I getId() {

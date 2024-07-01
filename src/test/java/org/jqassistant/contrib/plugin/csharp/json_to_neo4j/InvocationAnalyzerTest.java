@@ -31,16 +31,13 @@ import static org.mockito.Mockito.when;
 
 public class InvocationAnalyzerTest {
 
-    private Store store;
-    private MethodCache methodCache;
+    private final Store store = mock();
+    private final MethodCache methodCache = mock();
     private InvocationAnalyzer invocationAnalyzer;
-    private TypeCache typeCache;
+    private final TypeCache typeCache = mock();
 
     @BeforeEach
     void setup(){
-        store = mock();
-        methodCache = mock();
-        typeCache = mock();
         invocationAnalyzer = new InvocationAnalyzer(store, methodCache, typeCache);
     }
 
@@ -62,6 +59,7 @@ public class InvocationAnalyzerTest {
         InvokesModel invokesModel = new InvokesModel();
         invokesModel.setLineNumber(3);
         invokesModel.setMethodId("Some.Method.ID");
+        invokesModel.setTypeArguments(new ArrayList<>());
         MethodModel methodModel = new MethodModel();
         methodModel.setFqn("f.q.n");
         methodModel.setCreatesArrays(new ArrayList<>());
@@ -72,13 +70,13 @@ public class InvocationAnalyzerTest {
         MethodDescriptor invokedMethodDescriptor = new MethodDescriptorImpl();
         when(methodCache.findOrCreate(any())).thenReturn(invokedMethodDescriptor);
         InvokesDescriptor invokesDescriptor = new InvokesDescriptorImpl();
-        when(store.create(any(), eq(InvokesDescriptor.class), any())).thenReturn(invokesDescriptor);
+        when(store.create(InvokesDescriptor.class)).thenReturn(invokesDescriptor);
 
         invocationAnalyzer.analyzeInvocations(methodModel);
 
         verify(methodCache).findAny(any());
         verify(methodCache).findOrCreate(any());
-        verify(store).create(any(), eq(InvokesDescriptor.class), any());
+        verify(store).create(InvokesDescriptor.class);
         assertThat(invokesDescriptor.getLineNumber()).isEqualTo(3);
     }
 

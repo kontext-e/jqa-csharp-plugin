@@ -24,9 +24,8 @@ public interface MethodDescriptor extends MemberDescriptor, AbstractDescriptor, 
     List<TypeDescriptor> getDeclaredThrowables();
 
     @Outgoing
+    @Relation("INVOKES")
     List<InvokesDescriptor> getInvokes();
-    @Incoming
-    List<InvokesDescriptor> getInvokedBy();
 
     @Outgoing
     List<ArrayCreationDescriptor> getCreatesArray();

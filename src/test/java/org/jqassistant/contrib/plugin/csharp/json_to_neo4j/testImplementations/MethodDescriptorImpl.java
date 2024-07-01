@@ -43,9 +43,9 @@ public class MethodDescriptorImpl implements MethodDescriptor {
     private PropertyDescriptor associatedProperty;
 
     private List<ArrayCreationDescriptor> createsArray;
-    private List<InvokesDescriptor> invokes;
+    private List<InvokesDescriptor> invokes = new ArrayList<>();
     private List<InvokesDescriptor> invokedBy;
-    private List<TypeDescriptor> returns;
+    private List<TypeDescriptor> returns = new ArrayList<>();
     private TypeDescriptor extendedType;
     private List<ParameterDescriptor> parameters = new ArrayList<>();
     private List<TypeDescriptor> declaredThrowables;

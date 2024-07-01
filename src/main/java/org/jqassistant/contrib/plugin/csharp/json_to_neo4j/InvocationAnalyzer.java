@@ -70,10 +70,18 @@ public class InvocationAnalyzer {
         }
     }
 
-    private void addInvocation(MethodDescriptor methodDescriptor, InvokesModel invokesModel) {
-        MethodDescriptor invokedMethodDescriptor = methodCache.findOrCreate(invokesModel.getMethodId());
-        InvokesDescriptor invokesDescriptor = store.create(invokedMethodDescriptor, InvokesDescriptor.class, methodDescriptor);
+    private void addInvocation(MethodDescriptor invokedMethodDescriptor, InvokesModel invokesModel) {
+        MethodDescriptor invokingMethodDescriptor = methodCache.findOrCreate(invokesModel.getMethodId());
+        InvokesDescriptor invokesDescriptor = store.create(InvokesDescriptor.class);
+
+        invokingMethodDescriptor.getInvokes().add(invokesDescriptor);
+        invokesDescriptor.setInvokedMethod(invokedMethodDescriptor);
+
         invokesDescriptor.setLineNumber(invokesModel.getLineNumber());
+        for (String typeArgument : invokesModel.getTypeArguments()) {
+            TypeDescriptor typeDescriptor = typeCache.findOrCreate(typeArgument);
+            invokesDescriptor.getGenericTypeArguments().add(typeDescriptor);
+        }
     }
 
     private void addArrayCreations(MethodModel methodModel) {

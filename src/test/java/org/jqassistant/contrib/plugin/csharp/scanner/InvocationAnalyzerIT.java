@@ -16,13 +16,13 @@ public class InvocationAnalyzerIT extends CSharpIntegrationTest {
     @Test
     @TestStore(reset = false)
     void testInvocationsOfMemberMethod(){
-        MethodDescriptor method = (MethodDescriptor) query("Match (m:Method)-[:INVOKES]-(:Method) where m.name=\"Method\" return m").getColumn("m").get(0);
+        MethodDescriptor method = (MethodDescriptor) query("Match (m:Method) where m.fqn=\"Project1.Invocations.Invocations()\" return m").getColumn("m").get(0);
 
-        List<InvokesDescriptor> invokedBy = method.getInvokedBy();
-        assertThat(invokedBy.size()).isEqualTo(2);
-        assertThat(invokedBy.stream().allMatch(m->m.getInvokingMethod().getFullQualifiedName().equals("Project1.Invocations.Invocations()"))).isTrue();
-        assertThat(invokedBy.stream().anyMatch(i->i.getLineNumber() == 16)).isTrue();
-        assertThat(invokedBy.stream().anyMatch(i->i.getLineNumber() == 39)).isTrue();
+        List<InvokesDescriptor> invokedBy = method.getInvokes();
+        List<InvokesDescriptor> invocationsOfMethod = invokedBy.stream().filter(m -> m.getInvokedMethod().getName().equals("Method")).collect(Collectors.toList());
+        assertThat(invocationsOfMethod.size()).isEqualTo(2);
+        assertThat(invocationsOfMethod.stream().anyMatch(i->i.getLineNumber() == 16)).isTrue();
+        assertThat(invocationsOfMethod.stream().anyMatch(i->i.getLineNumber() == 39)).isTrue();
     }
 
     @Test
@@ -141,7 +141,7 @@ public class InvocationAnalyzerIT extends CSharpIntegrationTest {
 
     private MethodDescriptor queryForMethodInvocation(String methodName){
         return (MethodDescriptor) query(String.format(
-            "Match (m:Method)-[:INVOKES]-(:Method) where m.fqn=\"%s\" return m",
+            "Match (m:Method)-[:INVOKES]-(:Invocation)-[:INVOKES]-(:Method) where m.fqn=\"%s\" return m",
             methodName)
         ).getColumn("m")
                 .get(0);
