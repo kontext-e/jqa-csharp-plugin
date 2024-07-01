@@ -11,7 +11,7 @@ import java.io.File;
 
 public class CSharpToJsonTestRunner implements TestExecutionListener {
 
-    public static final String RELATIVE_PATH_TO_TEST_PROJECT = "src/test/resources/scanner/test-csharp-project";
+    public static final String RELATIVE_PATH_TO_TEST_PROJECT = "src/test/resources/scanner/test-csharp-project/CSharpJqAssistantTestProject/CSharpJqAssistantTestProject.sln";
     public static File jsonDirectory;
 
     @Override
