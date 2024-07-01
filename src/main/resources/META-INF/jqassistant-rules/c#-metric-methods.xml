@@ -9,16 +9,20 @@
     <concept id="C#:Metrics:Methods:RatioPublic" severity="info">
         <description>Calculates Ratio of public Methods to all Methods  </description>
         <cypher><![CDATA[
-            Match
+            MATCH
                 (n:Method)
             WITH
                 count(n) as totalMethods
-            MATCH
-                (m:Method)
-            WHERE
-                m.accessibility = "Public"
+            CALL {
+              WITH
+                totalMethods
+              MATCH
+                (m:Method) WHERE m.accessibility = "Public"
+              RETURN
+                count(m) as publicMethods
+            }
             RETURN
-                count(m)*1.0/totalMethods as RatioPublicMethods
+                publicMethods * 1.0 / totalMethods as RatioPublicMethods
         ]]></cypher>
     </concept>
 
@@ -27,7 +31,7 @@
         <description>Returns the Methods with the most incoming invokes-relation</description>
         <cypher><![CDATA[
         MATCH
-            (m:Method)-[i:INVOKES]->(n:Method)
+            (m:Method)-[i:INVOKES]->(:Invocation)-[:INVOKES]->(n:Method)
         RETURN
             n.fqn as Method, count(i) as NumberOfInvokingMethods
         ORDER BY
@@ -44,7 +48,7 @@
         <description>Returns the Methods with the most incoming invokes-relation except getter/setter</description>
         <cypher><![CDATA[
             MATCH
-                (m:Method)-[i:INVOKES]->(n:Method)
+                (m:Method)-[i:INVOKES]->(:Invocation)-[:INVOKES]->(n:Method)
             WHERE NOT
                 n:Accessor
             RETURN

@@ -18,7 +18,6 @@
                 d.coupling
             DESC
         ]]></cypher>
-        <report primaryColumn="Name" />
     </concept>
 
     <concept id="C#:Metrics:Coupling:Projects" severity="info">
@@ -33,7 +32,6 @@
                 d.coupling
             DESC
         ]]></cypher>
-        <report primaryColumn="Name" />
     </concept>
 
 </jqassistant-rules>

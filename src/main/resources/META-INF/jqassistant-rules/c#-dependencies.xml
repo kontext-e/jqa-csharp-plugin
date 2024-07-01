@@ -70,7 +70,7 @@
         <description>Marks Types as dependent on one another if type a contains a method that calls a static method of another type</description>
         <cypher><![CDATA[
                         MATCH
-                (s:Type)-[:DECLARES]->(m:Method)-[i:INVOKES]->(n:Method)<-[:DECLARES]-(t:Type)
+                (s:Type)-[:DECLARES]->(m:Method)-[i:INVOKES]->(:Invocation)-[:INVOKES]->(n:Method)<-[:DECLARES]-(t:Type)
             WHERE
                 n.static
             AND
@@ -144,7 +144,7 @@
 			AND
             	parent <> other
             AND
-            	not exists(r.resolved)
+            	r.resolved IS NULL
             MERGE
                 (parent)-[d:DEPENDS_ON]->(other)
             SET
@@ -167,7 +167,7 @@
 			AND
             	parent <> other
             AND
-            	not exists(r.resolved)
+            	r.resolved IS NULL
             MERGE
                 (other)-[d:DEPENDS_ON]->(parent)
             SET
