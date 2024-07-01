@@ -133,6 +133,26 @@ public class InvocationAnalyzerIT extends CSharpIntegrationTest {
         ).isEqualTo(1);
     }
 
+    @Test
+    @TestStore(reset = false)
+    void testGenericMethodTypeParameters(){
+        MethodDescriptor method = queryForMethodInvocation("Project1.Invocations.InvocationOfGenericMethods()");
+
+        List<InvokesDescriptor> genericMethodInvocation = method
+                .getInvokes()
+                .stream()
+                .filter(m -> m.getInvokedMethod()
+                        .getFullQualifiedName()
+                        .equals("Project1.NonGenericClass.GenericMethodInNonGenericClass<T>(T)"))
+                .collect(Collectors.toList());
+        assertThat(genericMethodInvocation.size()).isEqualTo(1);
+
+        List<TypeDescriptor> genericTypeArguments = genericMethodInvocation.get(0).getGenericTypeArguments();
+        assertThat(genericTypeArguments.size()).isEqualTo(2);
+        assertThat(genericTypeArguments.stream().anyMatch(i->i.getFullQualifiedName().equals("Project1.Properties"))).isTrue();
+        assertThat(genericTypeArguments.stream().anyMatch(i->i.getFullQualifiedName().equals("System.Collections.Generic.List<T>"))).isTrue();
+    }
+
     private static boolean containsCalledMethod(MethodDescriptor method, String methodName) {
         return method.getInvokes()
                 .stream()
