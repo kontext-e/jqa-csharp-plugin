@@ -102,7 +102,7 @@
         <description>Marks Types as dependent on each other when a type contains a method calls a method with type parameters of another type</description>
         <cypher><![CDATA[
             MATCH
-                (t:Type)-[:DECLARES]->(m:Method)-[:INVOKES]->(:Invocation)->[:WITH_TYPE_PARAMETER]->(d:Type)
+                (t:Type)-[:DECLARES]->(m:Method)-[:INVOKES]->(:Invocation)-[:WITH_TYPE_PARAMETER]->(d:Type)
             WHERE
                 t<>d
             AND
