@@ -37,7 +37,8 @@ public class CSharpDirectoryScannerPlugin extends AbstractScannerPlugin<FileReso
 
     @Override
     public boolean accepts(FileResource item, String path, Scope scope) throws IOException {
-        return item.getFile().getName().endsWith(".sln");
+        String name = item.getFile().getName();
+        return name.endsWith(".sln") || name.endsWith(".slnf");
     }
 
     @Override
