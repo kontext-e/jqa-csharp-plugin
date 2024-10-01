@@ -10,7 +10,7 @@
         <description>Shows the 20 Classes with the highest number of Methods</description>
         <cypher><![CDATA[
             MATCH
-                (C:Class)-[r:DECLARES]-(m:Method)
+                (C:Class:`C#`)-[r:DECLARES]-(m:Method:`C#`)
             RETURN
                 C.name as Name, count(r) as NumberOfDeclaredMethods
             ORDER BY
@@ -25,7 +25,7 @@
         <description>Shows the 20 Types with the highest number of partial Fragments</description>
         <cypher><![CDATA[
             MATCH
-                (t:Type)-[r:PARTIAL_WITH]-(d:Type)
+                (t:Type:`C#`)-[r:PARTIAL_WITH]-(d:Type:`C#`)
             RETURN
                 t.fqn as Name, count(d) as NumberOfPartialFragments
             ORDER BY

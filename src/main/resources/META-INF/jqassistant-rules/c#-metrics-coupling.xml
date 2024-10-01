@@ -11,7 +11,7 @@
         <description>Shows a list of dependent namespaces and their coupling (descending)</description>
         <cypher><![CDATA[
             MATCH
-                r=(n:Namespace)-[d:DEPENDS_ON]-(m:Namespace)
+                r=(n:Namespace:`C#`)-[d:DEPENDS_ON]-(m:Namespace:`C#`)
             RETURN
                 n.fqn, m.fqn, d.coupling
             ORDER BY
@@ -25,7 +25,7 @@
         <description>Shows a list of dependent Projects and their coupling (descending)</description>
         <cypher><![CDATA[
             MATCH
-                r=(n:Project)-[d:DEPENDS_ON]-(m:Project)
+                r=(n:Project:`C#`)-[d:DEPENDS_ON]-(m:Project:`C#`)
             RETURN
                 n.fqn, m.fqn, d.coupling
             ORDER BY

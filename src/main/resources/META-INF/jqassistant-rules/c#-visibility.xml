@@ -10,7 +10,7 @@
         <description>Marks all public methods with label Public</description>
         <cypher><![CDATA[
             MATCH
-                (m:Method)
+                (m:Method:`C#`)
             WHERE
                 m.accessibility='Public'
             SET
@@ -24,7 +24,7 @@
         <description>Marks all protected methods with label Protected</description>
         <cypher><![CDATA[
             MATCH
-                (m:Method)
+                (m:Method:`C#`)
             WHERE
                 m.accessibility='Protected'
             SET
@@ -38,7 +38,7 @@
         <description>Marks all private methods with label Private</description>
         <cypher><![CDATA[
             MATCH
-                (m:Method)
+                (m:Method:`C#`)
             WHERE
                 m.accessibility='Private'
             SET
@@ -52,7 +52,7 @@
         <description>Marks all public types with label Public</description>
         <cypher><![CDATA[
             MATCH
-                (m:Type)
+                (m:Type:`C#`)
             WHERE
                 m.accessibility='Public'
             SET
@@ -66,7 +66,7 @@
         <description>Marks all protected types with label Protected</description>
         <cypher><![CDATA[
             MATCH
-                (m:Type)
+                (m:Type:`C#`)
             WHERE
                 m.accessibility='Protected'
             SET
@@ -80,7 +80,7 @@
         <description>Marks all private types with label Private</description>
         <cypher><![CDATA[
             MATCH
-                (m:Type)
+                (m:Type:`C#`)
             WHERE
                 m.accessibility='Private'
             SET

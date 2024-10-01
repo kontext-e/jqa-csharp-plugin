@@ -4,14 +4,24 @@
 
     <group id="C#:Dependencies">
         <includeConcept refId="C#:Dependencies:*"/>
-        <includeConcept refId="C#:*"/>
     </group>
 
-    <concept id="C#:Dependencies:Types:FieldsAndProperties" severity="info">
-        <description>Marks Types that have Fields or Properties of other Types as dependent on it</description>
+    <concept id="C#:Dependencies:Types">
+        <description>Abstract Concept to enable extension by other Concepts</description>
+        <cypher><![CDATA[RETURN 0]]></cypher>
+    </concept>
+
+    <concept id="C#:Dependencies:Methods">
+        <description>Abstract Concept to enable extension by other Concepts</description>
+        <cypher><![CDATA[RETURN 0]]></cypher>
+    </concept>
+
+    <concept id="C#:Dependencies:Types:Fields" severity="info">
+        <providesConcept refId="C#:Dependencies:Types"/>
+        <description>Marks Types that have Fields of other Types as dependent on it</description>
         <cypher><![CDATA[
             MATCH
-                (s:Type)-[:DECLARES]-(:Field)-[f:OF_TYPE]-(t:Type)
+                (s:Type:`C#`)-[:DECLARES]-(:Field:`C#`)-[f:OF_TYPE]-(t:Type:`C#`)
             WHERE
                 t.fqn contains "." and not t.fqn starts with "System"
             AND
@@ -25,9 +35,15 @@
             ON MATCH SET
                 d.coupling = d.coupling + coupling
             RETURN s, t
-            UNION
+        ]]></cypher>
+    </concept>
+
+    <concept id="C#:Dependencies:Types:Properties" severity="info">
+        <providesConcept refId="C#:Dependencies:Types"/>
+        <description>Marks Types that have Properties of other Types as dependent on it</description>
+        <cypher><![CDATA[
             MATCH
-                (s:Type)-[:DECLARES]-(:Property)-[f:OF_TYPE]-(t:Type)
+                (s:Type:`C#`)-[:DECLARES]-(:Property:`C#`)-[f:OF_TYPE]-(t:Type:`C#`)
             WHERE
                 t.fqn contains "." and not t.fqn starts with "System"
             AND
@@ -46,10 +62,11 @@
     </concept>
 
     <concept id="C#:Dependencies:Types:Inheritance" severity="info">
+        <providesConcept refId="C#:Dependencies:Types"/>
         <description>Marks Types that Inherit from another Type as dependent on it</description>
         <cypher><![CDATA[
             MATCH
-                (s:Type)-[c:EXTENDS|IMPLEMENTS]->(t:Type)
+                (s:Type:`C#`)-[c:EXTENDS|IMPLEMENTS]->(t:Type:`C#`)
             WHERE
                 t.fqn contains "." and not t.fqn starts with "System"
             AND
@@ -67,59 +84,78 @@
     </concept>
 
     <concept id="C#:Dependencies:Methods:Returns" severity="info">
+        <providesConcept refId="C#:Dependencies:Methods"/>
         <description>Marks Types as dependent on each other when a type contains a method that returns another type</description>
         <cypher><![CDATA[
             MATCH
-                (t:Type)-[:DECLARES]->(m:Method)-[:RETURNS]->(d:Type)
+                (s:Type:`C#`)-[:DECLARES]->(m:Method:`C#`)-[c:RETURNS]->(t:Type:`C#`)
             WHERE
-                t<>d
+                t<>s
             AND
-                d.fqn contains '.'
+                t.fqn contains '.'
+            WITH s, t, count(c) as coupling
             MERGE
-                (t)-[:DEPENDS_ON]->(d)
+                (s)-[d:DEPENDS_ON]->(t)
+            ON CREATE SET
+                d.coupling = coupling
+            ON MATCH SET
+                d.coupling = d.coupling + coupling
             RETURN
-                t.fqn, d.fqn
+                s.fqn, t.fqn
         ]]></cypher>
     </concept>
 
     <concept id="C#:Dependencies:Methods:Parameters" severity="info">
+        <providesConcept refId="C#:Dependencies:Methods"/>
         <description>Marks Types as dependent on each other when a type contains a method that has a parameter of another type</description>
         <cypher><![CDATA[
             MATCH
-                (t:Type)-[:DECLARES]->(m:Method)-[:HAS]->(p:Parameter)-[:OF_TYPE]->(d:Type)
+                (s:Type:`C#`)-[:DECLARES]->(m:Method:`C#`)-[:HAS]->(p:Parameter:`C#`)-[c:OF_TYPE]->(t:Type:`C#`)
             WHERE
-                t<>d
+                t<>s
             AND
-                d.fqn contains '.'
+                t.fqn contains '.'
+            WITH s, t, count(c) as coupling
             MERGE
-                (t)-[:DEPENDS_ON]->(d)
+                (s)-[d:DEPENDS_ON]->(t)
+            ON CREATE SET
+                d.coupling = coupling
+            ON MATCH SET
+                d.coupling = d.coupling + coupling
             RETURN
-                t.fqn, d.fqn
+                s.fqn, t.fqn
         ]]></cypher>
     </concept>
 
     <concept id="C#:Dependencies:Methods:TypeParameters" severity="info">
+        <providesConcept refId="C#:Dependencies:Methods"/>
         <description>Marks Types as dependent on each other when a type contains a method calls a method with type parameters of another type</description>
         <cypher><![CDATA[
             MATCH
-                (t:Type)-[:DECLARES]->(m:Method)-[:INVOKES]->(:Invocation)-[:WITH_TYPE_PARAMETER]->(d:Type)
+                (s:Type:`C#`)-[:DECLARES]->(m:Method:`C#`)-[:INVOKES]->(:Invocation:`C#`)-[c:WITH_TYPE_PARAMETER]->(t:Type:`C#`)
             WHERE
-                t<>d
+                s<>t
             AND
-                d.fqn contains '.'
+                t.fqn contains '.'
+            WITH s, t, count(c) as coupling
             MERGE
-                (t)-[:DEPENDS_ON]->(d)
+                (s)-[d:DEPENDS_ON]->(t)
+            ON CREATE SET
+                d.coupling = coupling
+            ON MATCH SET
+                d.coupling = d.coupling + coupling
             RETURN
-                t.fqn, d.fqn
+                s.fqn, t.fqn
         ]]></cypher>
     </concept>
 
 
     <concept id="C#:Dependencies:Types:StaticCalls" severity="info">
+        <providesConcept refId="C#:Dependencies:Types"/>
         <description>Marks Types as dependent on one another if type a contains a method that calls a static method of another type</description>
         <cypher><![CDATA[
                         MATCH
-                (s:Type)-[:DECLARES]->(m:Method)-[i:INVOKES]->(:Invocation)-[:INVOKES]->(n:Method)<-[:DECLARES]-(t:Type)
+                (s:Type:`C#`)-[:DECLARES]->(m:Method:`C#`)-[i:INVOKES]->(:Invocation)-[:INVOKES]->(n:Method:`C#`)<-[:DECLARES]-(t:Type:`C#`)
             WHERE
                 n.static
             AND
@@ -140,48 +176,44 @@
     </concept>
 
     <concept id="C#:Dependencies:Namespaces" severity="info">
-        <requiresConcept refId="C#:Dependencies:Types:FieldsAndProperties"/>
-        <requiresConcept refId="C#:Dependencies:Types:Inheritance"/>
-        <requiresConcept refId="C#:Dependencies:Types:StaticCalls"/>
-        <requiresConcept refId="C#:Dependencies:Methods:Returns"/>
-        <requiresConcept refId="C#:Dependencies:Methods:Parameters"/>
-        <requiresConcept refId="C#:Dependencies:Methods:TypeParameters"/>
+        <requiresConcept refId="C#:Dependencies:Types"/>
+        <requiresConcept refId="C#:Dependencies:Methods"/>
         <description>Marks Namespaces dependent on each other based on dependencies of Types</description>
         <cypher><![CDATA[
             MATCH
-                (sourceNamespace:Namespace)-[:CONTAINS]->(sourceType:Type)-[d:DEPENDS_ON]->(targetType:Type)<-[:CONTAINS]-(targetNamespace:Namespace)
+                (sourceNamespace:Namespace:`C#`)-[:CONTAINS]->(sourceType:Type:`C#`)-[d:DEPENDS_ON]->(targetType:Type:`C#`)<-[:CONTAINS]-(targetNamespace:Namespace:`C#`)
             WHERE
                 sourceNamespace <> targetNamespace
             WITH
                 sourceNamespace, targetNamespace, sum(d.coupling) as coupling
             MERGE
                 (sourceNamespace)-[d:DEPENDS_ON]-(targetNamespace)
-            SET
+            ON CREATE SET
                 d.coupling = coupling
+            ON MERGE SET
+                d.coupling = d.coupling + coupling
             RETURN
                 sourceNamespace.fqn, targetNamespace.fqn, coupling
         ]]></cypher>
     </concept>
 
     <concept id="C#:Dependencies:Projects" severity="info">
-        <requiresConcept refId="C#:Dependencies:Types:FieldsAndProperties"/>
-        <requiresConcept refId="C#:Dependencies:Types:Inheritance"/>
-        <requiresConcept refId="C#:Dependencies:Types:StaticCalls"/>
-        <requiresConcept refId="C#:Dependencies:Methods:Returns"/>
-        <requiresConcept refId="C#:Dependencies:Methods:Parameters"/>
-        <requiresConcept refId="C#:Dependencies:Methods:TypeParameters"/>
+        <requiresConcept refId="C#:Dependencies:Types"/>
+        <requiresConcept refId="C#:Dependencies:Methods"/>
         <description>Marks Projects Dependent on each other based on dependencies of Types within Projects</description>
         <cypher><![CDATA[
             MATCH
-                (p:Project)-[:CONTAINS]->(f:File)-[:CONTAINS]->(t:Type)-[r:DEPENDS_ON]->(d:Type)<-[:CONTAINS]-(w:File)<-[:CONTAINS]-(b:Project)
+                (p:Project:`C#`)-[:CONTAINS]->(f:File:`C#`)-[:CONTAINS]->(t:Type:`C#`)-[r:DEPENDS_ON]->(d:Type:`C#`)<-[:CONTAINS]-(w:File:`C#`)<-[:CONTAINS]-(b:Project:`C#`)
             WHERE
                 p<>b
             WITH
                 p, b, sum(r.coupling) as coupling
             MERGE
                 r=(p)-[d:DEPENDS_ON]-(b)
-            SET
+            ON CREATE SET
                 d.coupling = coupling
+            ON MERGE SET
+                d.coupling = d.coupling + coupling
             RETURN DISTINCT
                 r
         ]]></cypher>
@@ -193,51 +225,59 @@
         <description>Add a DEPENDS_ON relationship to parents of namespace P *to* other namespace that depend on P</description>
         <cypher><![CDATA[
             MATCH
-                (parent:Namespace)-[:CONTAINS*]->(child:Namespace)-[r:DEPENDS_ON]->(other:Namespace)
+                (parent:Namespace:`C#`)-[:CONTAINS*]->(child:Namespace:`C#`)-[r:DEPENDS_ON]->(other:Namespace:`C#`)
             WHERE
-                parent.level >= other.level
+                parent.level <= other.level
 			AND
             	parent <> other
             AND
             	r.resolved IS NULL
             MERGE
                 (parent)-[d:DEPENDS_ON]->(other)
-            SET
+            ON CREATE SET
+                d.coupling = r.coupling,
+                d.resolved=true
+            ON MATCH SET
+                d.coupling = d.coupling + r.coupling,
                 d.resolved=true
             RETURN
                 distinct parent.fqn, other.fqn
         ]]></cypher>
     </concept>
 
+
     <concept id="C#:Dependencies:TransitivePackageDependenciesFromOtherToChild" severity="info">
         <requiresConcept refId="C#:Dependencies:Namespaces"/>
         <requiresConcept refId="C#:Namespaces:Levels"/>
-        <description>Add a DEPENDS_ON relationship to parents of a package P *from* other namespace that depend on P.</description>
+        <description>Add a DEPENDS_ON relationship to parents of a package P *from* other namespace that depend on P</description>
         <cypher><![CDATA[
             MATCH
-                (other:Namespace)-[r:DEPENDS_ON]->(child:Namespace),
-                (parent:Namespace)-[:CONTAINS*]->(child:Namespace)
+                (other:Namespace:`C#`)-[r:DEPENDS_ON]->(child:Namespace:`C#`)<-[:CONTAINS*]-(parent:Namespace:`C#`)
             WHERE
-                other.level <= parent.level
+                other.level >= parent.level
 			AND
             	parent <> other
             AND
             	r.resolved IS NULL
             MERGE
                 (other)-[d:DEPENDS_ON]->(parent)
-            SET
+            ON CREATE SET
+                d.coupling = r.coupling,
+                d.resolved=true
+            ON MATCH SET
+                d.coupling = d.coupling + r.coupling,
                 d.resolved=true
             RETURN
                 distinct other.fqn, parent.fqn
         ]]></cypher>
     </concept>
-    
+
     <concept id="C#:Dependencies:Namespaces:HighestFanOut">
         <requiresConcept refId="C#:Dependencies:Namespaces"/>
         <description>Lists the namespace that depend on the most other namespaces</description>
         <cypher><![CDATA[
             MATCH
-                (n:Namespace)-[d:DEPENDS_ON]->(m:Namespace)
+                (n:Namespace:`C#`)-[d:DEPENDS_ON]->(m:Namespace:`C#`)
             RETURN
                 n.fqn, count(d)
             ORDER BY
@@ -251,7 +291,7 @@
         <description>Lists the namespaces that are dependent on the most</description>
         <cypher><![CDATA[
             MATCH
-                (n:Namespace)<-[d:DEPENDS_ON]-(m:Namespace)
+                (n:Namespace:`C#`)<-[d:DEPENDS_ON]-(m:Namespace:`C#`)
             RETURN
                 n.fqn, count(d)
             ORDER BY

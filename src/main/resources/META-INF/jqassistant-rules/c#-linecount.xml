@@ -6,18 +6,17 @@
     </group>
 
     <concept id="C#:LineCount:Methods" severity="info">
-        <requiresParameter name="CSharp_LineCount_Methods_Limit" type="int" defaultValue="20"/>
         <description> Listing 20 Methods with the highest Line-count </description>
         <cypher><![CDATA[
             MATCH
-                (m:Method)
+                (m:Method:`C#`)
             WHERE
                 m.effectiveLineCount is not null
             RETURN
                 m.fqn as Name, m.effectiveLineCount as LineCount
             ORDER BY
                 m.effectiveLineCount
-            DESC LIMIT $CSharp_LineCount_Methods_Limit
+            DESC LIMIT 20
         ]]></cypher>
         <report primaryColumn="Name" />
     </concept>
@@ -30,7 +29,7 @@
         UNWIND
             range(0, size(ranges) - 2) AS i
         MATCH
-            (m:Method)
+            (m:Method:`C#`)
         WHERE
             m.effectiveLineCount >= ranges[i]
         AND
@@ -42,18 +41,17 @@
     </concept>
 
     <concept id="C#:LineCount:Types" severity="info">
-        <requiresParameter name="CSharp_LineCount_Types_Limit" type="int" defaultValue="20"/>
         <description>Listing the 20 Types with the highest Line-count</description>
         <cypher><![CDATA[
             MATCH
-                (t:Type)
+                (t:Type:`C#`)
             WHERE
                 t.effectiveLineCount is not null
             RETURN
                 t.fqn as Name, t.effectiveLineCount as LineCount
             ORDER BY
                 t.effectiveLineCount
-            DESC LIMIT $CSharp_LineCount_Types_Limit
+            DESC LIMIT 20
         ]]></cypher>
         <report primaryColumn="Name" />
     </concept>

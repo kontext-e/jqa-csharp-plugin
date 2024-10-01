@@ -1,26 +1,52 @@
-<jqassistant-rules xmlns="http://schema.jqassistant.org/rule/v1.10"
+<jqassistant-rules xmlns="http://schema.jqassistant.org/rule/v2.0"
                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                   xsi:schemaLocation="http://schema.jqassistant.org/rule/v1.10 https://schema.jqassistant.org/rule/jqassistant-rule-v1.10.xsd">
+                   xsi:schemaLocation="http://schema.jqassistant.org/rule/v2.0 http://schema.jqassistant.org/rule/jqassistant-rule-v2.0.xsd">
 
-    <group id="C#:Concepts">
-        <includeConcept refId="C#:Concept:*"/>
-    </group>
+    <concept id="C#:Excluded">
+        <description>Abstract Concepts used as Interface</description>
+        <cypher><![CDATA[RETURN 0]]></cypher>
+    </concept>
 
-    <concept id="C#:Concept:DesignerClasses" severity="info">
-        <description>Marks all Designer Classes and their types and members as Generated</description>
+    <concept id="C#:Generated">
+        <description>Abstract Concepts used as Interface</description>
+        <cypher><![CDATA[RETURN 0]]></cypher>
+    </concept>
+
+    <concept id="C#:Exclude:Getter">
+        <providesConcept refId="C#:Excluded"/>
+        <requiresConcept refId="C#:Concept:Getter"/>
+        <description>Marks Getter as Excluded, so other Concepts won't take them into account</description>
         <cypher><![CDATA[
             MATCH
-                (f:File)-[:CONTAINS]-(t:Type)-[:DECLARES]-(m:Member)
-            WHERE
-                f.name ENDS WITH 'Designer.cs'
+                (getter:Getter:`C#`)
             SET
-                f:Generated
+                getter:Excluded
+            RETURN count(getter)
+        ]]></cypher>
+    </concept>
+
+    <concept id="C#:Exclude:Setter">
+        <providesConcept refId="C#:Excluded"/>
+        <requiresConcept refId="C#:Concept:Setter"/>
+        <description>Marks Setter as Excluded, so other Concepts won't take them into account</description>
+        <cypher><![CDATA[
+            MATCH
+                (setter:Setter:`C#`)
             SET
-                t:Generated
+                setter:Excluded
+            RETURN count(setter)
+        ]]></cypher>
+    </concept>
+
+    <concept id="C#:Exclude:Generated" severity='info'>
+        <providesConcept refId="C#:Excluded"/>
+        <requiresConcept refId="C#:Generated"/>
+        <description>Marks all Generated SourceCode as Excluded</description>
+        <cypher><![CDATA[
+            MATCH
+                (node:Generated:`C#`)
             SET
-                m:Generated
-            RETURN
-                count(f)
+                node:Excluded
         ]]></cypher>
     </concept>
 
@@ -28,7 +54,7 @@
         <description>Marks Setters as such</description>
         <cypher><![CDATA[
             MATCH
-                (s:Method)
+                (s:Method:`C#`)
             WHERE
                 s.fqn ENDS WITH 'set'
             SET
@@ -42,7 +68,7 @@
         <description>Marks Getters as such</description>
         <cypher><![CDATA[
             MATCH
-                (g:Method)
+                (g:Method:`C#`)
             WHERE
                 g.fqn ENDS WITH 'get'
             SET
@@ -57,7 +83,7 @@
         <description>Adds int 'level' to each namespace</description>
         <cypher><![CDATA[
             MATCH
-                (n:Namespace)
+                (n:Namespace:`C#`)
             SET
                 n.level = Size(Split(n.fqn, '.'))
             RETURN
