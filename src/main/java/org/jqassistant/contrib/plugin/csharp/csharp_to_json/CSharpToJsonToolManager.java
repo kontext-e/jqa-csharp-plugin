@@ -24,7 +24,7 @@ public class CSharpToJsonToolManager {
 
     public static final String NAME = "C# to JSON converter";
 
-    public static final String CSHARP_TO_JSON_TOOL_VERSION = "0.3.0";
+    public static final String CSHARP_TO_JSON_TOOL_VERSION = "0.3.1";
     private static final String DOWNLOADLINK = "https://oss.sonatype.org/service/local/repositories/releases/content/de/kontext-e/jqassistant/plugin/csharp-to-json-converter/%s/csharp-to-json-converter-%s.zip";
     private static final String WINDOWS = "win";
     private static final String OSX = "osx";
