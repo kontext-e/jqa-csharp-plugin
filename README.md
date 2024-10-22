@@ -18,7 +18,7 @@ Simply add the following to the plugins section of the config
 ```yaml
   - group-id: de.kontext-e.jqassistant.plugin
     artifact-id: jqassistant.plugin.csharp
-    version: 0.3.1
+    version: 0.3.2
 ```
 
 ### Manual Installation

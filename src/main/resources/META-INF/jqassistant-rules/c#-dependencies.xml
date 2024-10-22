@@ -190,7 +190,7 @@
                 (sourceNamespace)-[d:DEPENDS_ON]-(targetNamespace)
             ON CREATE SET
                 d.coupling = coupling
-            ON MERGE SET
+            ON MATCH SET
                 d.coupling = d.coupling + coupling
             RETURN
                 sourceNamespace.fqn, targetNamespace.fqn, coupling
@@ -212,7 +212,7 @@
                 r=(p)-[d:DEPENDS_ON]-(b)
             ON CREATE SET
                 d.coupling = coupling
-            ON MERGE SET
+            ON MATCH SET
                 d.coupling = d.coupling + coupling
             RETURN DISTINCT
                 r
