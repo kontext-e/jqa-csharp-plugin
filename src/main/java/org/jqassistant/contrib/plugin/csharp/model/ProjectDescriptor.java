@@ -9,7 +9,7 @@ import java.util.List;
 
 
 @Label("Project")
-public interface ProjectDescriptor extends NamedDescriptor {
+public interface ProjectDescriptor extends NamedDescriptor, CSharpDescriptor {
 
     String getRelativePath();
     void setRelativePath(String relativePath);
