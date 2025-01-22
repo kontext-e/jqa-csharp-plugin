@@ -24,8 +24,8 @@ public class CSharpToJsonToolManager {
 
     public static final String NAME = "C# to JSON converter";
 
-    public static final String CSHARP_TO_JSON_TOOL_VERSION = "0.3.1";
-    private static final String DOWNLOADLINK = "https://oss.sonatype.org/service/local/repositories/releases/content/de/kontext-e/jqassistant/plugin/csharp-to-json-converter/%s/csharp-to-json-converter-%s.zip";
+    public static final String CSHARP_TO_JSON_TOOL_VERSION = "0.3.2";
+    private static final String DOWNLOADLINK = "https://oss.sonatype.org/service/local/repositories/releases/content/de/kontext-e/jqassistant/plugin/csharp-to-json-converter/%s/csharp-to-json-converter-%s-%s.zip";
     private static final String WINDOWS = "win";
     private static final String OSX = "osx";
     private static final String LINUX = "linux";
@@ -118,6 +118,6 @@ public class CSharpToJsonToolManager {
             throw new RuntimeException("No C#2J tool version available for OS: " + OS_NAME);
         }
 
-        return String.format(DOWNLOADLINK, CSHARP_TO_JSON_TOOL_VERSION, CSHARP_TO_JSON_TOOL_VERSION);
+        return String.format(DOWNLOADLINK, CSHARP_TO_JSON_TOOL_VERSION, CSHARP_TO_JSON_TOOL_VERSION, operatingSystem);
     }
 }
