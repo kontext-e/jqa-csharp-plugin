@@ -1,6 +1,5 @@
 package org.jqassistant.contrib.plugin.csharp.json_to_neo4j;
 
-import com.buschmais.jqassistant.core.store.api.model.FullQualifiedNameDescriptor;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.caches.NamespaceCache;
 import org.jqassistant.contrib.plugin.csharp.model.NamespaceDescriptor;
 

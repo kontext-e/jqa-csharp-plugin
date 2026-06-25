@@ -1,7 +1,6 @@
 package org.jqassistant.contrib.plugin.csharp.csharp_to_json;
 
 import net.lingala.zip4j.ZipFile;
-import net.lingala.zip4j.exception.ZipException;
 import org.jqassistant.contrib.plugin.csharp.common.CSharpPluginException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,7 +23,7 @@ public class CSharpToJsonToolManager {
 
     public static final String NAME = "C# to JSON converter";
 
-    public static final String CSHARP_TO_JSON_TOOL_VERSION = "0.3.2";
+    public static final String CSHARP_TO_JSON_TOOL_VERSION = "0.3.4";
     private static final String DOWNLOADLINK = "https://oss.sonatype.org/service/local/repositories/releases/content/de/kontext-e/jqassistant/plugin/csharp-to-json-converter/%s/csharp-to-json-converter-%s-%s.zip";
     private static final String WINDOWS = "win";
     private static final String OSX = "osx";
@@ -86,10 +85,10 @@ public class CSharpToJsonToolManager {
         }
     }
 
-    private void extractZip(File zip) throws ZipException {
-
-        new ZipFile(zip)
-                .extractAll(zip.getParentFile().getAbsolutePath());
+    private void extractZip(File file) throws IOException {
+        try (ZipFile zip = new ZipFile(file)) {
+                zip.extractAll(file.getParentFile().getAbsolutePath());
+        }
     }
 
     private File downloadZip(File directory, String url) throws IOException {
