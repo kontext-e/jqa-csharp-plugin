@@ -8,15 +8,19 @@ import org.junit.jupiter.api.TestInstance;
 
 import static org.jqassistant.contrib.plugin.csharp.CSharpToJsonTestRunner.jsonDirectory;
 
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public abstract class CSharpIntegrationTest extends AbstractPluginIT {
 
     private static boolean scannerHasRun = false;
 
     @BeforeEach
     public void beforeEachTest(){
-        store.beginTransaction();
         if (!scannerHasRun) {
+            store.reset();
+            store.beginTransaction();
             scanJsonsToNeo4J();
+        } else {
+            store.beginTransaction();
         }
     }
 
