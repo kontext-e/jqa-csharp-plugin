@@ -46,10 +46,7 @@ public class MethodCache {
     }
 
     public MethodDescriptor findOrCreate(String fqn) {
-        if (cache.containsKey(fqn)) {
-            return findAny(fqn).get();
-        }
-        return create(fqn, MethodDescriptor.class);
+        return findAny(fqn).orElseGet(() -> create(fqn, MethodDescriptor.class));
     }
 
     public List<List<MethodDescriptor>> findAllPartialMethods(){

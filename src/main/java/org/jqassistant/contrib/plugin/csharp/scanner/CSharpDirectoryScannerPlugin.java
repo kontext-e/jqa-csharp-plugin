@@ -20,7 +20,6 @@ import java.io.IOException;
 
 public class CSharpDirectoryScannerPlugin extends AbstractScannerPlugin<FileResource, CSharpDescriptor> {
 
-    private static final boolean DEBUG = true;
     private static final Logger LOGGER = LoggerFactory.getLogger(CSharpDirectoryScannerPlugin.class);
 
     private final CSharpToJsonToolManager cSharpToJsonToolManager;
@@ -52,7 +51,7 @@ public class CSharpDirectoryScannerPlugin extends AbstractScannerPlugin<FileReso
             jsonToNeo4JConverter.readAllJsonFilesAndSaveToNeo4J();
 
         } catch (CSharpPluginException e) {
-            e.printStackTrace();
+            LOGGER.error("CSharp Plugin Exception: ", e);
         }
 
         LOGGER.info("Deleting JSON folder at '{}' ...", jsonDirectory.getAbsolutePath());

@@ -7,10 +7,11 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.Objects;
 
 class ExecutionStreamLogger extends Thread {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(CSharpToJsonToolExecutor.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ExecutionStreamLogger.class);
 
     private final InputStream inputStream;
     private final String type;
@@ -32,7 +33,11 @@ class ExecutionStreamLogger extends Thread {
             }
 
         } catch (IOException ioe) {
-            ioe.printStackTrace();
+            if (Objects.equals(type, "ERROR")) {
+                LOGGER.error("Error while processing execution stream", ioe);
+            } else  {
+                LOGGER.info("Error while processing execution stream", ioe);
+            }
         }
     }
 }
