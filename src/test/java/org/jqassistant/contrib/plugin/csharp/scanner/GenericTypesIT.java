@@ -9,7 +9,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class GenericTypesIT extends CSharpIntegrationTest {
 
     @Test
-    @TestStore(reset = false)
     void testNestedGenericField(){
         List<String> typesOfField = query(
                 "MATCH (field:Field)-[:OF_TYPE]-(type:Type) " +
@@ -28,7 +27,6 @@ public class GenericTypesIT extends CSharpIntegrationTest {
     }
 
     @Test
-    @TestStore(reset = false)
     void testGenericFieldWithoutConstraint(){
         List<String> typesOfField = query(
                 "MATCH (field:Field)-[:OF_TYPE]-(type:Type) " +
@@ -40,7 +38,6 @@ public class GenericTypesIT extends CSharpIntegrationTest {
     }
 
     @Test
-    @TestStore(reset = false)
     void testMethodWithNestedGenericReturnType(){
         List<String> returnTypes = query(
                 "MATCH (method:Method)-[:RETURNS]-(type:Type) " +
@@ -56,7 +53,6 @@ public class GenericTypesIT extends CSharpIntegrationTest {
     }
 
     @Test
-    @TestStore(reset = false)
     void testGenericMethodInNonGenericClass(){
         List<String> returnTypes = query(
                 "MATCH (method:Method)-[:RETURNS]-(type:Type) " +
@@ -68,7 +64,6 @@ public class GenericTypesIT extends CSharpIntegrationTest {
     }
 
     @Test
-    @TestStore(reset = false)
     void testGenericMethodInNonGenericClassWithConstraints(){
         List<String> returnTypes = query(
                 "MATCH (method:Method)-[:RETURNS]-(type:Type) " +
@@ -81,7 +76,6 @@ public class GenericTypesIT extends CSharpIntegrationTest {
     }
 
     @Test
-    @TestStore(reset = false)
     void testRecursiveGenericMethod(){
         List<String> returnTypes = query(
                 "MATCH (method:Method)-[:RETURNS]-(type:Type) " +
@@ -95,7 +89,6 @@ public class GenericTypesIT extends CSharpIntegrationTest {
 
 
     @Test
-    @TestStore(reset = false)
     void testParameterWithNestedGenericType(){
         List<String> parameterTypes = query(
                 "MATCH (method:Method)-[:HAS]-(p:Parameter)-[:OF_TYPE]-(type:Type) " +

@@ -25,7 +25,6 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 public class TypeAnalyzerIT extends CSharpIntegrationTest{
 
     @Test
-    @TestStore(reset = false)
     void TestClass(){
         ClassDescriptor clazz = (ClassDescriptor) queryForType("Project1.Types","TypeClass").get(0);
 
@@ -53,7 +52,6 @@ public class TypeAnalyzerIT extends CSharpIntegrationTest{
     }
 
     @Test
-    @TestStore(reset = false)
     void TestInterface(){
         InterfaceTypeDescriptor interfaceDescriptor = (InterfaceTypeDescriptor) queryForType("Project1.Types","ITypeInterface").get(0);
 
@@ -75,7 +73,6 @@ public class TypeAnalyzerIT extends CSharpIntegrationTest{
     }
 
     @Test
-    @TestStore(reset = false)
     void TestStruct(){
         StructDescriptor struct = (StructDescriptor) queryForType("Project1.Types","TypeStruct").get(0);
 
@@ -99,7 +96,6 @@ public class TypeAnalyzerIT extends CSharpIntegrationTest{
     }
 
     @Test
-    @TestStore(reset = false)
     void TestRecordClass(){
         RecordClassDescriptor record = (RecordClassDescriptor) queryForType("Project1.Types","TypeRecord").get(0);
 
@@ -128,7 +124,6 @@ public class TypeAnalyzerIT extends CSharpIntegrationTest{
     }
 
     @Test
-    @TestStore(reset = false)
     void TestRecordStruct(){
         RecordStructDescriptor recordStruct = (RecordStructDescriptor) queryForType("Project1.Types","TypeRecordStruct").get(0);
 
@@ -152,7 +147,6 @@ public class TypeAnalyzerIT extends CSharpIntegrationTest{
     }
 
     @Test
-    @TestStore(reset = false)
     void TestEnumType(){
         EnumTypeDescriptor enumDescriptor = (EnumTypeDescriptor) queryForType("Project1.Types", "TypeEnum").get(0);
 
@@ -165,7 +159,6 @@ public class TypeAnalyzerIT extends CSharpIntegrationTest{
     }
 
     @Test
-    @TestStore(reset = false)
     void TestEnumValues(){
         List<EnumValueDescriptor> values = query("Match r=(v:Enum:Value)-[]-(t:Enum:Type) Where t.name=\"TypeEnum\" return v").getColumn("v");
 
@@ -180,7 +173,6 @@ public class TypeAnalyzerIT extends CSharpIntegrationTest{
 
 
     @Test
-    @TestStore(reset = false)
     void TestRecordDeclarationShorthand(){
         RecordClassDescriptor typeDescriptor = (RecordClassDescriptor) queryForType("Project1","OnePublicConstructor").get(0);
         assertThat(typeDescriptor.getDeclaredMembers().size()).isEqualTo(10);
@@ -192,7 +184,6 @@ public class TypeAnalyzerIT extends CSharpIntegrationTest{
     }
 
     @Test
-    @TestStore(reset = false)
     void testPrimaryConstructors(){
         List<MethodDescriptor> constructors = findConstructorsOfType("Constructors");
 
@@ -206,7 +197,6 @@ public class TypeAnalyzerIT extends CSharpIntegrationTest{
 
 
     @Test
-    @TestStore(reset = false)
     void testDefaultConstructor(){
         List<MethodDescriptor> defaultConstructors = findConstructorsOfType("ClassWithDefaultConstructor");
         assertThat(defaultConstructors.size()).isEqualTo(1);
@@ -215,14 +205,12 @@ public class TypeAnalyzerIT extends CSharpIntegrationTest{
     }
 
     @Test
-    @TestStore(reset = false)
     void testClassWithoutConstructor(){
         ClassDescriptor clazz = (ClassDescriptor) query("Match (c:Class) Where c.name=\"ClassWithoutAnyConstructor\" Return c\n").getColumn("c").get(0);
         assertThat(clazz.getDeclaredMembers().isEmpty()).isTrue();
     }
 
     @Test
-    @TestStore(reset = false)
     void testRecordStruct(){
         List<MethodDescriptor> constructors = findConstructorsOfType("TwoConstructors");
         assertThat(constructors.size()).isEqualTo(2);

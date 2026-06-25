@@ -10,7 +10,6 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 public class FieldAnalyzerIT extends CSharpIntegrationTest{
 
     @Test
-    @TestStore(reset = false)
     void testPrivateField(){
         FieldDescriptor field = queryForField("privateField");
 
@@ -25,14 +24,12 @@ public class FieldAnalyzerIT extends CSharpIntegrationTest{
     }
 
     @Test
-    @TestStore(reset = false)
     void testPublicField(){
         FieldDescriptor field = queryForField("PublicField");
         assertThat(field.getAccessibility()).isEqualTo("Public");
     }
 
     @Test
-    @TestStore(reset = false)
     void testStaticField(){
         FieldDescriptor field = queryForField("StaticField");
         assertThat(field.isStatic()).isTrue();
@@ -42,14 +39,12 @@ public class FieldAnalyzerIT extends CSharpIntegrationTest{
     }
 
     @Test
-    @TestStore(reset = false)
     void testRequiredField(){
         FieldDescriptor field = queryForField("RequiredField");
         assertThat(field.isRequired()).isTrue();
     }
 
     @Test
-    @TestStore(reset = false)
     void testVolatileField(){
         FieldDescriptor field = queryForField("VolatileField");
         assertThat(field.isVolatile()).isTrue();
@@ -57,7 +52,6 @@ public class FieldAnalyzerIT extends CSharpIntegrationTest{
     }
 
     @Test
-    @TestStore(reset = false)
     void testFieldWithDefaultValue(){
         FieldDescriptor field = queryForField("DefaultField");
         assertThat(field.getValue().getValue()).isEqualTo("Initial String");

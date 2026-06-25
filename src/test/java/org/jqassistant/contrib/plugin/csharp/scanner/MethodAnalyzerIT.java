@@ -12,28 +12,24 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 public class MethodAnalyzerIT extends CSharpIntegrationTest {
 
     @Test
-    @TestStore(reset = false)
     void testProtectedInternalMethod() {
         MethodDescriptor method = queryForMethods("Methods", "ProtectedInternalMethod").get(0);
         assertThat(method.getAccessibility()).isEqualTo("ProtectedOrInternal");
     }
 
     @Test
-    @TestStore(reset = false)
     void testMethodReturnType(){
         MethodDescriptor method = queryForMethods("Methods", "MethodWithReturnType").get(0);
         assertThat(method.getReturns().get(0).getFullQualifiedName()).isEqualTo("int");
     }
 
     @Test
-    @TestStore(reset = false)
     void testImplicitlyPrivateMethods(){
         MethodDescriptor method = queryForMethods("Methods", "ImplicitlyPrivateMethod").get(0);
         assertThat(method.getAccessibility()).isEqualTo("Private");
     }
 
     @Test
-    @TestStore(reset = false)
     void testExpressionMethod(){
         MethodDescriptor method = queryForMethods("Methods", "ExpressionMethod").get(0);
         assertThat(method.isImplementation()).isTrue();
@@ -41,7 +37,6 @@ public class MethodAnalyzerIT extends CSharpIntegrationTest {
     }
 
     @Test
-    @TestStore(reset = false)
     void testExtensionMethod(){
         MethodDescriptor method = queryForMethods("MethodExtensions", "ExtensionMethod").get(0);
         assertThat(method.getExtendedType().getName()).isEqualTo("Methods");
@@ -49,7 +44,6 @@ public class MethodAnalyzerIT extends CSharpIntegrationTest {
     }
 
     @Test
-    @TestStore(reset = false)
     void TestConstructor(){
         MethodDescriptor method = queryForMethods("Methods", ".ctor").get(0);
         assertThat(method.getReturns().get(0).getFullQualifiedName()).isEqualTo("Project1.Methods");
@@ -57,21 +51,18 @@ public class MethodAnalyzerIT extends CSharpIntegrationTest {
     }
 
     @Test
-    @TestStore(reset = false)
     void testCyclomaticComplexity(){
         MethodDescriptor method = queryForMethods("CyclomaticComplexityExample", "shouldBeOne").get(0);
         assertThat(method.getCyclomaticComplexity()).isEqualTo(1);
     }
 
     @Test
-    @TestStore(reset = false)
     void testCyclomaticComplexityBranch(){
         MethodDescriptor method = queryForMethods("CyclomaticComplexityExample", "ShouldBeTwo").get(0);
         assertThat(method.getCyclomaticComplexity()).isEqualTo(2);
     }
 
     @Test
-    @TestStore(reset = false)
     void testCyclomaticComplexityLoop(){
         MethodDescriptor method = queryForMethods("CyclomaticComplexityExample", "ShouldBeTwoAsWell").get(0);
         assertThat(method.getCyclomaticComplexity()).isEqualTo(2);
@@ -79,7 +70,6 @@ public class MethodAnalyzerIT extends CSharpIntegrationTest {
 
 
     @Test
-    @TestStore(reset = false)
     void testCyclomaticComplexityThree(){
         MethodDescriptor method = queryForMethods("CyclomaticComplexityExample", "ShouldBeThree").get(0);
         assertThat(method.getCyclomaticComplexity()).isEqualTo(3);
