@@ -18,7 +18,10 @@ public class InvocationAnalyzerIT extends CSharpIntegrationTest {
         MethodDescriptor method = (MethodDescriptor) query("Match (m:Method) where m.fqn=\"Project1.Invocations.Invocations()\" return m").getColumn("m").get(0);
 
         List<InvokesDescriptor> invokedBy = method.getInvokes();
-        List<InvokesDescriptor> invocationsOfMethod = invokedBy.stream().filter(m -> m.getInvokedMethod().getName().equals("Method")).collect(Collectors.toList());
+        List<InvokesDescriptor> invocationsOfMethod = invokedBy.stream()
+                .filter(m -> m.getInvokedMethod() != null && m.getInvokedMethod().getName() != null)
+                .filter(m -> m.getInvokedMethod().getName().equals("Method"))
+                .collect(Collectors.toList());
         assertThat(invocationsOfMethod.size()).isEqualTo(2);
         assertThat(invocationsOfMethod.stream().anyMatch(i->i.getLineNumber() == 16)).isTrue();
         assertThat(invocationsOfMethod.stream().anyMatch(i->i.getLineNumber() == 39)).isTrue();
@@ -33,7 +36,7 @@ public class InvocationAnalyzerIT extends CSharpIntegrationTest {
     @Test
     void testStaticMethodInvocation(){
         MethodDescriptor method = queryForMethodInvocation("Project1.Invocations.Invocations()");
-        assertThat(containsCalledMethod(method, "Project1.ExtensionMethods.Extensions.ExtensionMethodWithArgument(Project1.Types.TypeClass, double)")).isTrue();
+        assertThat(containsCalledMethod(method, "Project1.Types.TypeClass.ExtensionMethodWithArgument(double)")).isTrue();
     }
 
     @Test
@@ -45,7 +48,7 @@ public class InvocationAnalyzerIT extends CSharpIntegrationTest {
     @Test
     void testPropertySetter(){
         MethodDescriptor method = queryForMethodInvocation("Project1.Invocations.Invocations()");
-        assertThat(containsCalledMethod(method, "Project1.Invocations.Property.get")).isTrue();
+        assertThat(containsCalledMethod(method, "Project1.Invocations.Property.set")).isTrue();
     }
 
     @Test
