@@ -2,20 +2,18 @@ package org.jqassistant.contrib.plugin.csharp.scanner;
 
 import com.buschmais.jqassistant.core.test.plugin.AbstractPluginIT;
 import org.jqassistant.contrib.plugin.csharp.json_to_neo4j.JsonToNeo4JConverter;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.TestInstance;
 
 import static org.jqassistant.contrib.plugin.csharp.CSharpToJsonTestRunner.jsonDirectory;
 
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public abstract class CSharpIntegrationTest extends AbstractPluginIT {
 
-    private boolean scannerHasRun = false;
+    private static boolean scannerHasRun = false;
 
     @BeforeEach
-    public void beforeEach(){
+    public void beforeEachTest(){
         store.beginTransaction();
         if (!scannerHasRun) {
             scanJsonsToNeo4J();
@@ -23,13 +21,13 @@ public abstract class CSharpIntegrationTest extends AbstractPluginIT {
     }
 
     @AfterEach
-    public void afterEach(){
+    public void afterEachTest(){
         store.commitTransaction();
     }
 
-    @AfterAll
-    public void afterAll(){
-        resetStore();
+    @Override
+    protected boolean isReset() {
+        return false;
     }
 
     private void scanJsonsToNeo4J() {
@@ -38,10 +36,4 @@ public abstract class CSharpIntegrationTest extends AbstractPluginIT {
         scannerHasRun = true;
     }
 
-    private void resetStore() {
-        store.start();
-        store.reset();
-        store.stop();
-        scannerHasRun = false;
-    }
 }

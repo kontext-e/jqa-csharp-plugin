@@ -13,35 +13,30 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 public class PartialityAnalyzerIT extends CSharpIntegrationTest{
 
     @Test
-    @TestStore(reset = false)
     void testPartialClass(){
         List<TypeDescriptor> partialClasses = queryForType("PartialClass");
         assertPartiality(partialClasses);
     }
 
     @Test
-    @TestStore(reset = false)
     void testPartialInterface(){
         List<TypeDescriptor> partialClasses = queryForType("IPartialInterface");
         assertPartiality(partialClasses);
     }
 
     @Test
-    @TestStore(reset = false)
     void testPartialStruct(){
         List<TypeDescriptor> partialClasses = queryForType("PartialStruct");
         assertPartiality(partialClasses);
     }
 
     @Test
-    @TestStore(reset = false)
     void testPartialRecord(){
         List<TypeDescriptor> partialClasses = queryForType("PartialRecord");
         assertPartiality(partialClasses);
     }
 
     @Test
-    @TestStore(reset = false)
     void testPartialMethods(){
         List<MethodDescriptor> partialMethods = query("Match (c:Class)-[]-(m:Method) where c.fqn=\"Project1.Partiality.PartialClass\" and m.partial=true return m").getColumn("m");
 
@@ -60,7 +55,6 @@ public class PartialityAnalyzerIT extends CSharpIntegrationTest{
     }
 
     @Test
-    @TestStore(reset = false)
     void testPartialClassConstructor(){
         List<TypeDescriptor> partialClasses = queryForType("PartialClass");
 

@@ -14,14 +14,12 @@ public class PropertyAnalyzerIT extends CSharpIntegrationTest {
 
 
     @Test
-    @TestStore(reset = false)
     void testProperties() {
         List<Map<String, Object>> propertyDescriptorList = query("Match (c:Class)-[]->(p:Property) Where c.name=\"Properties\" Return p").getRows();
         assertThat(propertyDescriptorList.size()).isEqualTo(9);
     }
 
     @Test
-    @TestStore(reset = false)
     void testImplicitlyPrivateProperty() {
         Map<String, List<Object>> result = queryForPropertyAndAccessors("ImplicitlyPrivateProperty");
 
@@ -34,7 +32,6 @@ public class PropertyAnalyzerIT extends CSharpIntegrationTest {
     }
 
     @Test
-    @TestStore(reset = false)
     void testPrivateProtectedProperty() {
         PropertyDescriptor property = queryForProperty("PrivateProtectedProperty").get(0);
         assertThat(property.getAccessibility()).isEqualTo("ProtectedAndInternal");
@@ -43,7 +40,6 @@ public class PropertyAnalyzerIT extends CSharpIntegrationTest {
     }
 
     @Test
-    @TestStore(reset = false)
     void testPropertyWithDifferingAccessorAccessibility(){
 
         Map<String, List<Object>> result = queryForPropertyAndAccessors("PropertyWithDifferingAccessorAccessibility");
@@ -56,14 +52,12 @@ public class PropertyAnalyzerIT extends CSharpIntegrationTest {
     }
 
     @Test
-    @TestStore(reset = false)
     void testStaticProperty() {
         PropertyDescriptor property = queryForProperty("StaticProperty").get(0);
         assertThat(property.isStatic()).isTrue();
     }
 
     @Test
-    @TestStore(reset = false)
     void testExpressionProperty(){
         Map<String, List<Object>> result = queryForPropertyAndAccessors("ExpressionBodiedProperty");
 
@@ -74,7 +68,6 @@ public class PropertyAnalyzerIT extends CSharpIntegrationTest {
     }
 
     @Test
-    @TestStore(reset = false)
     void testPropertyWithExplicitAccessors(){
         Map<String, List<Object>> result = queryForPropertyAndAccessors("PropertyWithExplicitAccessors");
 
@@ -86,7 +79,6 @@ public class PropertyAnalyzerIT extends CSharpIntegrationTest {
     }
 
     @Test
-    @TestStore(reset = false)
     void testPropertyAccessorReturnType(){
         Map<String, List<Object>> result = queryForPropertyAndAccessors("ImplicitlyPrivateProperty");
 

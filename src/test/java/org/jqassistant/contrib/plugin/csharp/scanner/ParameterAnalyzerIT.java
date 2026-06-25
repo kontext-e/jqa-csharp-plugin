@@ -13,14 +13,12 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 public class ParameterAnalyzerIT extends CSharpIntegrationTest {
 
     @Test
-    @TestStore(reset = false)
     void testMethodZeroParameters(){
         MethodDescriptor method = (MethodDescriptor) query("Match (m:Method) where m.name=\"MethodWithLocalMethod\" return m").getColumn("m").get(0);
         assertThat(method.getParameters().size()).isEqualTo(0);
     }
 
     @Test
-    @TestStore(reset = false)
     void testMethodParameter(){
         MethodDescriptor method = (MethodDescriptor) query("Match (m:Method)-[]-(p:Parameter)-[]-(t:Type) where m.name=\"ExpressionMethod\" return m").getColumn("m").get(0);
         assertThat(method.getParameters().size()).isEqualTo(1);
@@ -30,7 +28,6 @@ public class ParameterAnalyzerIT extends CSharpIntegrationTest {
     }
 
     @Test
-    @TestStore(reset = false)
     void testMethodTwoParameters(){
         MethodDescriptor method = (MethodDescriptor) query("Match (m:Method) where m.name=\"MethodWithMultipleArguments\" return m").getColumn("m").get(0);
         assertThat(method.getParameters().size()).isEqualTo(2);

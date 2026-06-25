@@ -14,7 +14,6 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 public class InvocationAnalyzerIT extends CSharpIntegrationTest {
 
     @Test
-    @TestStore(reset = false)
     void testInvocationsOfMemberMethod(){
         MethodDescriptor method = (MethodDescriptor) query("Match (m:Method) where m.fqn=\"Project1.Invocations.Invocations()\" return m").getColumn("m").get(0);
 
@@ -26,42 +25,36 @@ public class InvocationAnalyzerIT extends CSharpIntegrationTest {
     }
 
     @Test
-    @TestStore(reset = false)
     void testExtensionMethodInvocation(){
         MethodDescriptor method = queryForMethodInvocation("Project1.Invocations.Invocations()");
         assertThat(containsCalledMethod(method, "Project1.Invocations.Method()")).isTrue();
     }
 
     @Test
-    @TestStore(reset = false)
     void testStaticMethodInvocation(){
         MethodDescriptor method = queryForMethodInvocation("Project1.Invocations.Invocations()");
         assertThat(containsCalledMethod(method, "Project1.ExtensionMethods.Extensions.ExtensionMethodWithArgument(Project1.Types.TypeClass, double)")).isTrue();
     }
 
     @Test
-    @TestStore(reset = false)
     void testPropertyGetter(){
         MethodDescriptor method = queryForMethodInvocation("Project1.Invocations.Invocations()");
         assertThat(containsCalledMethod(method, "Project1.Invocations.Property.get")).isTrue();
     }
 
     @Test
-    @TestStore(reset = false)
     void testPropertySetter(){
         MethodDescriptor method = queryForMethodInvocation("Project1.Invocations.Invocations()");
         assertThat(containsCalledMethod(method, "Project1.Invocations.Property.get")).isTrue();
     }
 
     @Test
-    @TestStore(reset = false)
     void testPartialMethod(){
         MethodDescriptor method = queryForMethodInvocation("Project1.Invocations.Invocations()");
         assertThat(containsCalledMethod(method, "Project1.Partiality.PartialClass.PartialMethod()")).isTrue();
     }
 
     @Test
-    @TestStore(reset = false)
     void testConstructor(){
         MethodDescriptor method = queryForMethodInvocation("Project1.Invocations.Invocations()");
         assertThat(method.getInvokes()
@@ -71,14 +64,12 @@ public class InvocationAnalyzerIT extends CSharpIntegrationTest {
     }
 
     @Test
-    @TestStore(reset = false)
     void testRecursion(){
         MethodDescriptor method = queryForMethodInvocation("Project1.Invocations.ObjectCreations(Project1.Properties)");
         assertThat(containsCalledMethod(method, "Project1.Invocations.ObjectCreations(Project1.Properties)")).isTrue();
     }
 
     @Test
-    @TestStore(reset = false)
     void testConstructors(){
         MethodDescriptor method = queryForMethodInvocation("Project1.Invocations.ObjectCreations(Project1.Properties)");
         assertThat(method.getInvokes()
@@ -90,7 +81,6 @@ public class InvocationAnalyzerIT extends CSharpIntegrationTest {
     }
 
     @Test
-    @TestStore(reset = false)
     void testTwoCallsToSameMethod(){
         MethodDescriptor method = queryForMethodInvocation("Project1.Invocations.Invocations()");
         assertThat(method.getInvokes()
@@ -102,7 +92,6 @@ public class InvocationAnalyzerIT extends CSharpIntegrationTest {
     }
 
     @Test
-    @TestStore(reset = false)
     void testArrayCreations(){
         MethodDescriptor method = (MethodDescriptor) query("Match (m:Method)-[:CREATES_ARRAY]-(:Type) where m.fqn=\"Project1.Invocations.ArrayCreations()\" return m")
                 .getColumn("m").get(0);
@@ -115,14 +104,12 @@ public class InvocationAnalyzerIT extends CSharpIntegrationTest {
     }
 
     @Test
-    @TestStore(reset = false)
     void testConstructorCallToBase(){
         MethodDescriptor method = queryForMethodInvocation("Project1.Constructors.Constructors()");
         assertThat(containsCalledMethod(method,"Project1.Constructors.Constructors(double, double)")).isTrue();
     }
 
     @Test
-    @TestStore(reset = false)
     void testCallToPartialClassConstructor(){
         MethodDescriptor method = queryForMethodInvocation("Project1.Invocations.ObjectCreations(Project1.Properties)");
         assertThat(method.getInvokes()
@@ -134,7 +121,6 @@ public class InvocationAnalyzerIT extends CSharpIntegrationTest {
     }
 
     @Test
-    @TestStore(reset = false)
     void testGenericMethodTypeParameters(){
         MethodDescriptor method = queryForMethodInvocation("Project1.Invocations.InvocationOfGenericMethods()");
 

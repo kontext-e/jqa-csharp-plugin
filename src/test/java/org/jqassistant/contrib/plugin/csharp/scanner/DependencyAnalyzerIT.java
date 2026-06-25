@@ -16,7 +16,6 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 public class DependencyAnalyzerIT extends CSharpIntegrationTest{
 
     @Test
-    @TestStore(reset = false)
     void testClassInheritance(){
         ClassDescriptor firstChildClass = (ClassDescriptor) queryForType("FirstChildClass").get(0);
         ClassDescriptor secondChildClass = (ClassDescriptor) queryForType("SecondChildClass").get(0);
@@ -26,7 +25,6 @@ public class DependencyAnalyzerIT extends CSharpIntegrationTest{
     }
 
     @Test
-    @TestStore(reset = false)
     void testRecordInheritance(){
         RecordClassDescriptor firstChildRecord = (RecordClassDescriptor) queryForType("FirstChildRecord").get(0);
         RecordClassDescriptor secondChildRecord = (RecordClassDescriptor) queryForType("SecondChildRecord").get(0);
@@ -36,7 +34,6 @@ public class DependencyAnalyzerIT extends CSharpIntegrationTest{
     }
 
     @Test
-    @TestStore(reset = false)
     void testInterfaceImplementation(){
         InterfaceTypeDescriptor parentInterface1 = (InterfaceTypeDescriptor) queryForType("IFirstParentInterface").get(0);
         InterfaceTypeDescriptor parentInterface2 = (InterfaceTypeDescriptor) queryForType("ISecondParentInterface").get(0);
@@ -52,7 +49,6 @@ public class DependencyAnalyzerIT extends CSharpIntegrationTest{
     }
 
     @Test
-    @TestStore(reset = false)
     void testImplementationAndInheritance(){
         ClassDescriptor child = (ClassDescriptor) queryForType("Child").get(0);
 
@@ -62,7 +58,6 @@ public class DependencyAnalyzerIT extends CSharpIntegrationTest{
     }
 
     @Test
-    @TestStore(reset = false)
     void testUsings(){
         List<NamespaceDescriptor> namespaces = query("MATCH (:File {name: \"FileWithUsings.cs\"})-[:USES]->(n:Namespace) RETURN n").getColumn("n");
         assertThat(namespaces.size()).isEqualTo(3);
@@ -72,7 +67,6 @@ public class DependencyAnalyzerIT extends CSharpIntegrationTest{
     }
 
     @Test
-    @TestStore(reset = false)
     void testUsingAlias(){
         List<UsesNamespaceDescriptor> usesNamespaceDescriptorList = query("MATCH (:File {name: \"FileWithUsings.cs\"})-[u:USES {alias: 'MyAlias'}]->() RETURN u").getColumn("u");
         Assertions.assertThat(usesNamespaceDescriptorList).hasSize(1);
